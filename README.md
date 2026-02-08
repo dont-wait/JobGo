@@ -175,7 +175,6 @@ SocialButton(
 | Page | Path | Mô tả |
 |------|------|-------|
 | WelcomePage | `pages/welcome/welcome_page.dart` | Trang chủ với Login/SignUp options |
-| LoginPage | `pages/auth/login_page.dart` | Trang đăng nhập |
 
 ---
 
