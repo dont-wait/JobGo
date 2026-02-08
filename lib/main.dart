@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/configs/theme/app_theme.dart';
+import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,12 +11,11 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      title: 'JobGo',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const WelcomePage(),
     );
   }
 }
