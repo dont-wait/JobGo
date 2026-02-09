@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import 'register_info_page.dart';
-import 'role_card.dart';
+import '../../../widgets/common/role_card.dart';
 
 
 
@@ -66,7 +66,7 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
 
             // CANDIDATE
             RoleCard(
-              imagePath: 'assets/images/role_candidate.jpg',
+              imagePath: 'assets/images/role_candidate1.jpg',
               title: 'I am a Candidate',
               description:
                   'I’m looking for new career opportunities and want to showcase my talent.',
@@ -80,7 +80,7 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
 
             // EMPLOYER
             RoleCard(
-              imagePath: 'assets/images/role_employer.jpg',
+              imagePath: 'assets/images/role_employee.jpg',
               title: 'I am an Employer',
               description:
                   'I want to post jobs, manage applications, and find talent.',

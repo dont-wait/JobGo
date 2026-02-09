@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: 3.10.7
+  sdk: 3.10.8
 
 dependencies:
   flutter:
@@ -20,6 +20,6 @@ flutter:
   assets:
     - assets/icons/google.png
     - assets/icons/facebook.jpg
-    - assets/images/role_candidate.jpg
-    - assets/images/role_employer.jpg
+    - assets/images/role_candidate1.jpg
+    - assets/images/role_employee.jpg
 
