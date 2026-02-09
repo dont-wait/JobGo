@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
-import 'auth_text_field.dart';
-import 'social_login_row.dart';
+import '../../../widgets/common/auth_text_field.dart';
+import '../../../widgets/common/social_login_row.dart';
 
 import 'register_verify_email_page.dart';
 
