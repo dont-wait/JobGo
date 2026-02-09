@@ -23,8 +23,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +49,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
                 hintText: 'Full Name',
                 icon: Icons.person_outline,
               ),
-
               const SizedBox(height: 16),
-
               AuthTextField(
                 controller: emailController,
                 hintText: 'Email Address',
@@ -67,9 +64,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 16),
-
               AuthTextField(
                 controller: passwordController,
                 hintText: 'Password',
@@ -82,9 +77,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 16),
-
               AuthTextField(
                 controller: confirmPasswordController,
                 hintText: 'Confirm Password',
@@ -116,7 +109,6 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
   }
 
   //  METHODS
-
   void _onContinue() {
     if (_formKey.currentState!.validate()) {
       Navigator.push(

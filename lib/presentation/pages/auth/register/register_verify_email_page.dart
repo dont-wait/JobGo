@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/configs/theme/app_colors.dart';
 
 class RegisterVerifyEmailPage extends StatelessWidget {
   final String email;
@@ -36,13 +37,7 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 6),
-                      Row(
-                        children: [
-                          _StepDot(active: true),
-                          _StepDot(active: true),
-                          _StepDot(active: true),
-                        ],
-                      )
+                      
                     ],
                   ),
                   const Spacer(flex: 2),
@@ -57,14 +52,14 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blue.withOpacity(0.15),
+                  color: AppColors.primary,
                 ),
                 child: Center(
                   child: Container(
                     width: 64,
                     height: 64,
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(18),
                     ),
                     child: const Icon(
@@ -95,7 +90,7 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey,
+                  color: AppColors.textSecondary,
                 ),
               ),
 
@@ -120,7 +115,7 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                 height: 52,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
@@ -143,13 +138,13 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                 children: const [
                   Text(
                     "Didn't receive the code?",
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: AppColors.textSecondary),
                   ),
                   SizedBox(height: 6),
                   Text(
                     "Resend code",
                     style: TextStyle(
-                      color: Colors.blue,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -158,7 +153,7 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                     "Request new code in 00:45",
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ],
@@ -190,7 +185,7 @@ class _OtpBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black,
             blurRadius: 10,
           )
         ],
@@ -204,22 +199,5 @@ class _OtpBox extends StatelessWidget {
       ),
     );
   }
-}
 
-class _StepDot extends StatelessWidget {
-  final bool active;
-  const _StepDot({required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      width: 20,
-      height: 4,
-      decoration: BoxDecoration(
-        color: active ? Colors.blue : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
 }
