@@ -40,6 +40,7 @@
             cmake
             gtk3
             glib
+            fontconfig
             libGL
             libX11
             libXext
