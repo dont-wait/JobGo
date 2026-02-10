@@ -41,13 +41,13 @@
             gtk3
             glib
             libGL
-            xorg.libX11
-            xorg.libXext
-            xorg.libXinerama
-            xorg.libXcursor
-            xorg.libXrender
-            xorg.libXrandr
-            xorg.libXi
+            libX11
+            libXext
+            libXinerama
+            libXcursor
+            libXrender
+            libXrandr
+            libXi
             pcre2
           ];
 
