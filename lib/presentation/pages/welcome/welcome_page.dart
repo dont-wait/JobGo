@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth/register/register_role_page.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class WelcomePage extends StatelessWidget {
@@ -121,6 +122,12 @@ class WelcomePage extends StatelessWidget {
           child: OutlinedButton(
             onPressed: () {
               // TODO: Navigate to Sign Up page
+              Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => RegisterRolePage(),
+                        ),
+                      );
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.primary,

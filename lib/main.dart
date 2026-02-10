@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_theme.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
 
+
+
 void main() {
   runApp(const MainApp());
 }

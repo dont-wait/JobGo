@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.10.8
+  sdk: 3.10.8
 
 dependencies:
   flutter:
@@ -13,11 +13,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints: 6.0.0
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/icons/google.png
-    - assets/icons/facebook.jpg
-
+    # - assets/icons/google.png
+    # - assets/icons/facebook.jpg
+    # - assets/images/role_candidate1.jpg
+    # - assets/images/role_employee.jpg
+    - assets/icons/
+    - assets/images/
