@@ -121,7 +121,14 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Xóa hết stack và vào trang chính
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/home',
+                      (route) => false,
+                    );
+                  },
                   child: const Text(
                     "Verify",
                     style: TextStyle(

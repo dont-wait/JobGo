@@ -23,4 +23,8 @@ class AppColors {
   // Border colors
   static const border = Color(0xFFE5E7EB);
   static const divider = Color(0xFFF3F4F6);
+
+  // Search Primary bar
+  static const searchPrimaryBar = Color(0xFFECE6F4);
+  static const searchPrimaryBarText = Color(0xFF653E9D);
 }
