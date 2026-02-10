@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_theme.dart';
 import 'package:jobgo/presentation/pages/auth/forgotpassword_layout.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
+import 'package:jobgo/presentation/pages/auth/forgotpassword_layout.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
 
 
