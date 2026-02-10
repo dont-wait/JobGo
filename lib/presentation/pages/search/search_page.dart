@@ -12,14 +12,14 @@ class SearchPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search, size: 64, color: AppColors.searchPrimaryBar),
+            Icon(Icons.search, size: 64, color: AppColors.textHint),
             SizedBox(height: 16),
             Text(
               'Search',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppColors.searchPrimaryBarText,
+                color: AppColors.textSecondary,
               ),
             ),
             SizedBox(height: 8),
