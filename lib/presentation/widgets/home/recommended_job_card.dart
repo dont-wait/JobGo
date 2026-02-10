@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 
 class RecommendedJobCard extends StatelessWidget {
   final MockJob job;
@@ -24,24 +25,13 @@ class RecommendedJobCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Logo card
-            Container(
-              height: 100,
+            CompanyLogo(
+              imageUrl: job.logoUrl,
+              fallbackText: job.logoText,
+              backgroundColor: color,
               width: double.infinity,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Text(
-                  job.logoText,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-              ),
+              height: 100,
+              fontSize: 12,
             ),
             const SizedBox(height: 10),
             // Job title

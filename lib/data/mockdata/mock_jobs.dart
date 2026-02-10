@@ -4,6 +4,7 @@ class MockJob {
   final String company;
   final String logoColor;
   final String logoText;
+  final String? logoUrl; // URL ảnh từ Cloudinary (null = dùng fallback text)
   final String location;
   final String salary;
   final String type;
@@ -16,6 +17,7 @@ class MockJob {
     required this.company,
     required this.logoColor,
     required this.logoText,
+    this.logoUrl,
     this.location = '',
     this.salary = '',
     this.type = '',

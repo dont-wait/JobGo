@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 
 class RecentJobTile extends StatelessWidget {
   final MockJob job;
@@ -25,23 +26,10 @@ class RecentJobTile extends StatelessWidget {
         child: Row(
           children: [
             // Company logo
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Text(
-                  job.logoText,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+            CompanyLogo(
+              imageUrl: job.logoUrl,
+              fallbackText: job.logoText,
+              backgroundColor: color,
             ),
             const SizedBox(width: 12),
             // Job info
