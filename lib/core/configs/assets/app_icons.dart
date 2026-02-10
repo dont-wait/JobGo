@@ -1,7 +1,7 @@
 class AppIcons {
   static const String basePath = 'assets/icons/';
   
-  static const String google = '${basePath}google.svg';
-  static const String facebook = '${basePath}facebook.svg';
-  static const String briefcase = '${basePath}briefcase.svg';
+  static const String google = '${basePath}google.png';
+  static const String facebook = '${basePath}facebook.png';
+  static const String briefcase = '${basePath}briefcase.png';
 }

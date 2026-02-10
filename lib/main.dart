@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_theme.dart';
 import 'package:jobgo/presentation/pages/auth/forgotpassword_layout.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
-import 'package:jobgo/presentation/pages/auth/register/register_role_page.dart';
+import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
+
 
 
 void main() {
@@ -18,7 +19,7 @@ class MainApp extends StatelessWidget {
       title: 'JobGo',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: RegisterRolePage(),
+      home: const WelcomePage(),
     );
   }
 }

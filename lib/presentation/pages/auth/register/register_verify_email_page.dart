@@ -86,7 +86,7 @@ class RegisterVerifyEmailPage extends StatelessWidget {
 
               // SUBTITLE
               const Text(
-                "Enter the 4-digit code sent to\nalex.design@example.com",
+                "Enter the 4-digit code sent to\nemail",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
