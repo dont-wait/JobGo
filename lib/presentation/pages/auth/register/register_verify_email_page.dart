@@ -3,8 +3,9 @@ import '../../../../core/configs/theme/app_colors.dart';
 
 class RegisterVerifyEmailPage extends StatelessWidget {
   final String email;
+  final String role;
 
-  const RegisterVerifyEmailPage({super.key, required this.email});
+  const RegisterVerifyEmailPage({super.key, required this.email,required this.role,});
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +86,8 @@ class RegisterVerifyEmailPage extends StatelessWidget {
               const SizedBox(height: 12),
 
               // SUBTITLE
-              const Text(
-                "Enter the 4-digit code sent to\nemail",
+               Text(
+                "Enter the 4-digit code sent to\n$email\nRole: $role",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
