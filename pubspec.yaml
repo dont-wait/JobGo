@@ -18,8 +18,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/icons/google.png
-    - assets/icons/facebook.jpg
-    - assets/images/role_candidate1.jpg
-    - assets/images/role_employee.jpg
-
+    # - assets/icons/google.png
+    # - assets/icons/facebook.jpg
+    # - assets/images/role_candidate1.jpg
+    # - assets/images/role_employee.jpg
+    - assets/icons/
+    - assets/images/

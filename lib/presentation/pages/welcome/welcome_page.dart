@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../auth/Register/register_role_page.dart';
+import '../auth/register/register_role_page.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class WelcomePage extends StatelessWidget {
