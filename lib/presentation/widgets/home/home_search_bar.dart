@@ -13,18 +13,17 @@ class HomeSearchBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.lightBackground,
+          color: AppColors.searchPrimaryBar,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
         ),
         child: const Row(
           children: [
-            Icon(Icons.search, color: AppColors.textHint, size: 22),
+            Icon(Icons.search, color: AppColors.searchPrimaryBarText, size: 22),
             SizedBox(width: 12),
             Text(
               'Search jobs, companies...',
               style: TextStyle(
-                color: AppColors.textHint,
+                color: AppColors.searchPrimaryBarText,
                 fontSize: 14,
               ),
             ),
