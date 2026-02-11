@@ -30,6 +30,14 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
+        title: const Text(
+          'Login',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
@@ -73,7 +81,9 @@ class _LoginPageState extends State<LoginPage> {
                       return 'Email is required';
                     }
                     final email = value.trim();
-                    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+                    final emailRegex = RegExp(
+                      r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+                    );
                     if (!emailRegex.hasMatch(email)) {
                       return 'Invalid email format';
                     }
@@ -87,8 +97,19 @@ class _LoginPageState extends State<LoginPage> {
                   icon: Icons.lock_outline,
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                    final password = value ?? '';
+                    if (password.isEmpty) {
+                      return 'Password is required';
+                    }
+                    if (password.length < 8) {
+                      return 'Password must be at least 8 characters';
+                    }
+                    final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
+                    final hasLower = RegExp(r'[a-z]').hasMatch(password);
+                    final hasDigit = RegExp(r'[0-9]').hasMatch(password);
+                    final hasSpecial = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
+                    if (!(hasUpper && hasLower && hasDigit && hasSpecial)) {
+                      return 'Password must include upper, lower, number, and symbol';
                     }
                     return null;
                   },
