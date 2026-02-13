@@ -81,9 +81,8 @@ class _LoginPageState extends State<LoginPage> {
                       return 'Email is required';
                     }
                     final email = value.trim();
-                    final emailRegex = RegExp(
-                      r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
-                    );
+                    final emailRegex =
+                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                     if (!emailRegex.hasMatch(email)) {
                       return 'Invalid email format';
                     }
@@ -97,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                   icon: Icons.lock_outline,
                   obscureText: true,
                   validator: (value) {
-                    final password = value ?? '';
+                    final password = (value ?? '').trim();
                     if (password.isEmpty) {
                       return 'Password is required';
                     }
@@ -145,16 +144,16 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 24),
                 Row(
-                  children: const [
-                    Expanded(child: Divider(color: AppColors.divider)),
-                    Padding(
+                  children: [
+                    const Expanded(child: Divider(color: AppColors.divider)),
+                    const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         'OR',
                         style: TextStyle(color: AppColors.textSecondary),
                       ),
                     ),
-                    Expanded(child: Divider(color: AppColors.divider)),
+                    const Expanded(child: Divider(color: AppColors.divider)),
                   ],
                 ),
                 const SizedBox(height: 20),
