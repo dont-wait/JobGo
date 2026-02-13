@@ -24,8 +24,7 @@ class MainApp extends StatelessWidget {
       scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.touch,
-          PointerDeviceKind
-              .mouse, // Enable scrolling with mouse as well btw: i test in web :((
+          PointerDeviceKind.mouse, // Enable scrolling with mouse as well btw: i test in web :((
         },
       ),
       home: const WelcomePage(),

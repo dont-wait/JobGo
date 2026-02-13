@@ -4,6 +4,7 @@ import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/home/home_search_bar.dart';
 import 'package:jobgo/presentation/widgets/home/recommended_job_card.dart';
 import 'package:jobgo/presentation/widgets/home/recent_job_tile.dart';
+import 'package:jobgo/presentation/pages/job_detail/job_detail_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -88,7 +89,12 @@ class HomePage extends StatelessWidget {
           return RecommendedJobCard(
             job: job,
             onTap: () {
-              // TODO: Navigate to job detail
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => JobDetailPage(job: job),
+                ),
+              );
             },
           );
         },
@@ -97,6 +103,10 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildRecentJobs() {
+    // shrinkWrap: true -> ListView chỉ cao vừa đủ nội dung, không chiếm hết màn hình.
+    // NeverScrollableScrollPhysics → tắt scroll riêng của ListView này,
+    // để SingleChildScrollView cha xử lý toàn bộ scroll.
+    // Pattern này dùng khi cần đặt ListView bên trong ScrollView.
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -110,7 +120,12 @@ class HomePage extends StatelessWidget {
         return RecentJobTile(
           job: job,
           onTap: () {
-            // TODO: Navigate to job detail
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => JobDetailPage(job: job),
+              ),
+            );
           },
           onBookmark: () {
             // TODO: Toggle bookmark
