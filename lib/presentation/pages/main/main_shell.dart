@@ -14,7 +14,7 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  int _currentIndex = 4;
+  int _currentIndex = 0;
 
   // Giữ state của từng tab bằng IndexedStack
   final List<Widget> _pages = const [
