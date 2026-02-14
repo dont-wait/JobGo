@@ -3,9 +3,8 @@ import '../../../core/configs/theme/app_colors.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
-
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
   return SizedBox(
     width: double.infinity, 
     child: Column(
@@ -55,5 +54,4 @@ Widget build(BuildContext context) {
     ),
   );
 }
-
 }
