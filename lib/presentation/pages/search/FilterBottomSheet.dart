@@ -38,7 +38,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget _buildJobTypeCheckbox(
     String title,
     bool value,
-    Function(bool?) onChanged,
+    ValueChanged<bool?> onChanged,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -130,22 +130,22 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     _buildJobTypeCheckbox(
                       'Full-time',
                       fullTime,
-                      (val) => setState(() => fullTime = val!),
+                      (val) => setState(() => fullTime = val ?? false),
                     ),
                     _buildJobTypeCheckbox(
                       'Part-time',
                       partTime,
-                      (val) => setState(() => partTime = val!),
+                      (val) => setState(() => partTime = val ?? false),
                     ),
                     _buildJobTypeCheckbox(
                       'Remote',
                       remote,
-                      (val) => setState(() => remote = val!),
+                      (val) => setState(() => remote = val ?? false),
                     ),
                     _buildJobTypeCheckbox(
                       'Contract',
                       contract,
-                      (val) => setState(() => contract = val!),
+                      (val) => setState(() => contract = val ?? false),
                     ),
                     const SizedBox(height: 28),
                     const Text(

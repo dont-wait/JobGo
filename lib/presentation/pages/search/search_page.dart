@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/search/search_job_card.dart';
-import 'FilterBottomShee.dart';
+import 'package:jobgo/presentation/pages/search/FilterBottomSheet.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
