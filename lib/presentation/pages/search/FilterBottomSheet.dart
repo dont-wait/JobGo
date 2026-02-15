@@ -1,9 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
-class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key});
+class FilterData {
+  final bool fullTime;
+  final bool partTime;
+  final bool remote;
+  final bool contract;
+  final RangeValues salaryRange;
+  final List<String> selectedExperiences;
+  final String location;
 
+  const FilterData({
+    required this.fullTime,
+    required this.partTime,
+    required this.remote,
+    required this.contract,
+    required this.salaryRange,
+    required this.selectedExperiences,
+    required this.location,
+  });
+}
+
+class FilterBottomSheet extends StatefulWidget {
+  const FilterBottomSheet({
+    super.key,
+    required this.onApplyFilters,
+  });
+
+  final void Function(FilterData) onApplyFilters;
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
