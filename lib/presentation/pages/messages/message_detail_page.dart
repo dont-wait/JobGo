@@ -90,7 +90,7 @@ class MessageDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      thread.isOnline ? 'Dang hoat dong' : 'Dang offline',
+                      thread.isOnline ? 'Đang hoạt động' : 'Đang offline',
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -142,7 +142,7 @@ class MessageDetailPage extends StatelessWidget {
               ),
               child: const TextField(
                 decoration: InputDecoration(
-                  hintText: 'Nhap tin nhan...',
+                  hintText: 'Nhập tin nhắn...',
                   border: InputBorder.none,
                 ),
               ),
@@ -287,7 +287,7 @@ class _OfferBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              message.cardTitle ?? 'Thong tin',
+              message.cardTitle ?? 'Thông tin',
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -318,7 +318,7 @@ class _OfferBubble extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                message.ctaLabel ?? 'Xem chi tiet',
+                message.ctaLabel ?? 'Xem chi tiết',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

@@ -2,10 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_theme.dart';
+import 'package:jobgo/presentation/pages/auth/forgotpassword_layout.dart';
+import 'package:jobgo/presentation/pages/auth/login/login_page.dart';
+import 'package:jobgo/presentation/pages/auth/register/register_role_page.dart';
 import 'package:jobgo/presentation/pages/main/main_shell.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
-
-
 
 void main() {
   runApp(const MainApp());
@@ -28,6 +29,9 @@ class MainApp extends StatelessWidget {
       ),
       home: const WelcomePage(),
       routes: {
+        '/login': (context) => const LoginPage(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/register': (context) => const RegisterRolePage(),
         '/home': (context) => const MainShell(),
       },
     );
