@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/search/search_job_card.dart';
+import 'package:jobgo/presentation/pages/search/FilterBottomSheet.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -32,7 +33,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     // Lấy data trực tiếp trong build method
     final jobs = MockJobs.recentJobs;
-    
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -75,17 +76,34 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.tune_rounded,
-                      color: Colors.white,
-                      size: 22,
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: AppColors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (BuildContext context) {
+                          return const FilterBottomSheet();
+                        },
+                      );
+                    },
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.tune_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ],
@@ -112,9 +130,14 @@ class _SearchPageState extends State<SearchPage> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: isSelected ? AppColors.primary : AppColors.lightBackground,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.lightBackground,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Center(
@@ -123,7 +146,9 @@ class _SearchPageState extends State<SearchPage> {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
-                              color: isSelected ? Colors.white : AppColors.textPrimary,
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
                             ),
                           ),
                         ),
@@ -152,11 +177,18 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                   const Row(
                     children: [
-                      Icon(Icons.sort_rounded, size: 18, color: AppColors.textSecondary),
+                      Icon(
+                        Icons.sort_rounded,
+                        size: 18,
+                        color: AppColors.textSecondary,
+                      ),
                       SizedBox(width: 4),
                       Text(
                         'Most Relevant',
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
