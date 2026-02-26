@@ -4,7 +4,7 @@ import 'package:jobgo/data/mockdata/mock_candidate.dart';
 import 'package:jobgo/presentation/widgets/employer/candidate_card_widget.dart';
 
 class TalentSearchScreen extends StatefulWidget {
-  const TalentSearchScreen({Key? key}) : super(key: key);
+  const TalentSearchScreen({super.key});
 
   @override
   State<TalentSearchScreen> createState() => _TalentSearchScreenState();
@@ -28,27 +28,26 @@ class _TalentSearchScreenState extends State<TalentSearchScreen> {
       _displayedCandidates = mockCandidatesData.where((candidate) {
         final searchLower = _searchQuery.toLowerCase();
         final matchesSearch =
-            candidate.cFullName.toLowerCase().contains(searchLower) ||
-            candidate.cSkill.toLowerCase().contains(searchLower);
+            candidate.fullName.toLowerCase().contains(searchLower) ||
+            candidate.skill.toLowerCase().contains(searchLower);
 
         final matchesRole =
             _selectedRole == 'All Roles' ||
-            candidate.cExperience.toLowerCase().contains(
+            candidate.experience.toLowerCase().contains(
               _selectedRole.toLowerCase(),
             );
 
         final matchesExp =
             _selectedExperience == null ||
             _selectedExperience == 'All' ||
-            candidate.cExperience.toLowerCase().contains(
+            candidate.experience.toLowerCase().contains(
               _selectedExperience!.toLowerCase(),
             );
 
         final matchesLocation =
             _selectedLocation == null ||
             _selectedLocation == 'All' ||
-            candidate.cAddress.toLowerCase() ==
-                _selectedLocation!.toLowerCase();
+            candidate.address.toLowerCase() == _selectedLocation!.toLowerCase();
 
         return matchesSearch && matchesRole && matchesExp && matchesLocation;
       }).toList();
@@ -277,21 +276,21 @@ class _TalentSearchScreenState extends State<TalentSearchScreen> {
       itemCount: _displayedCandidates.length,
       itemBuilder: (context, index) {
         final candidate = _displayedCandidates[index];
-        final List<String> skillList = candidate.cSkill
+        final List<String> skillList = candidate.skill
             .split(',')
             .map((s) => s.trim())
             .toList();
         final String formattedSalary =
-            '${(candidate.cDesiredSalaryMin / 1000).toStringAsFixed(0)}k';
+            '${(candidate.desiredSalaryMin / 1000).toStringAsFixed(0)}k';
         final String combinedInfo =
-            '${candidate.cAddress} • \$$formattedSalary+';
+            '${candidate.address} • \$$formattedSalary+';
 
         return CandidateCardWidget(
-          name: candidate.cFullName,
-          title: candidate.cExperience,
+          name: candidate.fullName,
+          title: candidate.experience,
           info: combinedInfo,
           skills: skillList,
-          avatarUrl: candidate.cAvartaUrl,
+          avatarUrl: candidate.avatarUrl,
         );
       },
     );

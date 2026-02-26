@@ -9,13 +9,13 @@ class CandidateCardWidget extends StatelessWidget {
   final String avatarUrl;
 
   const CandidateCardWidget({
-    Key? key,
+    super.key,
     required this.name,
     required this.title,
     required this.info,
     required this.skills,
     required this.avatarUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
