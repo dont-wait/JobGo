@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/presentation/widgets/dashboard/stats_card.dart';
-import 'package:jobgo/presentation/widgets/dashboard/dashboard_header.dart';
+import 'package:jobgo/presentation/widgets/dashboard/profile_header.dart';
+import 'package:jobgo/presentation/widgets/dashboard/overview_card.dart';
+import 'package:jobgo/presentation/widgets/dashboard/views_statistics.dart';
 import 'package:jobgo/presentation/widgets/dashboard/recent_activity.dart';
 import 'package:jobgo/data/models/dashboard_model.dart';
 
@@ -31,22 +32,22 @@ class _DashboardPageState extends State<DashboardPage> {
       lastUpdated: DateTime.now(),
       recentActivities: [
         ActivityItem(
-          title: 'New application received',
-          description: 'Senior Flutter Developer role',
+          title: 'John Doe applied for Senior UI Desi...',
+          description: 'Design Team • 2h ago',
           timestamp: DateTime.now().subtract(const Duration(hours: 2)),
           type: 'application',
         ),
         ActivityItem(
-          title: 'Job posting created',
-          description: 'UI/UX Designer position',
-          timestamp: DateTime.now().subtract(const Duration(days: 1)),
-          type: 'posting',
+          title: 'Interview scheduled with Sarah Smith',
+          description: 'Engineering • 1h ago',
+          timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+          type: 'view',
         ),
         ActivityItem(
-          title: 'Profile viewed',
-          description: 'By HR Manager from Tech Corp',
-          timestamp: DateTime.now().subtract(const Duration(days: 2)),
-          type: 'view',
+          title: 'New message from David Lee',
+          description: 'Product Management • 3h ago',
+          timestamp: DateTime.now().subtract(const Duration(hours: 3)),
+          type: 'posting',
         ),
       ],
     );
@@ -56,126 +57,174 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
-      appBar: AppBar(
-        backgroundColor: AppColors.lightBackground,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: AppColors.textPrimary,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        centerTitle: true,
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              DashboardHeader(stats: stats),
-              const SizedBox(height: 24),
+              // Profile Header
+              const DashboardProfileHeader(),
+              const SizedBox(height: 20),
               
-              // Stats Cards
+              // Overview Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Quick Statistics',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Overview',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.lightBackground,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            'Last 30 days',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
-                    // Stats Grid
-                    Row(
-                      children: [
-                        Expanded(
-                          child: StatsCard(
-                            title: 'Active Postings',
-                            value: stats.activePostings.toString(),
-                            icon: Icons.article_outlined,
-                            color: AppColors.primary,
-                            onTap: () {
-                              // TODO: Navigate to job postings list
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: StatsCard(
-                            title: 'New Profiles',
-                            value: stats.newProfiles.toString(),
-                            icon: Icons.person_add_outlined,
-                            color: AppColors.success,
-                            onTap: () {
-                              // TODO: Navigate to profiles list
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: StatsCard(
-                            title: 'Total Applications',
-                            value: stats.totalApplications.toString(),
-                            icon: Icons.inbox_outlined,
-                            color: AppColors.warning,
-                            onTap: () {
-                              // TODO: Navigate to applications
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: StatsCard(
-                            title: 'Profile Views',
-                            value: stats.totalViews.toString(),
-                            icon: Icons.visibility_outlined,
-                            color: const Color(0xFF8B5CF6),
-                            onTap: () {
-                              // TODO: Navigate to profile views analytics
-                            },
-                          ),
-                        ),
-                      ],
+                    // Overview Cards - Responsive
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isNarrow = constraints.maxWidth < 360;
+
+                        if (isNarrow) {
+                          return Column(
+                            children: const [
+                              OverviewCard(
+                                title: 'Active Jobs',
+                                value: '12',
+                                percentage: '+7%',
+                                icon: Icons.work_outline,
+                                color: AppColors.primary,
+                                isPositive: true,
+                              ),
+                              SizedBox(height: 12),
+                              OverviewCard(
+                                title: 'Applicants',
+                                value: '48',
+                                percentage: '+9%',
+                                icon: Icons.people_outline,
+                                color: AppColors.success,
+                                isPositive: true,
+                              ),
+                              SizedBox(height: 12),
+                              OverviewCard(
+                                title: 'Interviews',
+                                value: '5',
+                                percentage: '+2%',
+                                icon: Icons.calendar_today_outlined,
+                                color: Color(0xFF8B5CF6),
+                                isPositive: true,
+                              ),
+                            ],
+                          );
+                        }
+
+                        return Row(
+                          children: const [
+                            Expanded(
+                              child: OverviewCard(
+                                title: 'Active Jobs',
+                                value: '12',
+                                percentage: '+7%',
+                                icon: Icons.work_outline,
+                                color: AppColors.primary,
+                                isPositive: true,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: OverviewCard(
+                                title: 'Applicants',
+                                value: '48',
+                                percentage: '+9%',
+                                icon: Icons.people_outline,
+                                color: AppColors.success,
+                                isPositive: true,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: OverviewCard(
+                                title: 'Interviews',
+                                value: '5',
+                                percentage: '+2%',
+                                icon: Icons.calendar_today_outlined,
+                                color: Color(0xFF8B5CF6),
+                                isPositive: true,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 28),
 
-              // Recent Activity
+              // Views Statistics
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ViewsStatisticsChart(
+                  weeklyData: const [250, 650, 400, 500, 350, 200, 800],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Recent Activities
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Recent Activity',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Recent Activities',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // TODO: View all activities
+                          },
+                          child: const Text(
+                            'View all',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     RecentActivityList(activities: stats.recentActivities),
@@ -186,6 +235,34 @@ class _DashboardPageState extends State<DashboardPage> {
             ],
           ),
         ),
+      ),
+      // Bottom Navigation
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: AppColors.white,
+        elevation: 8,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.folder_open_outlined),
+            label: 'Postings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people_outline),
+            label: 'Applicants',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message_outlined),
+            label: 'Messages',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
