@@ -5,6 +5,7 @@ import 'package:jobgo/presentation/widgets/home/home_search_bar.dart';
 import 'package:jobgo/presentation/widgets/home/recommended_job_card.dart';
 import 'package:jobgo/presentation/widgets/home/recent_job_tile.dart';
 import 'package:jobgo/presentation/pages/job_detail/job_detail_page.dart';
+import 'package:jobgo/presentation/pages/dashboard/dashboard_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -26,6 +27,21 @@ class HomePage extends StatelessWidget {
           ),
         ),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const DashboardPage(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.dashboard_outlined,
+              color: AppColors.textPrimary,
+            ),
+            tooltip: 'Go to Dashboard',
+          ),
           IconButton(
             onPressed: () {
               // TODO: Navigate to notifications
