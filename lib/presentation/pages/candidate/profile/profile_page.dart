@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../core/configs/theme/app_colors.dart';
-import '../../widgets/profile_page/skills_section.dart';
-import '../../widgets/profile_page/profile_header.dart';
-import '../../widgets/profile_page/profile_tabs.dart';
-import '../../widgets/profile_page/experience_section.dart';
-import '../../widgets/profile_page/resume_card.dart';
-import '../../widgets/profile_page/upload_resume_box.dart';
-import '../../widgets/profile_page/favorites_section.dart';
+import '../../../../core/configs/theme/app_colors.dart';
+import '../../../widgets/candidate/profile_page/skills_section.dart';
+import '../../../widgets/candidate/profile_page/profile_header.dart';
+import '../../../widgets/candidate/profile_page/profile_tabs.dart';
+import '../../../widgets/candidate/profile_page/experience_section.dart';
+import '../../../widgets/candidate/profile_page/resume_card.dart';
+import '../../../widgets/candidate/profile_page/upload_resume_box.dart';
+import '../../../widgets/candidate/profile_page/favorites_section.dart';
 
 
 class ProfilePage extends StatefulWidget {

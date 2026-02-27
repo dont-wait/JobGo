@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/configs/theme/app_colors.dart';
+import '../../../../core/configs/theme/app_colors.dart';
 
 class SkillsSection extends StatelessWidget {
   const SkillsSection({super.key});

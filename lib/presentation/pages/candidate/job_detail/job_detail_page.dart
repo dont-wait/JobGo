@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
-import 'package:jobgo/presentation/widgets/job_detail/job_info_grid.dart';
-import 'package:jobgo/presentation/widgets/job_detail/job_description_section.dart';
-import 'package:jobgo/presentation/widgets/job_detail/job_requirements_section.dart';
-import 'package:jobgo/presentation/widgets/job_detail/job_benefits_section.dart';
-import 'package:jobgo/presentation/widgets/job_detail/job_apply_button.dart';
+import 'package:jobgo/presentation/widgets/candidate/job_detail/job_info_grid.dart';
+import 'package:jobgo/presentation/widgets/candidate/job_detail/job_description_section.dart';
+import 'package:jobgo/presentation/widgets/candidate/job_detail/job_requirements_section.dart';
+import 'package:jobgo/presentation/widgets/candidate/job_detail/job_benefits_section.dart';
+import 'package:jobgo/presentation/widgets/candidate/job_detail/job_apply_button.dart';
 
 /// Trang chi tiết công việc
 class JobDetailPage extends StatelessWidget {
