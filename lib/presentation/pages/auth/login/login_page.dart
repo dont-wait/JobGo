@@ -183,9 +183,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _onSignIn() {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Handle sign in
-      Navigator.pushReplacementNamed(context, '/home'); //Hash code login, TODO: replace with real auth
+  if (_formKey.currentState!.validate()) {
+    // TODO: gọi API login để lấy role từ backend
+    final String role = "recruiter"; // hoặc "candidate"
+
+    if (role == "candidate") {
+      // Ứng viên  vào Home (MainShell)
+      Navigator.pushReplacementNamed(context, '/home');
+    } else if (role == "recruiter") {
+      // Nhà tuyển dụng vào Dashboard
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    } else {
+      // fallback nếu role không xác định
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
+}
 }
