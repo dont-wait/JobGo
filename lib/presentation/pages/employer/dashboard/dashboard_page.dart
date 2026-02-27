@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/presentation/widgets/dashboard/profile_header.dart';
-import 'package:jobgo/presentation/widgets/dashboard/overview_card.dart';
-import 'package:jobgo/presentation/widgets/dashboard/views_statistics.dart';
-import 'package:jobgo/presentation/widgets/dashboard/recent_activity.dart';
+import 'package:jobgo/presentation/widgets/employer/dashboard/profile_header.dart';
+import 'package:jobgo/presentation/widgets/employer/dashboard/overview_card.dart';
+import 'package:jobgo/presentation/widgets/employer/dashboard/views_statistics.dart';
+import 'package:jobgo/presentation/widgets/employer/dashboard/recent_activity.dart';
 import 'package:jobgo/data/models/dashboard_model.dart';
 
 class DashboardPage extends StatefulWidget {

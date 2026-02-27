@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/configs/theme/app_colors.dart';
+import '../../../../core/configs/theme/app_colors.dart';
 
 class ExperienceItem extends StatelessWidget {
   final String title;

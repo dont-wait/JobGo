@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_candidate.dart';
-import 'package:jobgo/presentation/widgets/employer/candidate_card_widget.dart';
+import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
 
-class TalentSearchScreen extends StatefulWidget {
-  const TalentSearchScreen({super.key});
+class TalentSearchWidget extends StatefulWidget {
+  const TalentSearchWidget({super.key});
 
   @override
-  State<TalentSearchScreen> createState() => _TalentSearchScreenState();
+  State<TalentSearchWidget> createState() => _TalentSearchWidgetState();
 }
 
-class _TalentSearchScreenState extends State<TalentSearchScreen> {
+class _TalentSearchWidgetState extends State<TalentSearchWidget> {
   List<CandidateModel> _displayedCandidates = [];
   String _searchQuery = '';
   String _selectedRole = 'All Roles';

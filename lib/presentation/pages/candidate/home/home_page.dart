@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
-import 'package:jobgo/presentation/widgets/home/home_search_bar.dart';
-import 'package:jobgo/presentation/widgets/home/recommended_job_card.dart';
-import 'package:jobgo/presentation/widgets/home/recent_job_tile.dart';
-import 'package:jobgo/presentation/pages/job_detail/job_detail_page.dart';
-import 'package:jobgo/presentation/pages/dashboard/dashboard_page.dart';
+import 'package:jobgo/presentation/widgets/candidate/home/home_search_bar.dart';
+import 'package:jobgo/presentation/widgets/candidate/home/recommended_job_card.dart';
+import 'package:jobgo/presentation/widgets/candidate/home/recent_job_tile.dart';
+import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
+import 'package:jobgo/presentation/pages/employer/dashboard/dashboard_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/presentation/pages/home/home_page.dart';
-import 'package:jobgo/presentation/pages/search/search_page.dart';
+import 'package:jobgo/presentation/pages/candidate/home/home_page.dart';
+import 'package:jobgo/presentation/pages/candidate/search/search_page.dart';
 import 'package:jobgo/presentation/pages/applications/applications_page.dart';
-import 'package:jobgo/presentation/pages/messages/messages_page.dart';
-import 'package:jobgo/presentation/pages/profile/profile_page.dart';
+import 'package:jobgo/presentation/pages/candidate/messages/messages_page.dart';
+import 'package:jobgo/presentation/pages/candidate/profile/profile_page.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});

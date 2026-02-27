@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
-import 'package:jobgo/presentation/pages/job_detail/job_detail_page.dart';
+import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
 
 /// Card hiển thị 1 kết quả tìm kiếm công việc
 class SearchJobCard extends StatelessWidget {
