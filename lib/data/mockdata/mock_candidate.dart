@@ -12,6 +12,7 @@ class CandidateModel {
   final String cvUrl;
   final double desiredSalaryMin;
   final double desiredSalaryMax;
+  final String email;
   CandidateModel({
     required this.id,
     required this.fullName,
@@ -26,6 +27,7 @@ class CandidateModel {
     required this.cvUrl,
     required this.desiredSalaryMin,
     required this.desiredSalaryMax,
+    required this.email,
   });
 }
 
@@ -44,6 +46,7 @@ final List<CandidateModel> mockCandidatesData = [
     cvUrl: 'https://example.com/cv/sarah.pdf',
     desiredSalaryMin: 85000,
     desiredSalaryMax: 100000,
+    email: 'candidate@gmail.com',
   ),
   CandidateModel(
     id: 2,
@@ -59,6 +62,7 @@ final List<CandidateModel> mockCandidatesData = [
     cvUrl: 'https://example.com/cv/david.pdf',
     desiredSalaryMin: 140000,
     desiredSalaryMax: 160000,
+    email: 'candidate1@gmail.com',
   ),
   CandidateModel(
     id: 3,
@@ -74,5 +78,6 @@ final List<CandidateModel> mockCandidatesData = [
     cvUrl: 'https://example.com/cv/amara.pdf',
     desiredSalaryMin: 95000,
     desiredSalaryMax: 120000,
+    email: 'candidate2@gmail.com',
   ),
 ];

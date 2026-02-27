@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
+import '../../../../data/mockdata/mock_candidate.dart';
+import '../../../../data/mockdata/mockdata_employer.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -184,19 +186,39 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onSignIn() {
   if (_formKey.currentState!.validate()) {
-    // TODO: gọi API login để lấy role từ backend
-    final String role = "recruiter"; // hoặc "candidate"
+    final input = emailController.text.trim(); // nhập email
+    final password = passwordController.text.trim();
 
-    if (role == "candidate") {
-      // Ứng viên  vào Home (MainShell)
-      Navigator.pushReplacementNamed(context, '/home');
-    } else if (role == "recruiter") {
-      // Nhà tuyển dụng vào Dashboard
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
-      // fallback nếu role không xác định
-      Navigator.pushReplacementNamed(context, '/home');
+    // --- Check employer ---
+    EmployerMock? recruiter;
+    try {
+      recruiter = mockEmployers.firstWhere((e) => e.email == input);
+    } catch (e) {
+      recruiter = null;
     }
+
+    if (recruiter != null && password == "Employer@123") {
+      Navigator.pushReplacementNamed(context, '/dashboard');
+      return;
+    }
+
+    // --- Check candidate ---
+    CandidateModel? candidate;
+    try {
+      candidate = mockCandidatesData.firstWhere((c) => c.email == input);
+    } catch (e) {
+      candidate = null;
+    }
+
+    if (candidate != null && password == "Candidate@123") {
+      Navigator.pushReplacementNamed(context, '/home');
+      return;
+    }
+
+    // --- Nếu không khớp recruiter/candidate ---
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Sai thông tin đăng nhập")),
+    );
   }
 }
 }

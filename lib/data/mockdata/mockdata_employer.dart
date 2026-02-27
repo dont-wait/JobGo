@@ -14,6 +14,6 @@ final List<EmployerMock> mockEmployers = [
   EmployerMock(
     id: 1,
     companyName: "Global Design Systems",
-    email: "emloyer@gmail.com",
+    email: "employeer@gmail.com",
   ),
 ];
