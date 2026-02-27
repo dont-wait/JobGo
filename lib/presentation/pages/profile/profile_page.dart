@@ -8,6 +8,7 @@ import '../../widgets/profile_page/resume_card.dart';
 import '../../widgets/profile_page/upload_resume_box.dart';
 import '../../widgets/profile_page/favorites_section.dart';
 
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -16,7 +17,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _currentTab = 1;
+  int _currentTab = 1; 
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,13 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () {},
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.maybePop(context);
+
+            },
+          ),
         ],
         centerTitle: true,
       ),
@@ -59,65 +66,69 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildTabContent() {
-    switch (_currentTab) {
-      case 0:
-        return _buildInfoTab();
-      case 1:
-        return _buildExperienceTab();
-      case 2:
-        return _buildSkillsTab();
-      case 3:
-        return _buildFavoritesTab();
-      default:
-        return const SizedBox.shrink();
-    }
+  switch (_currentTab) {
+    case 0:
+      return _buildInfoTab();
+    case 1:
+      return _buildExperienceTab();
+    case 2:
+      return _buildSkillsTab();
+    case 3:
+      return _buildFavoritesTab();
+    default:
+      return const SizedBox.shrink();
   }
+}
 
-  //  INFO
+
+  //  INFO 
   Widget _buildInfoTab() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
-          'Resume & Documents',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: const [
+      Text(
+        'Resume & Documents',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
         ),
-        SizedBox(height: 12),
+      ),
+      SizedBox(height: 12),
 
-        ResumeCard(
-          title: 'Resume_Designer_2024.pdf',
-          subtitle: 'Uploaded Oct 12, 2023 · 1.2 MB',
-          isDefault: true,
-        ),
-        SizedBox(height: 12),
+      ResumeCard(
+        title: 'Resume_Designer_2024.pdf',
+        subtitle: 'Uploaded Oct 12, 2023 · 1.2 MB',
+        isDefault: true,
+      ),
+      SizedBox(height: 12),
 
-        ResumeCard(
-          title: 'Creative_CV_Portfolio.pdf',
-          subtitle: 'Uploaded Aug 05, 2023 · 2.8 MB',
-        ),
-        SizedBox(height: 16),
+      ResumeCard(
+        title: 'Creative_CV_Portfolio.pdf',
+        subtitle: 'Uploaded Aug 05, 2023 · 2.8 MB',
+      ),
+      SizedBox(height: 16),
 
-        UploadResumeBox(),
-      ],
-    );
-  }
+      UploadResumeBox(),
+    ],
+  );
+}
 
-  // EXPERIENCE
+
+  // EXPERIENCE 
   Widget _buildExperienceTab() {
-    return const ExperienceSection();
-  }
+  return const ExperienceSection();
+}
 
-  // SKILLS
+
+  // SKILLS 
   Widget _buildSkillsTab() {
-    return const SkillsSection();
-  }
+  return const SkillsSection();
+}
 
-  // FAVORITES
+  // FAVORITES 
   Widget _buildFavoritesTab() {
-    return const FavoritesSection();
-  }
+  return const FavoritesSection();
+}
+
 }
