@@ -66,7 +66,7 @@
   export JAVA_HOME="${pkgs.jdk17.home}"
   export ANDROID_HOME="${androidSdk}/libexec/android-sdk"
   export ANDROID_SDK_ROOT="$ANDROID_HOME"
-  export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.glibc}/lib:$LD_LIBRARY_PATH"
+  export LD_LIBRARY_PATH="${pkgs.fontconfig.lib}/lib:${pkgs.libGL}/lib:${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.glibc}/lib:$LD_LIBRARY_PATH"
   export PKG_CONFIG_PATH="${pkgs.sysprof}/lib/pkgconfig:$PKG_CONFIG_PATH"
   export PATH="${pkgs.ninja}/bin:${pkgs.cmake}/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
   echo "⚡ Android SDK License accepted. Môi trường đã sẵn sàng!"
