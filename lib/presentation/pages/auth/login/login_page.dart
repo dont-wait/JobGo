@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
 import '../../../../data/mockdata/mock_candidate.dart';
@@ -98,19 +99,8 @@ class _LoginPageState extends State<LoginPage> {
                   icon: Icons.lock_outline,
                   obscureText: true,
                   validator: (value) {
-                    final password = (value ?? '').trim();
-                    if (password.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Password is required';
-                    }
-                    if (password.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    final hasUpper = RegExp(r'[A-Z]').hasMatch(password);
-                    final hasLower = RegExp(r'[a-z]').hasMatch(password);
-                    final hasDigit = RegExp(r'[0-9]').hasMatch(password);
-                    final hasSpecial = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
-                    if (!(hasUpper && hasLower && hasDigit && hasSpecial)) {
-                      return 'Password must include upper, lower, number, and symbol';
                     }
                     return null;
                   },
@@ -186,8 +176,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onSignIn() {
   if (_formKey.currentState!.validate()) {
-    final input = emailController.text.trim(); // nhập email
-    final password = passwordController.text.trim();
+    final input = emailController.text.trim();
+    final password = passwordController.text;
 
     // --- Check employer ---
     EmployerMock? recruiter;
@@ -198,7 +188,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if (recruiter != null && password == "Employer@123") {
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.employer);
       return;
     }
 
@@ -211,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if (candidate != null && password == "Candidate@123") {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate);
       return;
     }
 

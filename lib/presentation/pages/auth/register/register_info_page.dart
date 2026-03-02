@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
 
 import 'register_verify_email_page.dart';
 
 class RegisterInfoPage extends StatefulWidget {
-  final String role;
+  final UserRole role;
 
   const RegisterInfoPage({
     super.key,
@@ -137,7 +138,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
         MaterialPageRoute(
           builder: (_) => RegisterVerifyEmailPage(
             email: emailController.text,
-            role :widget.role,
+            role: widget.role,
           ),
         ),
       );
