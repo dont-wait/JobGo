@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/configs/theme/app_colors.dart';
 
-class AuthTextField extends StatelessWidget {
+class AuthTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData icon;
@@ -19,16 +20,42 @@ class AuthTextField extends StatelessWidget {
   });
 
   @override
+  State<AuthTextField> createState() => _AuthTextFieldState();
+}
+
+class _AuthTextFieldState extends State<AuthTextField> {
+  late bool _obscured;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscured = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
+      controller: widget.controller,
+      obscureText: _obscured,
+      keyboardType: widget.keyboardType,
       decoration: InputDecoration(
-        hintText: hintText,
-        prefixIcon: Icon(icon),
+        hintText: widget.hintText,
+        prefixIcon: Icon(widget.icon),
+        // Chỉ hiển thị nút toggle khi field là password
+        suffixIcon: widget.obscureText
+            ? IconButton(
+                icon: Icon(
+                  _obscured
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: AppColors.textHint,
+                  size: 20,
+                ),
+                onPressed: () => setState(() => _obscured = !_obscured),
+              )
+            : null,
       ),
-      validator: validator,
+      validator: widget.validator,
     );
   }
 }
