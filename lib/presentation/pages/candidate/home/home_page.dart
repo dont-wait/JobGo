@@ -28,12 +28,7 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const HomePage(),
-                ),
-              );
+              // TODO: Navigate to Dashboard
             },
             icon: const Icon(
               Icons.dashboard_outlined,

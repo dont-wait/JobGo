@@ -5,7 +5,7 @@ import 'package:jobgo/core/enums/user_role.dart';
 // ── Candidate pages ──
 import 'package:jobgo/presentation/pages/candidate/home/home_page.dart';
 import 'package:jobgo/presentation/pages/candidate/search/search_page.dart';
-import 'package:jobgo/presentation/pages/applications/applications_page.dart';
+import 'package:jobgo/presentation/pages/candidate/applications/applications_page.dart';
 import 'package:jobgo/presentation/pages/candidate/messages/messages_page.dart';
 import 'package:jobgo/presentation/pages/candidate/profile/profile_page.dart';
 
@@ -17,7 +17,6 @@ import 'package:jobgo/presentation/pages/employer/messages/employer_messages_pag
 import 'package:jobgo/presentation/pages/employer/profile/employer_profile_page.dart';
 
 /// Shell chính của ứng dụng — hiển thị bottom nav + pages theo role.
-/// Reusable cho candidate, employer, và sau này là admin.
 class AppShell extends StatefulWidget {
   final UserRole role;
 

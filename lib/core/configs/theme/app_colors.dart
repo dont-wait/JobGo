@@ -27,4 +27,9 @@ class AppColors {
   // Search Primary bar
   static const searchPrimaryBar = Color(0xFFECE6F4);
   static const searchPrimaryBarText = Color(0xFF653E9D);
+
+  // Apply job flow
+  static const orange = Color(0xFFE8630A);       // Submit / CTA button
+  static const pdfRed = Color(0xFFE53935);        // PDF icon color
+  static const pdfRedBackground = Color(0xFFFFEEEE); // PDF icon background
 }

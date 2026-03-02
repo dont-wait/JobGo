@@ -3,6 +3,7 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
+import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
 
 /// Card hiển thị 1 kết quả tìm kiếm công việc
 class SearchJobCard extends StatelessWidget {
@@ -155,7 +156,7 @@ class SearchJobCard extends StatelessWidget {
                 SizedBox(
                   height: 32,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => navigateToApply(context, job),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,

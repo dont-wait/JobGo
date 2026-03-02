@@ -7,6 +7,7 @@ import 'package:jobgo/presentation/widgets/candidate/job_detail/job_description_
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_requirements_section.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_benefits_section.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_apply_button.dart';
+import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
 
 /// Trang chi tiết công việc
 class JobDetailPage extends StatelessWidget {
@@ -131,9 +132,7 @@ class JobDetailPage extends StatelessWidget {
 
           // ── Apply Button cố định ở dưới ──
           JobApplyButton(
-            onPressed: () {
-              // TODO: Implement apply action
-            },
+            onPressed: () => navigateToApply(context, job),
           ),
         ],
       ),
