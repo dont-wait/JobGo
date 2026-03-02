@@ -259,7 +259,6 @@ class LineChartPainter extends CustomPainter {
         final t1 = j / segments;
         final t2 = (j + 1) / segments;
 
-        final point1 = _catmullRom(p0, p1, p2, p3, t1);
         final point2 = _catmullRom(p0, p1, p2, p3, t2);
 
         path.lineTo(point2.dx, point2.dy);
