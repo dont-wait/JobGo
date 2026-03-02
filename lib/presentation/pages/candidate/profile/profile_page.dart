@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import '../../../../presentation/pages/settings/settings_page.dart';
 import '../../../widgets/candidate/profile_page/skills_section.dart';
 import '../../../widgets/candidate/profile_page/profile_header.dart';
 import '../../../widgets/candidate/profile_page/profile_tabs.dart';
@@ -24,16 +25,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Navigator.maybePop(context);
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsPage()),
+              );
             },
           ),
         ],
@@ -59,6 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
             // Tab content
             _buildTabContent(),
+            const SizedBox(height: 16),
           ],
         ),
       ),
