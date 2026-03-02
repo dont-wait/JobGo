@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import '../../../../core/enums/user_role.dart';
 import 'register_info_page.dart';
 import '../../../widgets/common/role_card.dart';
-
-
-
-enum UserRole { admin, candidate, employer }
 
 class RegisterRolePage extends StatefulWidget {
   const RegisterRolePage({super.key});
@@ -102,7 +99,7 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
                         context,
                         MaterialPageRoute(
                           builder: (_) => RegisterInfoPage(
-                            role: selectedRole!.name,
+                            role: selectedRole!,
                           ),
                         ),
                       );

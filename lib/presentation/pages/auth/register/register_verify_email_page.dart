@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import '../../../../core/enums/user_role.dart';
 
 class RegisterVerifyEmailPage extends StatelessWidget {
   final String email;
-  final String role;
+  final UserRole role;
 
-  const RegisterVerifyEmailPage({super.key, required this.email,required this.role,});
+  const RegisterVerifyEmailPage({super.key, required this.email, required this.role});
 
   @override
   Widget build(BuildContext context) {
@@ -122,11 +123,12 @@ class RegisterVerifyEmailPage extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    // Xóa hết stack và vào trang chính
+                    // Xóa hết stack và vào trang chính theo role
                     Navigator.pushNamedAndRemoveUntil(
                       context,
-                      '/home',
+                      '/main',
                       (route) => false,
+                      arguments: role,
                     );
                   },
                   child: const Text(
