@@ -51,7 +51,6 @@ class _AppShellState extends State<AppShell> {
           // EmployerProfilePage(),
         ];
       case UserRole.candidate:
-      default:
         return const [
           HomePage(),
           SearchPage(),
@@ -75,7 +74,6 @@ class _AppShellState extends State<AppShell> {
           Icons.person_outline,
         ];
       case UserRole.candidate:
-      default:
         return const [
           Icons.home_filled,
           Icons.search,

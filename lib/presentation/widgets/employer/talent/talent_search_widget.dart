@@ -3,56 +3,27 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_candidate.dart';
 import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
 
-class TalentSearchWidget extends StatefulWidget {
-  const TalentSearchWidget({super.key});
+class TalentSearchWidget extends StatelessWidget {
+  final List<CandidateModel> candidates;
+  final String selectedRole;
+  final String? selectedExperience;
+  final String? selectedLocation;
+  final ValueChanged<String> onSearchChanged;
+  final ValueChanged<String> onRoleChanged;
+  final ValueChanged<String?> onExperienceChanged;
+  final ValueChanged<String?> onLocationChanged;
 
-  @override
-  State<TalentSearchWidget> createState() => _TalentSearchWidgetState();
-}
-
-class _TalentSearchWidgetState extends State<TalentSearchWidget> {
-  List<CandidateModel> _displayedCandidates = [];
-  String _searchQuery = '';
-  String _selectedRole = 'All Roles';
-  String? _selectedExperience;
-  String? _selectedLocation;
-
-  @override
-  void initState() {
-    super.initState();
-    _displayedCandidates = List.from(mockCandidatesData);
-  }
-
-  void _applyFilters() {
-    setState(() {
-      _displayedCandidates = mockCandidatesData.where((candidate) {
-        final searchLower = _searchQuery.toLowerCase();
-        final matchesSearch =
-            candidate.fullName.toLowerCase().contains(searchLower) ||
-            candidate.skill.toLowerCase().contains(searchLower);
-
-        final matchesRole =
-            _selectedRole == 'All Roles' ||
-            candidate.experience.toLowerCase().contains(
-              _selectedRole.toLowerCase(),
-            );
-
-        final matchesExp =
-            _selectedExperience == null ||
-            _selectedExperience == 'All' ||
-            candidate.experience.toLowerCase().contains(
-              _selectedExperience!.toLowerCase(),
-            );
-
-        final matchesLocation =
-            _selectedLocation == null ||
-            _selectedLocation == 'All' ||
-            candidate.address.toLowerCase() == _selectedLocation!.toLowerCase();
-
-        return matchesSearch && matchesRole && matchesExp && matchesLocation;
-      }).toList();
-    });
-  }
+  const TalentSearchWidget({
+    super.key,
+    required this.candidates,
+    required this.selectedRole,
+    required this.selectedExperience,
+    required this.selectedLocation,
+    required this.onSearchChanged,
+    required this.onRoleChanged,
+    required this.onExperienceChanged,
+    required this.onLocationChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +37,9 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
             _buildSearchBar(),
             _buildFilterChips(),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 12.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               child: Text(
-                'RECOMMENDED CANDIDATES (${_displayedCandidates.length})',
+                'RECOMMENDED CANDIDATES (${candidates.length})',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -95,19 +63,12 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
         children: [
           const Text(
             'Find Talent',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
           ),
           Row(
             children: [
               IconButton(
-                icon: const Icon(
-                  Icons.notifications_none,
-                  color: AppColors.textPrimary,
-                ),
+                icon: const Icon(Icons.notifications_none, color: AppColors.textPrimary),
                 onPressed: () {},
               ),
               IconButton(
@@ -130,7 +91,7 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -146,10 +107,7 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
             focusedBorder: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           ),
-          onChanged: (value) {
-            _searchQuery = value;
-            _applyFilters();
-          },
+          onChanged: onSearchChanged,
         ),
       ),
     );
@@ -164,35 +122,24 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
         child: Row(
           children: [
             _buildCustomDropdown(
-              value: _selectedRole,
+              value: selectedRole,
               items: const ['All Roles', 'Designer', 'Developer', 'Engineer'],
               isPrimary: true,
-              onChanged: (val) {
-                if (val != null) {
-                  _selectedRole = val;
-                  _applyFilters();
-                }
-              },
+              onChanged: (val) { if (val != null) onRoleChanged(val); },
             ),
             const SizedBox(width: 8),
             _buildCustomDropdown(
               hint: 'Experience Level',
-              value: _selectedExperience,
+              value: selectedExperience,
               items: const ['All', 'Senior', 'Junior', 'Intern'],
-              onChanged: (val) {
-                _selectedExperience = val;
-                _applyFilters();
-              },
+              onChanged: onExperienceChanged,
             ),
             const SizedBox(width: 8),
             _buildCustomDropdown(
               hint: 'Location',
-              value: _selectedLocation,
+              value: selectedLocation,
               items: const ['All', 'London', 'San Francisco', 'Berlin'],
-              onChanged: (val) {
-                _selectedLocation = val;
-                _applyFilters();
-              },
+              onChanged: onLocationChanged,
             ),
           ],
         ),
@@ -212,30 +159,18 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
       decoration: BoxDecoration(
         color: isPrimary ? AppColors.primary : AppColors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: isPrimary ? AppColors.primary : AppColors.border,
-        ),
+        border: Border.all(color: isPrimary ? AppColors.primary : AppColors.border),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isDense: true,
           value: value,
           hint: hint != null
-              ? Text(
-                  hint,
-                  style: TextStyle(
-                    color: isPrimary ? AppColors.white : AppColors.textPrimary,
-                    fontSize: 13,
-                  ),
-                )
+              ? Text(hint, style: TextStyle(color: isPrimary ? AppColors.white : AppColors.textPrimary, fontSize: 13))
               : null,
           icon: Padding(
             padding: const EdgeInsets.only(left: 4.0),
-            child: Icon(
-              Icons.keyboard_arrow_down,
-              color: isPrimary ? AppColors.white : AppColors.textSecondary,
-              size: 16,
-            ),
+            child: Icon(Icons.keyboard_arrow_down, color: isPrimary ? AppColors.white : AppColors.textSecondary, size: 16),
           ),
           dropdownColor: AppColors.white,
           style: TextStyle(
@@ -243,18 +178,10 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
             fontWeight: isPrimary ? FontWeight.w600 : FontWeight.w500,
             fontSize: 13,
           ),
-          items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(
-                item,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 13,
-                ),
-              ),
-            );
-          }).toList(),
+          items: items.map((item) => DropdownMenuItem<String>(
+            value: item,
+            child: Text(item, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13)),
+          )).toList(),
           onChanged: onChanged,
         ),
       ),
@@ -262,29 +189,19 @@ class _TalentSearchWidgetState extends State<TalentSearchWidget> {
   }
 
   Widget _buildCandidateList() {
-    if (_displayedCandidates.isEmpty) {
+    if (candidates.isEmpty) {
       return const Center(
-        child: Text(
-          'No candidates found matching your criteria.',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
+        child: Text('No candidates found matching your criteria.', style: TextStyle(color: AppColors.textSecondary)),
       );
     }
-
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      itemCount: _displayedCandidates.length,
+      itemCount: candidates.length,
       itemBuilder: (context, index) {
-        final candidate = _displayedCandidates[index];
-        final List<String> skillList = candidate.skill
-            .split(',')
-            .map((s) => s.trim())
-            .toList();
-        final String formattedSalary =
-            '${(candidate.desiredSalaryMin / 1000).toStringAsFixed(0)}k';
-        final String combinedInfo =
-            '${candidate.address} • \$$formattedSalary+';
-
+        final candidate = candidates[index];
+        final skillList = candidate.skill.split(',').map((s) => s.trim()).toList();
+        final formattedSalary = '${(candidate.desiredSalaryMin / 1000).toStringAsFixed(0)}k';
+        final combinedInfo = '${candidate.address} • \$$formattedSalary+';
         return CandidateCardWidget(
           name: candidate.fullName,
           title: candidate.experience,
