@@ -5,7 +5,6 @@ import 'package:jobgo/presentation/widgets/candidate/home/home_search_bar.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/recommended_job_card.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/recent_job_tile.dart';
 import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
-import 'package:jobgo/presentation/pages/employer/dashboard/dashboard_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -32,7 +31,7 @@ class HomePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const DashboardPage(),
+                  builder: (_) => const HomePage(),
                 ),
               );
             },
