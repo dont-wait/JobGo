@@ -38,4 +38,38 @@ class MockInterviewSchedule {
     final h = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
     return '$h:$minute $period';
   }
+
+  
 }
+final List<MockInterviewSchedule> mockInterviewSchedules = [
+  MockInterviewSchedule(
+    id: 1,
+    interviewDate: DateTime(2026, 3, 7, 10, 0),
+    interviewType: 'On-site',
+    location: 'Văn phòng Global Design Systems, London',
+    contactPerson: 'Ms. Anna HR',
+    note: 'Mang theo CV bản cứng',
+    employerId: 1,
+    candidateId: 2,
+  ),
+  MockInterviewSchedule(
+    id: 2,
+    interviewDate: DateTime(2026, 3, 8, 14, 30),
+    interviewType: 'Video Call',
+    location: 'Zoom link: https://zoom.us/j/123456789',
+    contactPerson: 'Mr. John HR',
+    note: 'Chuẩn bị portfolio',
+    employerId: 1,
+    candidateId: 3,
+  ),
+  MockInterviewSchedule(
+    id: 3,
+    interviewDate: DateTime(2026, 3, 10, 9, 0),
+    interviewType: 'Phone Screen',
+    location: 'Số điện thoại: +44 123 456 789',
+    contactPerson: 'Ms. Emily Recruiter',
+    note: 'Phỏng vấn vòng sơ loại',
+    employerId: 2,
+    candidateId: 1,
+  ),
+];
