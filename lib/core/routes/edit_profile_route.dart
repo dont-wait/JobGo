@@ -11,11 +11,13 @@ void navigateToEditProfile(BuildContext context, UserRole role) {
         context,
         MaterialPageRoute(builder: (_) => const EmployerEditProfilePage()),
       );
+      break;
     case UserRole.candidate:
       // TODO: Navigator.push → CandidateEditProfilePage khi có
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Candidate edit profile — coming soon')),
       );
+      break;
     case UserRole.admin:
       // TODO: AdminEditProfilePage
       break;
