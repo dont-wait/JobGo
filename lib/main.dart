@@ -35,8 +35,8 @@ class MainApp extends StatelessWidget {
           PointerDeviceKind.mouse,
         },
       ),
-      //home: const WelcomePage(),
-      home: const CompanyProfilePage(),
+      home: const WelcomePage(),
+      //home: const CompanyProfilePage(),
       // Route '/main' nhận UserRole qua arguments
       // Login/Register sẽ navigate: Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate)
       onGenerateRoute: (settings) {
