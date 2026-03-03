@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/presentation/widgets/employer/candidate_respone/candidate_respone_card.dart';
 import '../../../../core/configs/theme/app_colors.dart';
-import '../../../widgets/employer/candidate_respone/candidate_respone_card.dart';
+
 
 class CandidateResponsesPage extends StatelessWidget {
   const CandidateResponsesPage({super.key});
