@@ -11,7 +11,6 @@ class JobStatusTabBar extends StatelessWidget {
     required this.onTabChanged,
   });
 
-  // ← Sửa ở đây: static const
   static const List<String> tabs = ['All Jobs', 'Active', 'Closed', 'Drafts'];
 
   @override

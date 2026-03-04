@@ -45,11 +45,8 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
       ),
       body: Column(
         children: [
-          // Header Profile
           _buildProfileHeader(),
-          // Tab Bar
           _buildTabBar(),
-          // Content
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
@@ -226,7 +223,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
   Widget _buildTabContent() {
     switch (_currentTab) {
-      case 0: // About
+      case 0:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

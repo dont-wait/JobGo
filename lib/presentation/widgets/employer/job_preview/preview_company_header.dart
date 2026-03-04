@@ -11,7 +11,6 @@ class PreviewCompanyHeader extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // Logo
           Container(
             width: 64,
             height: 64,

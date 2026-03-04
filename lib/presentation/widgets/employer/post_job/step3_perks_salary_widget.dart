@@ -55,7 +55,7 @@ class Step3PerksSalaryWidget extends StatelessWidget {
         const SizedBox(height: 24),
 
         JobSummaryPreview(
-          jobTitle: 'Senior UI/UX Designer', // bạn có thể bind từ controller
+          jobTitle: 'Senior UI/UX Designer',
           location: 'New York, NY (Hybrid)',
           experience: '5+ Years',
         ),

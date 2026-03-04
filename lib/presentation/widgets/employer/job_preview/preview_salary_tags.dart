@@ -11,7 +11,6 @@ class PreviewSalaryTags extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         children: [
-          // Salary
           const Text(
             '\$120,000 - \$160,000 / year',
             style: TextStyle(
