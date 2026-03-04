@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/presentation/widgets/employer/applicants/job_applicants_page.dart';
 
 class PublishedJobCard extends StatelessWidget {
   const PublishedJobCard({super.key});
@@ -62,7 +63,18 @@ class PublishedJobCard extends StatelessWidget {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () {}, // TODO: View Applicants
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => JobApplicantsPage(
+                        jobTitle: 'Senior Product Designer',
+                        totalApplicants: 48,
+                        jobId: '101',
+                      ),
+                    ),
+                  );
+                },
                 child: const Text(
                   'View Applicants →',
                   style: TextStyle(
