@@ -4,6 +4,7 @@ import 'package:jobgo/presentation/widgets/employer/post_job/job_step_progress.d
 import 'package:jobgo/presentation/widgets/employer/post_job/step1_job_details_widget.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step2_description_widget.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step3_perks_salary_widget.dart';
+import 'package:jobgo/presentation/widgets/employer/job_preview/job_post_preview_page.dart';
 
 class PostJobPage extends StatefulWidget {
   const PostJobPage({super.key});
@@ -32,11 +33,10 @@ class _PostJobPageState extends State<PostJobPage> {
     if (currentStep < 3) {
       setState(() => currentStep++);
     } else {
-      // TODO: Call API post job
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Job posted successfully! 🎉')),
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const JobPostPreviewPage()),
       );
-      Navigator.pop(context);
     }
   }
 

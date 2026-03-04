@@ -11,7 +11,7 @@ import 'package:jobgo/presentation/pages/candidate/profile/profile_page.dart';
 
 // ── Employer pages ──
 import 'package:jobgo/presentation/pages/employer/dashboard/dashboard_page.dart';
-import 'package:jobgo/presentation/pages/employer/job_posts/job_posts_page.dart';
+import 'package:jobgo/presentation/pages/employer/manage_jobs/manage_jobs_page.dart';
 import 'package:jobgo/presentation/pages/employer/talent/talent_page.dart';
 import 'package:jobgo/presentation/pages/employer/messages/employer_messages_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_profile_page.dart';
@@ -35,7 +35,7 @@ class _AppShellState extends State<AppShell> {
       case UserRole.employer:
         return const [
           DashboardPage(),
-          PostJobPage(),
+          ManageJobsPage(),
           TalentPage(),
           EmployerMessagesPage(),
           EmployerProfilePage(),
