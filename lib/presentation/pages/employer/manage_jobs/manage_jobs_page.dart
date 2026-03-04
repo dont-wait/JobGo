@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/post_new_job_banner.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/job_status_tab_bar.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/draft_job_card.dart';
@@ -35,7 +36,10 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: AppColors.primary, size: 28),
-            onPressed: () => _navigateToPostJob(context),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PostJobPage()),
+            ),
           ),
         ],
       ),
@@ -60,17 +64,30 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
 
   Widget _buildTabContent() {
     if (_currentTab == 0 || _currentTab == 1) {
-      return const Column(
+      return Column(
         children: [
-          SizedBox(height: 20),
-          PostNewJobBanner(),
-          SizedBox(height: 24),
-          DraftJobCard(),
-          SizedBox(height: 32),
-          PublishedJobCard(),
-          SizedBox(height: 24),
-          ClosedJobCard(),
-          SizedBox(height: 40),
+          const SizedBox(height: 20),
+          const PostNewJobBanner(),
+          const SizedBox(height: 24),
+          const DraftJobCard(),
+          const SizedBox(height: 32),
+
+          // Published jobs từ mock data
+          ...MockJobs.recentJobs.map(
+            (job) => Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: PublishedJobCard(
+                jobTitle: job.title,
+                applicantsCount: job.applicants ?? 0,
+                jobId: job.id,
+                postedTime: job.postedTime,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+          const ClosedJobCard(),
+          const SizedBox(height: 40),
         ],
       );
     }
@@ -79,13 +96,6 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         'No jobs in this tab yet',
         style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
       ),
-    );
-  }
-
-  void _navigateToPostJob(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const PostJobPage()),
     );
   }
 }

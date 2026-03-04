@@ -34,12 +34,10 @@ class PostNewJobBanner extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PostJobPage()),
-                );
-              },
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PostJobPage()),
+              ),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text(
                 'Post New Job',

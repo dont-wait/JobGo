@@ -33,6 +33,11 @@ class ApplicantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final candidate = mockCandidatesData.firstWhere(
+      (c) => c.id == application.candidateId,
+      orElse: () => mockCandidatesData[0],
+    );
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -47,13 +52,9 @@ class ApplicantCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundImage: NetworkImage(
-                  'https://i.pravatar.cc/150?img=${application.candidateId}',
-                ),
+                backgroundImage: NetworkImage(candidate.avatarUrl),
               ),
               const SizedBox(width: 12),
-
-              // Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +62,7 @@ class ApplicantCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          'Candidate ${application.candidateId}',
+                          candidate.fullName,
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
@@ -120,19 +121,13 @@ class ApplicantCard extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {
-                    final candidate = mockCandidatesData.firstWhere(
-                      (c) => c.id == application.candidateId,
-                      orElse: () => mockCandidatesData[0],
-                    );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            CandidateProfilePage(candidate: candidate),
-                      ),
-                    );
-                  },
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          CandidateProfilePage(candidate: candidate),
+                    ),
+                  ),
                   child: const Text('View Profile'),
                 ),
               ),

@@ -3,7 +3,18 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/job_applicants_page.dart';
 
 class PublishedJobCard extends StatelessWidget {
-  const PublishedJobCard({super.key});
+  final String jobTitle;
+  final int applicantsCount;
+  final String jobId;
+  final String postedTime;
+
+  const PublishedJobCard({
+    super.key,
+    required this.jobTitle,
+    required this.applicantsCount,
+    required this.jobId,
+    this.postedTime = 'Posted 2 days ago',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,16 +49,19 @@ class PublishedJobCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Text(
-                'Posted 2 days ago',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              Text(
+                postedTime,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Senior Product Designer',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Text(
+            jobTitle,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           Row(
             children: [
@@ -57,24 +71,22 @@ class PublishedJobCard extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
               const SizedBox(width: 6),
-              const Text(
-                '14 Applicants',
-                style: TextStyle(color: AppColors.textSecondary),
+              Text(
+                '$applicantsCount Applicants',
+                style: const TextStyle(color: AppColors.textSecondary),
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => JobApplicantsPage(
-                        jobTitle: 'Senior Product Designer',
-                        totalApplicants: 48,
-                        jobId: '101',
-                      ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => JobApplicantsPage(
+                      jobTitle: jobTitle,
+                      totalApplicants: applicantsCount,
+                      jobId: jobId,
                     ),
-                  );
-                },
+                  ),
+                ),
                 child: const Text(
                   'View Applicants →',
                   style: TextStyle(
@@ -90,7 +102,7 @@ class PublishedJobCard extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {}, // Edit
+                  onPressed: () {},
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   label: const Text('Edit'),
                 ),
@@ -98,7 +110,7 @@ class PublishedJobCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {}, // Boost
+                  onPressed: () {},
                   icon: const Icon(Icons.bolt, size: 18),
                   label: const Text('Boost'),
                   style: ElevatedButton.styleFrom(
