@@ -35,7 +35,7 @@ class _AppShellState extends State<AppShell> {
       case UserRole.employer:
         return const [
           DashboardPage(),
-          JobPostsPage(),
+          PostJobPage(),
           TalentPage(),
           EmployerMessagesPage(),
           EmployerProfilePage(),
@@ -89,10 +89,7 @@ class _AppShellState extends State<AppShell> {
     final icons = _navIcons;
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: _currentIndex, children: pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
