@@ -16,6 +16,9 @@ import 'package:jobgo/presentation/pages/employer/talent/talent_page.dart';
 import 'package:jobgo/presentation/pages/employer/messages/employer_messages_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_profile_page.dart';
 
+// ── Admin pages ──
+import 'package:jobgo/presentation/pages/admin/admin_app_shell.dart';
+
 /// Shell chính của ứng dụng — hiển thị bottom nav + pages theo role.
 class AppShell extends StatefulWidget {
   final UserRole role;
@@ -41,14 +44,8 @@ class _AppShellState extends State<AppShell> {
           EmployerProfilePage(),
         ];
       case UserRole.admin:
-        // TODO: Thêm admin pages khi có
-        return const [
-          // DashboardPage(),
-          // JobPostsPage(),
-          // TalentPage(),
-          // EmployerMessagesPage(),
-          // EmployerProfilePage(),
-        ];
+        // Admin không dùng pages list, có shell riêng
+        return const [];
       case UserRole.candidate:
         return const [
           HomePage(),
@@ -85,6 +82,11 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Admin có shell riêng
+    if (widget.role == UserRole.admin) {
+      return const AdminAppShell();
+    }
+
     final pages = _pages;
     final icons = _navIcons;
 

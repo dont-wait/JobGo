@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
-import '../../../widgets/employer/candidate_respone/candidate_respone_card.dart';
+import '../../../widgets/employer/candidate_response/candidate_respone_card.dart';
 
 class CandidateResponsesPage extends StatelessWidget {
   const CandidateResponsesPage({super.key});
@@ -36,7 +36,7 @@ class CandidateResponsesPage extends StatelessWidget {
         foregroundColor: AppColors.white,
       ),
       body: ListView(
-        children: responses,
+        children: responses.cast<Widget>(),
       ),
     );
   }
