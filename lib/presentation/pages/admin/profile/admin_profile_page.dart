@@ -32,7 +32,9 @@ class AdminProfilePage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SettingsPage(role: UserRole.admin)),
+                MaterialPageRoute(builder: (_) => const SettingsPage(
+                  role: UserRole.admin,
+                )),
               );
             },
           ),
