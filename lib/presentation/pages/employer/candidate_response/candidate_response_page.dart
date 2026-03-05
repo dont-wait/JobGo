@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jobgo/presentation/widgets/employer/candidate_respone/candidate_respone_card.dart';
+import '../../../widgets/employer/candidate_response/candidate_respone_card.dart';
 import '../../../../core/configs/theme/app_colors.dart';
-
 
 class CandidateResponsesPage extends StatelessWidget {
   const CandidateResponsesPage({super.key});
@@ -37,7 +36,7 @@ class CandidateResponsesPage extends StatelessWidget {
         foregroundColor: AppColors.white,
       ),
       body: ListView(
-        children: responses,
+        children: responses.cast<Widget>(),
       ),
     );
   }
