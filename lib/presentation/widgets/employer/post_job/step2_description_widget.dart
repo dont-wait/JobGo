@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/skill_chip_selector.dart';
 
 class Step2DescriptionWidget extends StatelessWidget {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/benefit_selector.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/job_summary_preview.dart';
 

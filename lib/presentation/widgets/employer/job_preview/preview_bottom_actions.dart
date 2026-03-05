@@ -42,15 +42,15 @@ class PreviewBottomActions extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Job posted successfully!'),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    final controller = ScaffoldMessenger.of(context)
+                        .showSnackBar(
+                          const SnackBar(
+                            content: Text('Job posted successfully!'),
+                            backgroundColor: AppColors.success,
+                          ),
+                        );
+                    await controller.closed;
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.orange,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_applications.dart';
+import 'package:jobgo/data/mockdata/mock_candidate.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/applicant_card.dart';
 
 class JobApplicantsPage extends StatefulWidget {
@@ -32,14 +33,19 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
   }
 
   void _filterApplicants(String query) {
+    final lowerQuery = query.toLowerCase();
     setState(() {
-      filteredApplications = MockApplications.all
-          .where(
-            (app) =>
-                app.jobId == widget.jobId &&
-                app.jobTitle.toLowerCase().contains(query.toLowerCase()),
-          )
-          .toList();
+      filteredApplications = MockApplications.all.where((app) {
+        if (app.jobId != widget.jobId) return false;
+
+        final candidate = mockCandidatesData.firstWhere(
+          (c) => c.id == app.candidateId,
+          orElse: () => mockCandidatesData.first,
+        );
+
+        return candidate.fullName.toLowerCase().contains(lowerQuery) ||
+            candidate.skill.toLowerCase().contains(lowerQuery);
+      }).toList();
     });
   }
 
@@ -94,7 +100,6 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
               ),
             ),
           ),
-
           Expanded(
             child: filteredApplications.isEmpty
                 ? const Center(child: Text('No applicants found'))
