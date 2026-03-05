@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class DraftJobCard extends StatelessWidget {
-  const DraftJobCard({super.key});
+  final String jobTitle;
+  final String lastSaved;
+  final String missingInfo;
+
+  const DraftJobCard({
+    super.key,
+    required this.jobTitle,
+    this.lastSaved = 'Last saved 7h ago',
+    this.missingInfo = 'Missing: Salary range, Office location',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,27 +46,33 @@ class DraftJobCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Text(
-                'Last saved 7h ago',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              Text(
+                lastSaved,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Product Marketing Manager',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Text(
+            jobTitle,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          const Text(
-            'Missing: Salary range, Office location',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          Text(
+            missingInfo,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
           ),
           const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {}, // TODO: Resume editing
+                  onPressed: () {},
                   icon: const Icon(Icons.play_arrow, size: 18),
                   label: const Text('Resume'),
                   style: ElevatedButton.styleFrom(

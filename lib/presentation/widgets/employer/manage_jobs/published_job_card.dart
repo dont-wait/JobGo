@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/mockdata/mock_applications.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/job_applicants_page.dart';
 
 class PublishedJobCard extends StatelessWidget {
   final String jobTitle;
-  final int applicantsCount;
   final String jobId;
   final String postedTime;
 
   const PublishedJobCard({
     super.key,
     required this.jobTitle,
-    required this.applicantsCount,
     required this.jobId,
     this.postedTime = 'Posted 2 days ago',
   });
+
+  int get realApplicantCount =>
+      MockApplications.all.where((app) => app.jobId == jobId).length;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +74,7 @@ class PublishedJobCard extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                '$applicantsCount Applicants',
+                '$realApplicantCount Applicants',
                 style: const TextStyle(color: AppColors.textSecondary),
               ),
               const Spacer(),
@@ -82,7 +84,7 @@ class PublishedJobCard extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => JobApplicantsPage(
                       jobTitle: jobTitle,
-                      totalApplicants: applicantsCount,
+                      totalApplicants: realApplicantCount,
                       jobId: jobId,
                     ),
                   ),

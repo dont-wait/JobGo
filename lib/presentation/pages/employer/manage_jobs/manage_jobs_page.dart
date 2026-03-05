@@ -25,6 +25,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: const Text(
           'Manage Jobs',
           style: TextStyle(
@@ -70,23 +71,20 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
             const SizedBox(height: 20),
             const PostNewJobBanner(),
             const SizedBox(height: 24),
-            const DraftJobCard(),
+            DraftJobCard(jobTitle: 'Product Marketing Manager'),
             const SizedBox(height: 32),
-
             ...MockJobs.recentJobs.map(
               (job) => Padding(
                 padding: const EdgeInsets.only(bottom: 24),
                 child: PublishedJobCard(
                   jobTitle: job.title,
-                  applicantsCount: job.applicants ?? 0,
                   jobId: job.id,
                   postedTime: job.postedTime,
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
-            const ClosedJobCard(),
+            ClosedJobCard(jobTitle: 'Frontend Developer', applicantsCount: 5),
             const SizedBox(height: 40),
           ],
         );
@@ -100,7 +98,6 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
                 padding: const EdgeInsets.only(bottom: 24),
                 child: PublishedJobCard(
                   jobTitle: job.title,
-                  applicantsCount: job.applicants ?? 0,
                   jobId: job.id,
                   postedTime: job.postedTime,
                 ),
@@ -112,19 +109,19 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
 
       case 2:
         return Column(
-          children: const [
-            SizedBox(height: 20),
-            ClosedJobCard(),
-            SizedBox(height: 40),
+          children: [
+            const SizedBox(height: 20),
+            ClosedJobCard(jobTitle: 'Frontend Developer', applicantsCount: 5),
+            const SizedBox(height: 40),
           ],
         );
 
       case 3:
         return Column(
-          children: const [
-            SizedBox(height: 20),
-            DraftJobCard(),
-            SizedBox(height: 40),
+          children: [
+            const SizedBox(height: 20),
+            DraftJobCard(jobTitle: 'Product Marketing Manager'),
+            const SizedBox(height: 40),
           ],
         );
 

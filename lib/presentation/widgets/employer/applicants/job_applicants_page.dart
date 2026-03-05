@@ -37,16 +37,20 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
     setState(() {
       filteredApplications = MockApplications.all.where((app) {
         if (app.jobId != widget.jobId) return false;
-
         final candidate = mockCandidatesData.firstWhere(
           (c) => c.id == app.candidateId,
           orElse: () => mockCandidatesData.first,
         );
-
         return candidate.fullName.toLowerCase().contains(lowerQuery) ||
             candidate.skill.toLowerCase().contains(lowerQuery);
       }).toList();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -106,10 +110,8 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemCount: filteredApplications.length,
-                    itemBuilder: (context, index) {
-                      final app = filteredApplications[index];
-                      return ApplicantCard(application: app);
-                    },
+                    itemBuilder: (context, index) =>
+                        ApplicantCard(application: filteredApplications[index]),
                   ),
           ),
         ],

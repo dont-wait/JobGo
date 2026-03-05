@@ -8,54 +8,63 @@ class JobStepProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      color: AppColors.white,
-      child: Row(
-        children: List.generate(3, (index) {
-          final step = index + 1;
-          final isActive = step == currentStep;
-          final isCompleted = step < currentStep;
+    List<Widget> buildSteps() {
+      List<Widget> children = [];
+      for (int i = 0; i < 3; i++) {
+        final step = i + 1;
+        final isActive = step == currentStep;
+        final isCompleted = step < currentStep;
 
-          return Expanded(
-            child: Row(
-              children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: isCompleted
-                        ? AppColors.success
-                        : isActive
-                        ? AppColors.primary
-                        : AppColors.border,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$step',
-                      style: TextStyle(
-                        color: isCompleted || isActive
-                            ? Colors.white
-                            : AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+        children.add(
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: isCompleted
+                  ? AppColors.success
+                  : isActive
+                  ? AppColors.primary
+                  : AppColors.border,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                '$step',
+                style: TextStyle(
+                  color: isCompleted || isActive
+                      ? Colors.white
+                      : AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
                 ),
-                if (index < 2)
-                  Expanded(
-                    child: Container(
-                      height: 2,
-                      color: step < currentStep
-                          ? AppColors.primary
-                          : AppColors.border,
-                    ),
-                  ),
-              ],
+              ),
+            ),
+          ),
+        );
+
+        if (i < 2) {
+          children.add(
+            Expanded(
+              child: Container(
+                height: 3,
+                color: step < currentStep
+                    ? AppColors.primary
+                    : AppColors.border,
+              ),
             ),
           );
-        }),
+        }
+      }
+      return children;
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16.0, left: 40.0, right: 40.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: buildSteps(),
+        ),
       ),
     );
   }

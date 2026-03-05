@@ -9,16 +9,7 @@ class ApplicantCard extends StatelessWidget {
 
   const ApplicantCard({super.key, required this.application});
 
-  String get badgeText {
-    switch (application.status) {
-      case ApplicationStatus.interview:
-        return 'INTERVIEW';
-      case ApplicationStatus.hired:
-        return 'HIRED';
-      default:
-        return 'NEW';
-    }
-  }
+  String get badgeText => application.statusLabel;
 
   Color get badgeColor {
     switch (application.status) {
@@ -26,6 +17,12 @@ class ApplicantCard extends StatelessWidget {
         return const Color(0xFFF59E0B);
       case ApplicationStatus.hired:
         return AppColors.success;
+      case ApplicationStatus.rejected:
+        return AppColors.error;
+      case ApplicationStatus.reviewing:
+        return const Color(0xFF8B5CF6);
+      case ApplicationStatus.withdrawn:
+        return AppColors.textSecondary;
       default:
         return AppColors.primary;
     }
@@ -35,7 +32,7 @@ class ApplicantCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final candidate = mockCandidatesData.firstWhere(
       (c) => c.id == application.candidateId,
-      orElse: () => mockCandidatesData[0],
+      orElse: () => mockCandidatesData.first,
     );
 
     return Container(
@@ -90,7 +87,7 @@ class ApplicantCard extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      'Applied ${application.appliedTimeAgo}',
+                      application.appliedTimeAgo,
                       style: const TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary,

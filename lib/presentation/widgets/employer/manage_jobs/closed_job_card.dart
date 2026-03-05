@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class ClosedJobCard extends StatelessWidget {
-  const ClosedJobCard({super.key});
+  final String jobTitle;
+  final int applicantsCount;
+  final String endedTime;
+
+  const ClosedJobCard({
+    super.key,
+    required this.jobTitle,
+    required this.applicantsCount,
+    this.endedTime = 'Ended 1 week ago',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +35,19 @@ class ClosedJobCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              const Text(
-                'Ended 1 week ago',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              Text(
+                endedTime,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Frontend Developer',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          Text(
+            jobTitle,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           Row(
             children: [
@@ -45,9 +57,9 @@ class ClosedJobCard extends StatelessWidget {
                 color: AppColors.textSecondary,
               ),
               const SizedBox(width: 6),
-              const Text(
-                '5 Applicants',
-                style: TextStyle(color: AppColors.textSecondary),
+              Text(
+                '$applicantsCount Applicants',
+                style: const TextStyle(color: AppColors.textSecondary),
               ),
               const Spacer(),
               GestureDetector(
@@ -64,7 +76,7 @@ class ClosedJobCard extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {}, // Reopen
+                  onPressed: () {},
                   icon: const Icon(Icons.refresh, size: 18),
                   label: const Text('Reopen'),
                 ),
@@ -72,7 +84,7 @@ class ClosedJobCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {}, // Delete
+                  onPressed: () {},
                   icon: const Icon(
                     Icons.delete_outline,
                     size: 18,
