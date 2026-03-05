@@ -6,7 +6,7 @@ import 'package:jobgo/presentation/widgets/employer/manage_jobs/job_status_tab_b
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/draft_job_card.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/published_job_card.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/closed_job_card.dart';
-import 'package:jobgo/presentation/widgets/employer/post_job/job_posts_page.dart';
+import 'package:jobgo/presentation/widgets/employer/post_job/post_job_page.dart';
 
 class ManageJobsPage extends StatefulWidget {
   const ManageJobsPage({super.key});
@@ -63,39 +63,78 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
   }
 
   Widget _buildTabContent() {
-    if (_currentTab == 0 || _currentTab == 1) {
-      return Column(
-        children: [
-          const SizedBox(height: 20),
-          const PostNewJobBanner(),
-          const SizedBox(height: 24),
-          const DraftJobCard(),
-          const SizedBox(height: 32),
+    switch (_currentTab) {
+      case 0:
+        return Column(
+          children: [
+            const SizedBox(height: 20),
+            const PostNewJobBanner(),
+            const SizedBox(height: 24),
+            const DraftJobCard(),
+            const SizedBox(height: 32),
 
-          // Published jobs từ mock data
-          ...MockJobs.recentJobs.map(
-            (job) => Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: PublishedJobCard(
-                jobTitle: job.title,
-                applicantsCount: job.applicants ?? 0,
-                jobId: job.id,
-                postedTime: job.postedTime,
+            ...MockJobs.recentJobs.map(
+              (job) => Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: PublishedJobCard(
+                  jobTitle: job.title,
+                  applicantsCount: job.applicants ?? 0,
+                  jobId: job.id,
+                  postedTime: job.postedTime,
+                ),
               ),
             ),
-          ),
 
-          const SizedBox(height: 24),
-          const ClosedJobCard(),
-          const SizedBox(height: 40),
-        ],
-      );
+            const SizedBox(height: 24),
+            const ClosedJobCard(),
+            const SizedBox(height: 40),
+          ],
+        );
+
+      case 1:
+        return Column(
+          children: [
+            const SizedBox(height: 20),
+            ...MockJobs.recentJobs.map(
+              (job) => Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: PublishedJobCard(
+                  jobTitle: job.title,
+                  applicantsCount: job.applicants ?? 0,
+                  jobId: job.id,
+                  postedTime: job.postedTime,
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
+        );
+
+      case 2:
+        return Column(
+          children: const [
+            SizedBox(height: 20),
+            ClosedJobCard(),
+            SizedBox(height: 40),
+          ],
+        );
+
+      case 3:
+        return Column(
+          children: const [
+            SizedBox(height: 20),
+            DraftJobCard(),
+            SizedBox(height: 40),
+          ],
+        );
+
+      default:
+        return const Center(
+          child: Text(
+            'No jobs in this tab yet',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+          ),
+        );
     }
-    return const Center(
-      child: Text(
-        'No jobs in this tab yet',
-        style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
-      ),
-    );
   }
 }

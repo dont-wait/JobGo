@@ -15,6 +15,15 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   int _currentTab = 0;
   final List<String> _tabs = ['About', 'Experience', 'Skills', 'Resume'];
 
+  String get _resumeFileName {
+    final cleanName = widget.candidate.fullName.trim().toLowerCase().replaceAll(
+      RegExp(r'\s+'),
+      '_',
+    );
+
+    return '${cleanName}_resume.pdf';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +122,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           ),
           const SizedBox(height: 24),
 
-          // Action Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -240,7 +248,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               ),
             ),
             const SizedBox(height: 32),
-
             const Text(
               'Experience',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -258,7 +265,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               '',
             ),
             const SizedBox(height: 32),
-
             const Text(
               'Skills',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -276,11 +282,10 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         );
 
       case 1:
-        return const Center(
-          child: Text('Experience tab content (có thể mở rộng thêm)'),
-        );
+        return const Center(child: Text('Experience tab content'));
       case 2:
         return const Center(child: Text('Skills tab content'));
+
       case 3:
         return Column(
           children: [
@@ -300,7 +305,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '${widget.candidate.fullName.toLowerCase()}_resume.pdf',
+                    _resumeFileName,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 20),
@@ -318,6 +323,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
             ),
           ],
         );
+
       default:
         return const SizedBox();
     }

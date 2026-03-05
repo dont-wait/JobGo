@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/presentation/widgets/employer/post_job/job_posts_page.dart';
+import 'package:jobgo/presentation/widgets/employer/post_job/post_job_page.dart';
 
 class PostNewJobBanner extends StatelessWidget {
   const PostNewJobBanner({super.key});
