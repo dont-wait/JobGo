@@ -168,6 +168,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
         title: const Text(
           'User Management',
           style: TextStyle(

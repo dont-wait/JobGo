@@ -17,7 +17,11 @@ import 'package:jobgo/presentation/pages/employer/messages/employer_messages_pag
 import 'package:jobgo/presentation/pages/employer/profile/employer_profile_page.dart';
 
 // ── Admin pages ──
-import 'package:jobgo/presentation/pages/admin/admin_app_shell.dart';
+import 'package:jobgo/presentation/pages/admin/dashboard/admin_dashboard_page.dart';
+import 'package:jobgo/presentation/pages/admin/search/admin_search_page.dart';
+import 'package:jobgo/presentation/pages/admin/users/user_management_page.dart';
+import 'package:jobgo/presentation/pages/admin/moderation/job_moderation_page.dart';
+import 'package:jobgo/presentation/pages/admin/profile/admin_profile_page.dart';
 
 /// Shell chính của ứng dụng — hiển thị bottom nav + pages theo role.
 class AppShell extends StatefulWidget {
@@ -44,8 +48,13 @@ class _AppShellState extends State<AppShell> {
           EmployerProfilePage(),
         ];
       case UserRole.admin:
-        // Admin không dùng pages list, có shell riêng
-        return const [];
+        return const [
+          AdminDashboardPage(),
+          AdminSearchPage(),
+          UserManagementPage(),
+          JobModerationPage(),
+          AdminProfilePage(),
+        ];
       case UserRole.candidate:
         return const [
           HomePage(),
@@ -61,12 +70,19 @@ class _AppShellState extends State<AppShell> {
   List<IconData> get _navIcons {
     switch (widget.role) {
       case UserRole.employer:
-      case UserRole.admin:
         return const [
           Icons.dashboard_rounded,
           Icons.work_outline_rounded,
           Icons.people_outline_rounded,
           Icons.chat_bubble_outline,
+          Icons.person_outline,
+        ];
+      case UserRole.admin:
+        return const [
+          Icons.dashboard_rounded,
+          Icons.search,
+          Icons.people_outline_rounded,
+          Icons.work_outline_rounded,
           Icons.person_outline,
         ];
       case UserRole.candidate:
@@ -82,11 +98,6 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
-    // Admin có shell riêng
-    if (widget.role == UserRole.admin) {
-      return const AdminAppShell();
-    }
-
     final pages = _pages;
     final icons = _navIcons;
 

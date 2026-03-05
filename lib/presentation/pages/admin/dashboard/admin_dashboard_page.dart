@@ -79,6 +79,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
         title: const Text(
           'Dashboard',
           style: TextStyle(

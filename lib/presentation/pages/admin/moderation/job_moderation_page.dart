@@ -143,6 +143,7 @@ class _JobModerationPageState extends State<JobModerationPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        automaticallyImplyLeading: false,
         title: const Text(
           'Job Moderation',
           style: TextStyle(

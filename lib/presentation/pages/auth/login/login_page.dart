@@ -180,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
     final password = passwordController.text;
 
     // --- Check admin first ---
-    if (input == "employeer@gmail.com" && password == "Employer@123") {
+    if (input == "admin@gmail.com" && password == "Admin123456@") {
       Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.admin);
       return;
     }
