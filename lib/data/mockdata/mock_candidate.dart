@@ -95,6 +95,6 @@ final List<CandidateModel> mockCandidatesData = [
     cvUrl: 'https://example.com/cv/test.pdf',
     desiredSalaryMin: 80000,
     desiredSalaryMax: 120000,
-    email: 'cadidate@gmail.com',
+    email: 'candidate@gmail.com',
   ),
 ];

@@ -32,7 +32,7 @@ class _JobModerationPageState extends State<JobModerationPage> {
           title: 'Product Designer',
           company: 'TechSolutions Inc',
           location: 'San Francisco',
-          salaryRange: '\$100k - \$80k',
+          salaryRange: '\$80k - \$100k',
           postedDate: DateTime.now().subtract(const Duration(hours: 4)),
           status: 'pending',
         ),

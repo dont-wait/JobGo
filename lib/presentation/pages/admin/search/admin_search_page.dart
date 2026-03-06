@@ -114,7 +114,7 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
                     const SizedBox(width: 8),
                     _buildFilterChip('Job Posts'),
                     const SizedBox(width: 8),
-                    _buildFilterChip('Employe'),
+                    _buildFilterChip('Employers'),
                   ],
                 ),
               ],
