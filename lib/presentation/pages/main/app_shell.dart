@@ -16,6 +16,13 @@ import 'package:jobgo/presentation/pages/employer/talent/talent_page.dart';
 import 'package:jobgo/presentation/pages/employer/notification/employer_notification_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_profile_page.dart';
 
+// ── Admin pages ──
+import 'package:jobgo/presentation/pages/admin/dashboard/admin_dashboard_page.dart';
+import 'package:jobgo/presentation/pages/admin/search/admin_search_page.dart';
+import 'package:jobgo/presentation/pages/admin/users/user_management_page.dart';
+import 'package:jobgo/presentation/pages/admin/moderation/job_moderation_page.dart';
+import 'package:jobgo/presentation/pages/admin/profile/admin_profile_page.dart';
+
 /// Shell chính của ứng dụng — hiển thị bottom nav + pages theo role.
 class AppShell extends StatefulWidget {
   final UserRole role;
@@ -41,13 +48,12 @@ class _AppShellState extends State<AppShell> {
           EmployerProfilePage(),
         ];
       case UserRole.admin:
-        // TODO: Thêm admin pages khi có
         return const [
-          // DashboardPage(),
-          // JobPostsPage(),
-          // TalentPage(),
-          // EmployerMessagesPage(),
-          // EmployerProfilePage(),
+          AdminDashboardPage(),
+          AdminSearchPage(),
+          UserManagementPage(),
+          JobModerationPage(),
+          AdminProfilePage(),
         ];
       case UserRole.candidate:
         return const [
@@ -64,12 +70,19 @@ class _AppShellState extends State<AppShell> {
   List<IconData> get _navIcons {
     switch (widget.role) {
       case UserRole.employer:
-      case UserRole.admin:
         return const [
           Icons.dashboard_rounded,
           Icons.work_outline_rounded,
           Icons.people_outline_rounded,
           Icons.notifications_active,
+          Icons.person_outline,
+        ];
+      case UserRole.admin:
+        return const [
+          Icons.dashboard_rounded,
+          Icons.search,
+          Icons.people_outline_rounded,
+          Icons.work_outline_rounded,
           Icons.person_outline,
         ];
       case UserRole.candidate:

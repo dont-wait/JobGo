@@ -80,4 +80,21 @@ final List<CandidateModel> mockCandidatesData = [
     desiredSalaryMax: 120000,
     email: 'candidate2@gmail.com',
   ),
+  // Test candidate account
+  CandidateModel(
+    id: 4,
+    fullName: 'Test Candidate',
+    dateOfBirth: '1995-01-01',
+    gender: 'Male',
+    address: 'Test City',
+    skill: 'Flutter, Dart, React',
+    phone: '0123456789',
+    avatarUrl: 'https://i.pravatar.cc/150?img=20',
+    education: 'BSc Information Technology',
+    experience: 'Full Stack Developer',
+    cvUrl: 'https://example.com/cv/test.pdf',
+    desiredSalaryMin: 80000,
+    desiredSalaryMax: 120000,
+    email: 'candidate@gmail.com',
+  ),
 ];
