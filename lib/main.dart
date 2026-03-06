@@ -36,7 +36,7 @@ class MainApp extends StatelessWidget {
         },
       ),
       home: const WelcomePage(),
-      //home: const CandidateResponsesPage(),
+      //home: const InterviewSchedulePage(),
       // Route '/main' nhận UserRole qua arguments
       // Login/Register sẽ navigate: Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate)
       onGenerateRoute: (settings) {

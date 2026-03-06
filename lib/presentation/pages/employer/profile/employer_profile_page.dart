@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/mockdata/mockdata_employer.dart';
+import 'package:jobgo/presentation/pages/employer/candidate_response/candidate_response_page.dart';
+import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_edit_profile_page.dart';
 import 'package:jobgo/presentation/pages/settings/settings_page.dart';
+import '../../../pages/employer/company/company_profile_page.dart';
 
 /// Employer Account Settings — profile page matching the mockup.
 class EmployerProfilePage extends StatelessWidget {
@@ -120,6 +123,48 @@ class EmployerProfilePage extends StatelessWidget {
             ]),
             const SizedBox(height: 24),
 
+            _buildSectionTitle('Company'),
+            const SizedBox(height: 10),
+            _buildMenuCard([
+              _SettingsItem(
+                icon: Icons.business,
+                iconBg: const Color(0xFFE3F2FD),
+                iconColor: AppColors.primary,
+                label: 'Company Profile',
+                subtitle: 'Please refer to the company profile.',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CompanyProfilePage()),
+                  );
+
+                },
+              ),
+            ]),
+            const SizedBox(height: 24),
+
+            _buildSectionTitle('Appointment Schedule'),
+            const SizedBox(height: 10),
+            _buildMenuCard([
+              _SettingsItem(
+                icon: Icons.calendar_today,
+                iconBg: const Color(0xFFE3F2FD),
+                iconColor: AppColors.primary,
+                label: 'Interview Schedule',
+                subtitle: 'Please check your appointment schedule.',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const InterviewSchedulePage()),
+                  );
+
+                },
+              ),
+            ]),
+            const SizedBox(height: 24),
+
+            
+
             // ── DANGER ZONE ──
             _buildMenuCard([
               _SettingsItem(
@@ -145,9 +190,7 @@ class EmployerProfilePage extends StatelessWidget {
     );
   }
 
-  // ─────────────────────────────────────────────
   //  Profile Header — avatar + name + edit icon
-  // ─────────────────────────────────────────────
   Widget _buildProfileHeader(BuildContext context) {
     if (mockEmployers.isEmpty) {
       return const Center(
@@ -254,10 +297,7 @@ class EmployerProfilePage extends StatelessWidget {
       ),
     );
   }
-
-  // ─────────────────────────────────────────────
   //  Section title
-  // ─────────────────────────────────────────────
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
@@ -269,10 +309,7 @@ class EmployerProfilePage extends StatelessWidget {
       ),
     );
   }
-
-  // ─────────────────────────────────────────────
   //  Menu card container
-  // ─────────────────────────────────────────────
   Widget _buildMenuCard(List<_SettingsItem> items) {
     return Container(
       decoration: BoxDecoration(
@@ -387,9 +424,7 @@ class EmployerProfilePage extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
 //  Data class for settings items
-// ─────────────────────────────────────────────
 class _SettingsItem {
   final IconData icon;
   final Color iconBg;
