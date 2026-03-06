@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class AdminSearchPage extends StatefulWidget {
   const AdminSearchPage({super.key});
@@ -56,6 +58,7 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
               // Show search history
             },
           ),
+          const ProfileAvatar(role: UserRole.admin),
           const SizedBox(width: 8),
         ],
         bottom: PreferredSize(

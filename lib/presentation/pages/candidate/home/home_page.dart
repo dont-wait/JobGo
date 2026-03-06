@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/home_search_bar.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/recommended_job_card.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/recent_job_tile.dart';
 import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -36,15 +38,7 @@ class HomePage extends StatelessWidget {
             ),
             tooltip: 'Go to Dashboard',
           ),
-          IconButton(
-            onPressed: () {
-              // TODO: Navigate to notifications
-            },
-            icon: const Icon(
-              Icons.notifications_none_outlined,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          const ProfileAvatar(role: UserRole.candidate),
         ],
       ),
       body: SingleChildScrollView(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/mockdata/mock_applications.dart';
 import 'package:jobgo/data/mockdata/mock_interview.dart';
 import 'package:jobgo/presentation/pages/candidate/applications/application_detail_page.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class ApplicationsPage extends StatefulWidget {
   const ApplicationsPage({super.key});
@@ -53,6 +55,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
             icon: const Icon(Icons.search, color: AppColors.textPrimary),
             onPressed: () {},
           ),
+          const ProfileAvatar(role: UserRole.candidate),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),

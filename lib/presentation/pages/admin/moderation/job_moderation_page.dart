@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/job_moderation_model.dart';
 import 'package:jobgo/presentation/widgets/admin/moderation/moderation_tabs.dart';
 import 'package:jobgo/presentation/widgets/admin/moderation/job_moderation_card.dart';
 import 'package:jobgo/presentation/widgets/admin/moderation/rejection_dialog.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class JobModerationPage extends StatefulWidget {
   const JobModerationPage({super.key});
@@ -153,13 +155,8 @@ class _JobModerationPageState extends State<JobModerationPage> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.notifications_none_outlined,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          const ProfileAvatar(role: UserRole.admin),
+          const SizedBox(width: 8),
         ],
       ),
       body: Column(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/admin_user_model.dart';
 import 'package:jobgo/presentation/widgets/admin/users/user_type_tabs.dart';
 import 'package:jobgo/presentation/widgets/admin/users/user_card.dart';
 import 'package:jobgo/presentation/widgets/admin/users/user_detail_dialog.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -178,13 +180,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.notifications_none_outlined,
-              color: AppColors.textPrimary,
-            ),
-          ),
+          const ProfileAvatar(role: UserRole.admin),
+          const SizedBox(width: 8),
         ],
       ),
       body: Column(
