@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/post_new_job_banner.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/job_status_tab_bar.dart';
@@ -7,6 +8,7 @@ import 'package:jobgo/presentation/widgets/employer/manage_jobs/draft_job_card.d
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/published_job_card.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/closed_job_card.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/post_job_page.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class ManageJobsPage extends StatefulWidget {
   const ManageJobsPage({super.key});
@@ -42,6 +44,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
               MaterialPageRoute(builder: (_) => const PostJobPage()),
             ),
           ),
+          const ProfileAvatar(role: UserRole.employer),
         ],
       ),
       body: SafeArea(

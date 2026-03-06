@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/employer/candidate_response/candidate_respone_card.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../widgets/common/profile_avatar.dart';
 
 class CandidateResponsesPage extends StatelessWidget {
   const CandidateResponsesPage({super.key});
@@ -34,6 +36,10 @@ class CandidateResponsesPage extends StatelessWidget {
         title: const Text("Thông báo phản hồi"),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
+        automaticallyImplyLeading: false,
+        actions: const [
+          ProfileAvatar(role: UserRole.employer),
+        ],
       ),
       body: ListView(
         children: responses.cast<Widget>(),

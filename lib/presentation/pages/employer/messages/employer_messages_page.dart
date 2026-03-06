@@ -1,82 +1,34 @@
 import 'package:flutter/material.dart';
-
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/data/mockdata/mock_employer_messages.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
-class MessagesPage extends StatelessWidget {
-  const MessagesPage({super.key});
+/// Trang nhắn tin của Employer — phân loại theo Employer, Candidate, Admin.
+class EmployerMessagesPage extends StatefulWidget {
+  const EmployerMessagesPage({super.key});
 
-  static const List<_MessageThread> _threads = [
-    _MessageThread(
-      name: 'Anh Khoa',
-      company: 'VietFin Bank',
-      role: 'Senior Flutter Dev',
-      lastMessage: 'Anh đã xem CV. Em có thể phỏng vấn thứ 6?',
-      time: '09:12',
-      unreadCount: 2,
-      isPinned: true,
-      isOnline: true,
-      hasAttachment: true,
-      avatarColor: Color(0xFF0A73B7),
-    ),
-    _MessageThread(
-      name: 'Chi Hanh',
-      company: 'Sunrise Studio',
-      role: 'UI/UX Designer',
-      lastMessage: 'Gửi giúp portfolio dạng PDF nhé.',
-      time: '08:41',
-      unreadCount: 0,
-      isPinned: true,
-      isOnline: false,
-      hasAttachment: false,
-      avatarColor: Color(0xFF10B981),
-    ),
-    _MessageThread(
-      name: 'Mr. Toan',
-      company: 'Aster Tech',
-      role: 'Mobile Engineer',
-      lastMessage: 'Lịch phỏng vấn: Thứ 5, 2:00 PM',
-      time: 'Yesterday',
-      unreadCount: 1,
-      isPinned: false,
-      isOnline: true,
-      hasAttachment: false,
-      avatarColor: Color(0xFFF59E0B),
-    ),
-    _MessageThread(
-      name: 'Ms. Linh',
-      company: 'Blue Ocean',
-      role: 'QA Engineer',
-      lastMessage: 'Cảm ơn bạn! Chúng tôi sẽ phản hồi sớm.',
-      time: 'Tue',
-      unreadCount: 0,
-      isPinned: false,
-      isOnline: false,
-      hasAttachment: false,
-      avatarColor: Color(0xFF6366F1),
-    ),
-    _MessageThread(
-      name: 'Recruitment',
-      company: 'NovaWorks',
-      role: 'Product Intern',
-      lastMessage: 'Bạn có thể bắt đầu tuần tới không?',
-      time: 'Mon',
-      unreadCount: 3,
-      isPinned: false,
-      isOnline: true,
-      hasAttachment: true,
-      avatarColor: Color(0xFFEF4444),
-    ),
-  ];
+  @override
+  State<EmployerMessagesPage> createState() => _EmployerMessagesPageState();
+}
+
+class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
+  ChatUserRole? _selectedFilter;
+
+  List<EmployerMessageThread> get _filteredThreads {
+    final all = MockEmployerMessages.threads;
+    if (_selectedFilter == null) return all;
+    return all.where((t) => t.userRole == _selectedFilter).toList();
+  }
+
+  List<EmployerMessageThread> get _pinned =>
+      _filteredThreads.where((t) => t.isPinned).toList();
+
+  List<EmployerMessageThread> get _others =>
+      _filteredThreads.where((t) => !t.isPinned).toList();
 
   @override
   Widget build(BuildContext context) {
-    final pinned =
-        _threads.where((thread) => thread.isPinned).toList(growable: false);
-    final others =
-        _threads.where((thread) => !thread.isPinned).toList(growable: false);
-
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       body: Stack(
@@ -88,25 +40,30 @@ class MessagesPage extends StatelessWidget {
                 SliverToBoxAdapter(child: _buildHeader()),
                 SliverToBoxAdapter(child: _buildSearch()),
                 SliverToBoxAdapter(child: _buildFilters()),
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader('Ghim', pinned.length),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) =>
-                        _MessageTile(thread: pinned[index]),
-                    childCount: pinned.length,
+                if (_pinned.isNotEmpty) ...[
+                  SliverToBoxAdapter(
+                    child: _buildSectionHeader('Pinned', _pinned.length),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader('Tất cả', others.length),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => _MessageTile(thread: others[index]),
-                    childCount: others.length,
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, i) => _MessageTile(thread: _pinned[i]),
+                      childCount: _pinned.length,
+                    ),
                   ),
-                ),
+                ],
+                if (_others.isNotEmpty) ...[
+                  SliverToBoxAdapter(
+                    child: _buildSectionHeader('All', _others.length),
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (_, i) => _MessageTile(thread: _others[i]),
+                      childCount: _others.length,
+                    ),
+                  ),
+                ],
+                if (_filteredThreads.isEmpty)
+                  SliverFillRemaining(child: _buildEmpty()),
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
               ],
             ),
@@ -116,31 +73,7 @@ class MessagesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBackground() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFF8FAFF), AppColors.lightBackground],
-        ),
-      ),
-      child: Stack(
-        children: const [
-          Positioned(
-            top: -80,
-            right: -40,
-            child: _GlowCircle(size: 180, color: Color(0x334DA3E0)),
-          ),
-          Positioned(
-            top: 140,
-            left: -60,
-            child: _GlowCircle(size: 140, color: Color(0x220A73B7)),
-          ),
-        ],
-      ),
-    );
-  }
+  // ── Header ──
 
   Widget _buildHeader() {
     return Padding(
@@ -152,7 +85,7 @@ class MessagesPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tin nhắn',
+                  'Messages',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -161,19 +94,24 @@ class MessagesPage extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Từ nhà tuyển dụng',
+                  'Chat with candidates & partners',
                   style: TextStyle(color: AppColors.textSecondary),
                 ),
               ],
             ),
           ),
-          _CircleIconButton(icon: Icons.tune),
+          _CircleIconButton(
+            icon: Icons.edit_outlined,
+            onTap: () {},
+          ),
           const SizedBox(width: 12),
-          const ProfileAvatar(role: UserRole.candidate),
+          const ProfileAvatar(role: UserRole.employer),
         ],
       ),
     );
   }
+
+  // ── Search ──
 
   Widget _buildSearch() {
     return Padding(
@@ -198,7 +136,7 @@ class MessagesPage extends StatelessWidget {
             SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Tìm kiếm tin nhắn, công ty... ',
+                'Search messages, users...',
                 style: TextStyle(color: AppColors.textHint),
               ),
             ),
@@ -209,21 +147,46 @@ class MessagesPage extends StatelessWidget {
     );
   }
 
+  // ── Filters (phân loại role) ──
+
   Widget _buildFilters() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
       child: Wrap(
         spacing: 10,
         runSpacing: 10,
-        children: const [
-          _FilterChip(label: 'Chưa đọc', isActive: true),
-          _FilterChip(label: 'Tuyển gấp', isActive: false),
-          _FilterChip(label: 'Đã phỏng vấn', isActive: false),
-          _FilterChip(label: 'Đã lưu', isActive: false),
+        children: [
+          _RoleFilterChip(
+            label: 'All',
+            isActive: _selectedFilter == null,
+            onTap: () => setState(() => _selectedFilter = null),
+          ),
+          _RoleFilterChip(
+            label: 'Candidates',
+            icon: Icons.person_outline,
+            isActive: _selectedFilter == ChatUserRole.candidate,
+            onTap: () =>
+                setState(() => _selectedFilter = ChatUserRole.candidate),
+          ),
+          _RoleFilterChip(
+            label: 'Employers',
+            icon: Icons.business_outlined,
+            isActive: _selectedFilter == ChatUserRole.employer,
+            onTap: () =>
+                setState(() => _selectedFilter = ChatUserRole.employer),
+          ),
+          _RoleFilterChip(
+            label: 'Admin',
+            icon: Icons.admin_panel_settings_outlined,
+            isActive: _selectedFilter == ChatUserRole.admin,
+            onTap: () => setState(() => _selectedFilter = ChatUserRole.admin),
+          ),
         ],
       ),
     );
   }
+
+  // ── Section header ──
 
   Widget _buildSectionHeader(String title, int count) {
     return Padding(
@@ -258,12 +221,152 @@ class MessagesPage extends StatelessWidget {
       ),
     );
   }
+
+  // ── Empty state ──
+
+  Widget _buildEmpty() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.chat_bubble_outline,
+              size: 64, color: AppColors.textHint.withValues(alpha: 0.4)),
+          const SizedBox(height: 12),
+          const Text(
+            'No messages yet',
+            style: TextStyle(
+              fontSize: 15,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Background ──
+
+  Widget _buildBackground() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFF8FAFF), AppColors.lightBackground],
+        ),
+      ),
+      child: const Stack(
+        children: [
+          Positioned(
+            top: -80,
+            right: -40,
+            child: _GlowCircle(size: 180, color: Color(0x334DA3E0)),
+          ),
+          Positioned(
+            top: 140,
+            left: -60,
+            child: _GlowCircle(size: 140, color: Color(0x220A73B7)),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
+// ══════════════════════════════════════════════════════════════
+//  WIDGETS
+// ══════════════════════════════════════════════════════════════
+
+/// Chip filter theo role.
+class _RoleFilterChip extends StatelessWidget {
+  const _RoleFilterChip({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+    this.icon,
+  });
+
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.primary : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isActive ? AppColors.primary : AppColors.border,
+          ),
+          boxShadow: [
+            if (isActive)
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 6),
+              ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 14,
+                color: isActive ? Colors.white : AppColors.textSecondary,
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? Colors.white : AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Tile hiển thị 1 cuộc trò chuyện.
 class _MessageTile extends StatelessWidget {
   const _MessageTile({required this.thread});
 
-  final _MessageThread thread;
+  final EmployerMessageThread thread;
+
+  Color get _roleBadgeColor {
+    switch (thread.userRole) {
+      case ChatUserRole.candidate:
+        return AppColors.primary;
+      case ChatUserRole.employer:
+        return AppColors.orange;
+      case ChatUserRole.admin:
+        return const Color(0xFFEF4444);
+    }
+  }
+
+  String get _roleLabel {
+    switch (thread.userRole) {
+      case ChatUserRole.candidate:
+        return 'Candidate';
+      case ChatUserRole.employer:
+        return 'Employer';
+      case ChatUserRole.admin:
+        return 'Admin';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -296,6 +399,7 @@ class _MessageTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Name + time
                   Row(
                     children: [
                       Expanded(
@@ -317,14 +421,16 @@ class _MessageTile extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
+                  // Subtitle
                   Text(
-                    '${thread.company} • ${thread.role}',
+                    thread.subtitle,
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),
+                  // Last message + unread
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -356,9 +462,7 @@ class _MessageTile extends StatelessWidget {
                         Container(
                           margin: const EdgeInsets.only(left: 8),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: AppColors.primary,
                             borderRadius: BorderRadius.circular(20),
@@ -375,15 +479,18 @@ class _MessageTile extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
+                  // Tags
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
                       if (thread.isPinned)
-                        const _Tag(label: 'Ghim', color: Color(0xFFEFF6FF)),
-                      const _Tag(
-                        label: 'Phản hồi trong 24h',
-                        color: Color(0xFFEFFAF3),
+                        const _Tag(
+                            label: 'Pinned', color: Color(0xFFEFF6FF)),
+                      _Tag(
+                        label: _roleLabel,
+                        color: _roleBadgeColor.withValues(alpha: 0.1),
+                        textColor: _roleBadgeColor,
                       ),
                     ],
                   ),
@@ -397,69 +504,7 @@ class _MessageTile extends StatelessWidget {
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.isActive});
-
-  final String label;
-  final bool isActive;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isActive ? AppColors.primary : AppColors.border,
-        ),
-        boxShadow: [
-          if (isActive)
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-        ],
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isActive ? Colors.white : AppColors.textSecondary,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
-}
-
-class _Tag extends StatelessWidget {
-  const _Tag({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
-        ),
-      ),
-    );
-  }
-}
+// ── Shared small widgets ──
 
 class _AvatarBadge extends StatelessWidget {
   const _AvatarBadge({
@@ -506,29 +551,65 @@ class _AvatarBadge extends StatelessWidget {
   }
 }
 
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({required this.icon});
+class _Tag extends StatelessWidget {
+  const _Tag({
+    required this.label,
+    required this.color,
+    this.textColor,
+  });
 
-  final IconData icon;
+  final String label;
+  final Color color;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40,
-      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
+        color: color,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
-      child: Icon(icon, color: AppColors.textSecondary, size: 20),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: textColor ?? AppColors.textSecondary,
+        ),
+      ),
+    );
+  }
+}
+
+class _CircleIconButton extends StatelessWidget {
+  const _CircleIconButton({required this.icon, this.onTap});
+
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: AppColors.textSecondary, size: 20),
+      ),
     );
   }
 }
@@ -550,30 +631,4 @@ class _GlowCircle extends StatelessWidget {
       ),
     );
   }
-}
-
-class _MessageThread {
-  const _MessageThread({
-    required this.name,
-    required this.company,
-    required this.role,
-    required this.lastMessage,
-    required this.time,
-    required this.unreadCount,
-    required this.isPinned,
-    required this.isOnline,
-    required this.hasAttachment,
-    required this.avatarColor,
-  });
-
-  final String name;
-  final String company;
-  final String role;
-  final String lastMessage;
-  final String time;
-  final int unreadCount;
-  final bool isPinned;
-  final bool isOnline;
-  final bool hasAttachment;
-  final Color avatarColor;
 }
