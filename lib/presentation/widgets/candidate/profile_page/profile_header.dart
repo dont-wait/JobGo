@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/presentation/pages/candidate/profile/candidate_edit_profile_page.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -42,9 +43,15 @@ class ProfileHeader extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         OutlinedButton.icon(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CandidateEditProfilePage()),
+            );
+          },
           icon: const Icon(Icons.edit, size: 16),
           label: const Text('Edit Profile'),
+          
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.primary,
             side: const BorderSide(color: AppColors.primary),

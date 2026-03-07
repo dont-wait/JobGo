@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/presentation/pages/candidate/profile/candidate_edit_profile_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_edit_profile_page.dart';
 
 /// Điều hướng đến đúng trang Edit Profile tương ứng với role.
@@ -14,8 +15,9 @@ void navigateToEditProfile(BuildContext context, UserRole role) {
       break;
     case UserRole.candidate:
       // TODO: Navigator.push → CandidateEditProfilePage khi có
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Candidate edit profile — coming soon')),
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const CandidateEditProfilePage()),
       );
       break;
     case UserRole.admin:
