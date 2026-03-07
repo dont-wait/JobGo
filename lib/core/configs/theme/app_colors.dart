@@ -32,4 +32,8 @@ class AppColors {
   static const orange = Color(0xFFE8630A);       // Submit / CTA button
   static const pdfRed = Color(0xFFE53935);        // PDF icon color
   static const pdfRedBackground = Color(0xFFFFEEEE); // PDF icon background
+
+  // Bookmark / saved
+  static const warningLight = Color(0xFFFFF8E1);  // Warning background tint
+  static const warningGlow = Color(0xFFFFD54F);   // Warning gradient start
 }

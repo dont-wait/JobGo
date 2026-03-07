@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/mockdata/mock_candidate.dart';
 import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class TalentSearchWidget extends StatelessWidget {
   final List<CandidateModel> candidates;
@@ -68,13 +70,10 @@ class TalentSearchWidget extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_none, color: AppColors.textPrimary),
-                onPressed: () {},
-              ),
-              IconButton(
                 icon: const Icon(Icons.tune, color: AppColors.textPrimary),
                 onPressed: () {},
               ),
+              const ProfileAvatar(role: UserRole.employer),
             ],
           ),
         ],

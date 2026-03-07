@@ -8,10 +8,6 @@ import 'package:jobgo/presentation/pages/auth/login/login_page.dart';
 import 'package:jobgo/presentation/pages/auth/register/register_role_page.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
-import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart'; 
-import 'package:jobgo/presentation/pages/employer/company/company_profile_page.dart'; 
-import 'package:jobgo/presentation/pages/employer/candidate_response/candidate_response_page.dart'; 
-
 
 
 
@@ -36,7 +32,6 @@ class MainApp extends StatelessWidget {
         },
       ),
       home: const WelcomePage(),
-      //home: const CompanyProfilePage(),
       // Route '/main' nhận UserRole qua arguments
       // Login/Register sẽ navigate: Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate)
       onGenerateRoute: (settings) {

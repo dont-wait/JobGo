@@ -14,7 +14,7 @@ class InterviewCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary.withOpacity(0.1), AppColors.white],
+          colors: [AppColors.lightBackground.withOpacity(0.1), AppColors.white],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

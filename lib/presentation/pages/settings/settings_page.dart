@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/routes/edit_profile_route.dart';
+import 'package:jobgo/presentation/pages/auth/forgotpassword/forgotpassword_layout.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  /// Role của user đang đăng nhập — dùng để điều hướng đúng trang edit profile.
+  final UserRole role;
+
+  const SettingsPage({super.key, required this.role});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -47,13 +53,18 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildMenuItem(
                 icon: Icons.person_outline,
                 label: 'Edit Profile',
-                onTap: () {},
+                onTap: () => navigateToEditProfile(context, widget.role),
               ),
               _buildMenuItem(
                 icon: Icons.lock_outline,
                 label: 'Change Password',
-                onTap: () {},
                 showDivider: false,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ForgotPasswordScreen(),
+                  ),
+                ),
               ),
             ]),
             const SizedBox(height: 20),
@@ -258,7 +269,7 @@ class _SettingsPageState extends State<SettingsPage> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: AppColors.primary,
+        activeThumbColor: AppColors.primary,
       ),
     );
   }

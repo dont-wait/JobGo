@@ -179,6 +179,12 @@ class _LoginPageState extends State<LoginPage> {
     final input = emailController.text.trim();
     final password = passwordController.text;
 
+    // --- Check admin first ---
+    if (input == "admin@gmail.com" && password == "Admin123456@") {
+      Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.admin);
+      return;
+    }
+
     // --- Check employer ---
     EmployerMock? recruiter;
     try {

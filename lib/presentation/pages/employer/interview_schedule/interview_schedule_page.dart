@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../data/mockdata/mock_interview.dart';
-import './../../../widgets/employer/interview_schedule/interview_card.dart';
+import '../../../widgets/employer/interview_schedule/interview_card.dart';
 
 class InterviewSchedulePage extends StatelessWidget {
   const InterviewSchedulePage({super.key});

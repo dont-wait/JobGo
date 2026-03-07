@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
@@ -167,7 +169,7 @@ class MessagesPage extends StatelessWidget {
           ),
           _CircleIconButton(icon: Icons.tune),
           const SizedBox(width: 12),
-          _CircleIconButton(icon: Icons.notifications_none_outlined),
+          const ProfileAvatar(role: UserRole.candidate),
         ],
       ),
     );

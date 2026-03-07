@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class DashboardProfileHeader extends StatelessWidget {
   const DashboardProfileHeader({super.key});
@@ -71,15 +73,7 @@ class DashboardProfileHeader extends StatelessWidget {
                       // TODO: Search functionality
                     },
                   ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications_outlined,
-                      color: AppColors.textSecondary,
-                    ),
-                    onPressed: () {
-                      // TODO: Notifications
-                    },
-                  ),
+                  const ProfileAvatar(role: UserRole.employer),
                 ],
               ),
             ],

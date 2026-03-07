@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../../../presentation/pages/settings/settings_page.dart';
 import '../../../widgets/candidate/profile_page/skills_section.dart';
 import '../../../widgets/candidate/profile_page/profile_header.dart';
@@ -32,7 +33,9 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SettingsPage()),
+                MaterialPageRoute(
+                  builder: (_) => const SettingsPage(role: UserRole.candidate),
+                ),
               );
             },
           ),

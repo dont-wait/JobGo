@@ -10,10 +10,41 @@ import 'package:jobgo/presentation/widgets/candidate/job_detail/job_apply_button
 import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
 
 /// Trang chi tiết công việc
-class JobDetailPage extends StatelessWidget {
+class JobDetailPage extends StatefulWidget {
   final MockJob job;
 
   const JobDetailPage({super.key, required this.job});
+
+  @override
+  State<JobDetailPage> createState() => _JobDetailPageState();
+}
+
+class _JobDetailPageState extends State<JobDetailPage> {
+  late bool _isBookmarked;
+
+  @override
+  void initState() {
+    super.initState();
+    _isBookmarked = widget.job.isBookmarked;
+  }
+
+  void _toggleBookmark() {
+    setState(() => _isBookmarked = !_isBookmarked);
+    if (_isBookmarked) {
+      _showSavedPopup();
+    }
+  }
+
+  void _showSavedPopup() {
+    final overlay = Overlay.of(context);
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => _SavedPopup(
+        onDone: () => entry.remove(),
+      ),
+    );
+    overlay.insert(entry);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +69,21 @@ class JobDetailPage extends StatelessWidget {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(
-              job.isBookmarked
-                  ? Icons.bookmark_rounded
-                  : Icons.bookmark_border_rounded,
-              color: job.isBookmarked ? AppColors.primary : AppColors.textSecondary,
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, anim) =>
+                  ScaleTransition(scale: anim, child: child),
+              child: Icon(
+                _isBookmarked
+                    ? Icons.bookmark_rounded
+                    : Icons.bookmark_border_rounded,
+                key: ValueKey(_isBookmarked),
+                color: _isBookmarked
+                    ? AppColors.warning
+                    : AppColors.textSecondary,
+              ),
             ),
-            onPressed: () {
-              // TODO: Implement bookmark toggle
-            },
+            onPressed: _toggleBookmark,
           ),
           IconButton(
             icon: const Icon(
@@ -77,52 +114,48 @@ class JobDetailPage extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
-                  // ── Badge (nếu có) ──
-                  // Dùng collection-if + spread (...[]) để chèn nhiều widget
-                  // có điều kiện vào Column.children.
-                  // Nếu không dùng spread, phải wrap trong Column/Widget khác.
-                  if (job.badge != null) ...[
+                  if (widget.job.badge != null) ...[
                     _buildBadge(),
                     const SizedBox(height: 16),
                   ],
 
                   // ── Applicants count (nếu có) ──
-                  if (job.applicants != null) ...[
+                  if (widget.job.applicants != null) ...[
                     _buildApplicantsInfo(),
                     const SizedBox(height: 20),
                   ],
 
                   // ── Info Grid: Salary / Job Type / Posted ──
                   JobInfoGrid(
-                    salary: job.salary,
-                    jobType: job.type,
-                    postedTime: job.postedTime,
+                    salary: widget.job.salary,
+                    jobType: widget.job.type,
+                    postedTime: widget.job.postedTime,
                   ),
 
                   const SizedBox(height: 24),
 
                   // ── Tags (nếu có) ──
-                  if (job.tags != null && job.tags!.isNotEmpty) ...[
+                  if (widget.job.tags != null && widget.job.tags!.isNotEmpty) ...[
                     _buildTags(),
                     const SizedBox(height: 24),
                   ],
 
                   // ── About the Role ──
-                  if (job.description != null && job.description!.isNotEmpty) ...[
-                    JobDescriptionSection(description: job.description!),
+                  if (widget.job.description != null && widget.job.description!.isNotEmpty) ...[
+                    JobDescriptionSection(description: widget.job.description!),
                     const SizedBox(height: 24),
                   ],
 
                   // ── Requirements ──
-                  if (job.requirements != null &&
-                      job.requirements!.isNotEmpty) ...[
-                    JobRequirementsSection(requirements: job.requirements!),
+                  if (widget.job.requirements != null &&
+                      widget.job.requirements!.isNotEmpty) ...[
+                    JobRequirementsSection(requirements: widget.job.requirements!),
                     const SizedBox(height: 24),
                   ],
 
                   // ── Benefits ──
-                  if (job.benefits != null && job.benefits!.isNotEmpty) ...[
-                    JobBenefitsSection(benefits: job.benefits!),
+                  if (widget.job.benefits != null && widget.job.benefits!.isNotEmpty) ...[
+                    JobBenefitsSection(benefits: widget.job.benefits!),
                     const SizedBox(height: 16),
                   ],
                 ],
@@ -132,7 +165,7 @@ class JobDetailPage extends StatelessWidget {
 
           // ── Apply Button cố định ở dưới ──
           JobApplyButton(
-            onPressed: () => navigateToApply(context, job),
+            onPressed: () => navigateToApply(context, widget.job),
           ),
         ],
       ),
@@ -145,11 +178,9 @@ class JobDetailPage extends StatelessWidget {
         // Logo
         Center(
           child: CompanyLogo(
-            imageUrl: job.logoUrl,
-            fallbackText: job.logoText,
-            // logoColor lưu dạng String '0xFF1A3A4A' (hex ARGB)
-            // để hỗ trợ const constructor → parse thành Color khi render.
-            backgroundColor: Color(int.parse(job.logoColor)),
+            imageUrl: widget.job.logoUrl,
+            fallbackText: widget.job.logoText,
+            backgroundColor: Color(int.parse(widget.job.logoColor)),
             width: 72,
             height: 72,
             borderRadius: 18,
@@ -161,7 +192,7 @@ class JobDetailPage extends StatelessWidget {
         // Job Title
         Center(
           child: Text(
-            job.title,
+            widget.job.title,
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
@@ -175,7 +206,7 @@ class JobDetailPage extends StatelessWidget {
         // Company Name
         Center(
           child: Text(
-            job.company,
+            widget.job.company,
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w500,
@@ -186,7 +217,7 @@ class JobDetailPage extends StatelessWidget {
         const SizedBox(height: 6),
 
         // Location
-        if (job.location.isNotEmpty)
+        if (widget.job.location.isNotEmpty)
           Center(
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -198,7 +229,7 @@ class JobDetailPage extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  job.location,
+                  widget.job.location,
                   style: const TextStyle(
                     fontSize: 13,
                     color: AppColors.textSecondary,
@@ -215,7 +246,7 @@ class JobDetailPage extends StatelessWidget {
   /// - 'URGENT' → nền đỏ nhạt, chữ đỏ (cảnh báo khẩn cấp)
   /// - Các badge khác (TOP TALENT...) → nền xanh nhạt, chữ xanh primary
   Widget _buildBadge() {
-    final isUrgent = job.badge!.toUpperCase() == 'URGENT';
+    final isUrgent = widget.job.badge!.toUpperCase() == 'URGENT';
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -226,7 +257,7 @@ class JobDetailPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
-          job.badge!,
+          widget.job.badge!,
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -249,7 +280,7 @@ class JobDetailPage extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           // Xử lý số nhiều tiếng Anh: 1 applicant / 5 applicants
-          '${job.applicants} applicant${job.applicants! > 1 ? 's' : ''} so far',
+          '${widget.job.applicants} applicant${widget.job.applicants! > 1 ? 's' : ''} so far',
           style: const TextStyle(
             fontSize: 13,
             color: AppColors.textSecondary,
@@ -263,7 +294,7 @@ class JobDetailPage extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: job.tags!.map((tag) {
+      children: widget.job.tags!.map((tag) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
@@ -280,6 +311,139 @@ class JobDetailPage extends StatelessWidget {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// Saved Popup Overlay
+// ─────────────────────────────────────────────
+class _SavedPopup extends StatefulWidget {
+  final VoidCallback onDone;
+  const _SavedPopup({required this.onDone});
+
+  @override
+  State<_SavedPopup> createState() => _SavedPopupState();
+}
+
+class _SavedPopupState extends State<_SavedPopup>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _scale;
+  late Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _scale = CurvedAnimation(parent: _ctrl, curve: Curves.elasticOut);
+    _opacity = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
+
+    _ctrl.forward();
+
+    // Auto-dismiss after 1.6s
+    Future.delayed(const Duration(milliseconds: 1600), () {
+      if (mounted) {
+        _ctrl.reverse().then((_) => widget.onDone());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Center(
+          child: FadeTransition(
+            opacity: _opacity,
+            child: ScaleTransition(
+              scale: _scale,
+              child: Container(
+                width: 200,
+                padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 32,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // ── Outer glow ring ──
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.warningLight,
+                        border: Border.all(
+                          color: AppColors.warning.withValues(alpha: 0.25),
+                          width: 6,
+                        ),
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 56,
+                          height: 56,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                AppColors.warningGlow,
+                                AppColors.warning,
+                              ],
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.bookmark_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Job Saved!',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Added to your\nfavorite list',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.textSecondary.withValues(alpha: 0.8),
+                        fontSize: 12,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
