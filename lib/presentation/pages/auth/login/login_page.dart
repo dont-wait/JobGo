@@ -5,6 +5,8 @@ import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
 import '../../../../data/mockdata/mock_candidate.dart';
 import '../../../../data/mockdata/mockdata_employer.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -174,47 +176,89 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _onSignIn() {
-  if (_formKey.currentState!.validate()) {
-    final input = emailController.text.trim();
-    final password = passwordController.text;
+//   void _onSignIn() {
+//   if (_formKey.currentState!.validate()) {
+//     final input = emailController.text.trim();
+//     final password = passwordController.text;
 
-    // --- Check admin first ---
-    if (input == "admin@gmail.com" && password == "Admin123456@") {
-      Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.admin);
-      return;
+//     // --- Check admin first ---
+//     if (input == "admin@gmail.com" && password == "Admin123456@") {
+//       Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.admin);
+//       return;
+//     }
+
+//     // --- Check employer ---
+//     EmployerMock? recruiter;
+//     try {
+//       recruiter = mockEmployers.firstWhere((e) => e.email == input);
+//     } catch (e) {
+//       recruiter = null;
+//     }
+
+//     if (recruiter != null && password == "Employer@123") {
+//       Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.employer);
+//       return;
+//     }
+
+//     // --- Check candidate ---
+//     CandidateModel? candidate;
+//     try {
+//       candidate = mockCandidatesData.firstWhere((c) => c.email == input);
+//     } catch (e) {
+//       candidate = null;
+//     }
+
+//     if (candidate != null && password == "Candidate@123") {
+//       Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate);
+//       return;
+//     }
+
+//     // --- Nếu không khớp recruiter/candidate ---
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text("Sai thông tin đăng nhập")),
+//     );
+//   }
+// }
+  void _onSignIn() async {
+    if (_formKey.currentState!.validate()) {
+      final inputEmail = emailController.text.trim();
+      final inputPassword = passwordController.text;
+
+      try {
+        final response = await Supabase.instance.client
+            .from('users')
+            .select()
+            .eq('u_email', inputEmail)
+            .eq('u_password', inputPassword)
+            .maybeSingle();
+
+        if (response == null) {
+          // Không tìm thấy user
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Sai thông tin đăng nhập")),
+          );
+          return;
+        }
+
+        final role = response['u_role'] as String;
+
+        if (role == 'admin') {
+          Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.admin);
+        } else if (role == 'employer') {
+          Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.employer);
+        } else if (role == 'candidate') {
+          Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Role không hợp lệ")),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Lỗi đăng nhập: $e")),
+        );
+      }
     }
-
-    // --- Check employer ---
-    EmployerMock? recruiter;
-    try {
-      recruiter = mockEmployers.firstWhere((e) => e.email == input);
-    } catch (e) {
-      recruiter = null;
-    }
-
-    if (recruiter != null && password == "Employer@123") {
-      Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.employer);
-      return;
-    }
-
-    // --- Check candidate ---
-    CandidateModel? candidate;
-    try {
-      candidate = mockCandidatesData.firstWhere((c) => c.email == input);
-    } catch (e) {
-      candidate = null;
-    }
-
-    if (candidate != null && password == "Candidate@123") {
-      Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate);
-      return;
-    }
-
-    // --- Nếu không khớp recruiter/candidate ---
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Sai thông tin đăng nhập")),
-    );
   }
-}
+
 }
