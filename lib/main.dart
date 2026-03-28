@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:app_links/app_links.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_theme.dart';
@@ -13,13 +15,25 @@ import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  print("Supabase URL: ${dotenv.env['SUPABASE_URL']}");
+  print("Supabase Key: ${dotenv.env['SUPABASE_ANON_KEY']}");
+
   await Supabase.initialize(
-    url: 'https://pdkxbupjmcbsvraqjjsq.supabase.co', // Project URL
-    anonKey: 'sb_publishable_1DBNJFwGBJM26IZ65suBzw_H92nfdPd', // Publishable Key
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
+  final appLinks = AppLinks();
+  appLinks.uriLinkStream.listen((uri) {
+    print('Deep link received: $uri');
+    try {
+      Supabase.instance.client.auth.getSessionFromUrl(uri);
+    } catch (e) {
+      print('Error processing auth link: $e');
+    }
+  });
   runApp(const MainApp());
 }
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 

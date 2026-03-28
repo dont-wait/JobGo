@@ -14,6 +14,8 @@ dependencies:
   # Bloc để quản lý state
   flutter_bloc: ^8.1.3
   cupertino_icons: ^1.0.8
+  flutter_dotenv: ^6.0.0
+  app_links: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +31,4 @@ flutter:
     # - assets/images/role_employee.jpg
     - assets/icons/
     - assets/images/
+    - .env
