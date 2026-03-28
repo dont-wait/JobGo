@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
@@ -40,6 +41,7 @@ class _ForgotPasswordNewPassPageState
           UserAttributes(password: newPassword),
         );
 
+
         // Cập nhật u_password trong bảng users
         await Supabase.instance.client
             .from('users')
@@ -54,7 +56,7 @@ class _ForgotPasswordNewPassPageState
               backgroundColor: Colors.green,
             ),
           );
-
+          isInForgotPasswordFlow = false;
           // Về trang login
           Navigator.pushNamedAndRemoveUntil(
             context,

@@ -14,8 +14,10 @@ import 'package:jobgo/presentation/pages/auth/register/register_role_page.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
 
-// ✅ Flag để biết đang ở flow register
+//  Flag để biết đang ở flow register
 bool isInRegisterFlow = false;
+// Thêm vào đầu file main.dart
+bool isInForgotPasswordFlow = false; //  thêm
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +62,7 @@ class _MainAppState extends State<MainApp> {
       if (event == AuthChangeEvent.signedIn) {
         // Không navigate nếu đang ở flow register/verify
         if (isInRegisterFlow) return;
-
+        if (isInForgotPasswordFlow) return;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final context = navigatorKey.currentContext;
           if (context == null) return;

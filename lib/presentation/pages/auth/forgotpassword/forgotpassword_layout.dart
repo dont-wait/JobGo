@@ -254,6 +254,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'forgotpassword_otp_page.dart';
 
@@ -280,6 +281,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => _isLoading = true);
 
       try {
+        isInForgotPasswordFlow = true;
         //  Gửi OTP về email
         await Supabase.instance.client.auth.signInWithOtp(
           email: _emailController.text.trim(),
