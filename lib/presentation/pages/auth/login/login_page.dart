@@ -3,8 +3,6 @@ import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
-import '../../../../data/mockdata/mock_candidate.dart';
-import '../../../../data/mockdata/mockdata_employer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -176,89 +174,91 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-//   void _onSignIn() {
-//   if (_formKey.currentState!.validate()) {
-//     final input = emailController.text.trim();
-//     final password = passwordController.text;
-
-//     // --- Check admin first ---
-//     if (input == "admin@gmail.com" && password == "Admin123456@") {
-//       Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.admin);
-//       return;
-//     }
-
-//     // --- Check employer ---
-//     EmployerMock? recruiter;
-//     try {
-//       recruiter = mockEmployers.firstWhere((e) => e.email == input);
-//     } catch (e) {
-//       recruiter = null;
-//     }
-
-//     if (recruiter != null && password == "Employer@123") {
-//       Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.employer);
-//       return;
-//     }
-
-//     // --- Check candidate ---
-//     CandidateModel? candidate;
-//     try {
-//       candidate = mockCandidatesData.firstWhere((c) => c.email == input);
-//     } catch (e) {
-//       candidate = null;
-//     }
-
-//     if (candidate != null && password == "Candidate@123") {
-//       Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate);
-//       return;
-//     }
-
-//     // --- Nếu không khớp recruiter/candidate ---
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text("Sai thông tin đăng nhập")),
-//     );
-//   }
-// }
-  void _onSignIn() async {
+void _onSignIn() async {
     if (_formKey.currentState!.validate()) {
-      final inputEmail = emailController.text.trim();
-      final inputPassword = passwordController.text;
-
       try {
-        final response = await Supabase.instance.client
+        final email = emailController.text.trim();
+        final password = passwordController.text;
+
+        // Thử đăng nhập qua Supabase Auth trước
+        try {
+          final authResponse = await Supabase.instance.client.auth.signInWithPassword(
+            email: email,
+            password: password,
+          );
+
+          if (authResponse.user != null) {
+            // Auth login thành công
+            await _handleLoginSuccess(authResponse.user!.id);
+            return;
+          }
+        } catch (authError) {
+          print('Auth login failed: $authError, trying database fallback...');
+        }
+
+        // Fallback: Query bảng users với email + password
+        final userData = await Supabase.instance.client
             .from('users')
-            .select()
-            .eq('u_email', inputEmail)
-            .eq('u_password', inputPassword)
+            .select('u_role')
+            .eq('u_email', email)
+            .eq('u_password', password)
             .maybeSingle();
 
-        if (response == null) {
-          // Không tìm thấy user
+        if (userData != null) {
+          _navigateToHome(userData['u_role'] as String);
+        } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Sai thông tin đăng nhập")),
           );
-          return;
         }
 
-        final role = response['u_role'] as String;
-
-        if (role == 'admin') {
-          Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.admin);
-        } else if (role == 'employer') {
-          Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.employer);
-        } else if (role == 'candidate') {
-          Navigator.pushReplacementNamed(context, '/main', arguments: UserRole.candidate);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Role không hợp lệ")),
-          );
-        }
       } catch (e) {
+        print('Error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Lỗi đăng nhập: $e")),
+          SnackBar(content: Text("Lỗi: $e")),
         );
       }
     }
   }
 
+  Future<void> _handleLoginSuccess(String authUid) async {
+    try {
+      final userData = await Supabase.instance.client
+          .from('users')
+          .select('u_role')
+          .eq('auth_uid', authUid)
+          .maybeSingle();
+
+      if (userData != null) {
+        _navigateToHome(userData['u_role'] as String);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Không tìm thấy thông tin người dùng")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Lỗi: $e")),
+      );
+    }
+  }
+
+  void _navigateToHome(String roleString) {
+  UserRole role;
+
+  if (roleString == 'employer') {
+    role = UserRole.employer;
+  } else if (roleString == 'admin') {
+    role = UserRole.admin;
+  } else {
+    role = UserRole.candidate;
+  }
+
+  // Luôn vào /main để AppShell xử lý bottom nav
+  Navigator.pushReplacementNamed(
+    context,
+    '/main',
+    arguments: role,
+  );
+}
 }
