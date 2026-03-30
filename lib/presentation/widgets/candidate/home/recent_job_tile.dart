@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 class RecentJobTile extends StatelessWidget {
   final MockJob job;
@@ -89,17 +91,18 @@ class RecentJobTile extends StatelessWidget {
               ),
             ),
             // Bookmark button
-            IconButton(
-              onPressed: onBookmark,
-              icon: Icon(
-                job.isBookmarked
-                    ? Icons.bookmark
-                    : Icons.bookmark_border_outlined,
-                color: job.isBookmarked
-                    ? AppColors.primary
-                    : AppColors.textHint,
-                size: 22,
-              ),
+            Consumer<BookmarkProvider>(
+              builder: (context, provider, child) {
+                final isSaved = provider.isBookmarked(job.id);
+                return IconButton(
+                  onPressed: () => provider.toggleBookmark(job.id),
+                  icon: Icon(
+                    isSaved ? Icons.bookmark : Icons.bookmark_border_outlined,
+                    color: isSaved ? AppColors.warning : AppColors.textHint,
+                    size: 22,
+                  ),
+                );
+              },
             ),
           ],
         ),

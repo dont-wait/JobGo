@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
-
 import 'package:jobgo/data/models/job_model.dart';
-import 'package:jobgo/data/repositories/job_repository.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 class FavoritesSection extends StatefulWidget {
   const FavoritesSection({super.key});
@@ -14,66 +14,48 @@ class FavoritesSection extends StatefulWidget {
 }
 
 class _FavoritesSectionState extends State<FavoritesSection> {
-  final JobRepository _jobRepository = JobRepository();
-  List<JobModel> _savedJobs = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedJobs();
-  }
-
-  Future<void> _loadSavedJobs() async {
-    setState(() => _isLoading = true);
-    final jobs = await _jobRepository.getSavedJobs();
-    if (mounted) {
-      setState(() {
-        _savedJobs = jobs;
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    return Consumer<BookmarkProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildHeader(),
-        const SizedBox(height: 16),
-        if (_savedJobs.isEmpty)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
-              child: Text(
-                'No bookmarked jobs yet.',
-                style: TextStyle(color: AppColors.textSecondary),
+        final savedJobs = provider.savedJobs;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(savedJobs.length),
+            const SizedBox(height: 16),
+            if (savedJobs.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Text(
+                    'No bookmarked jobs yet.',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                ),
+              )
+            else
+              ...savedJobs.map(
+                (job) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _FavoriteJobCard(
+                    job: job,
+                    onUnsave: () => provider.toggleBookmark(job.id),
+                  ),
+                ),
               ),
-            ),
-          )
-        else
-          ..._savedJobs.map(
-            (job) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _FavoriteJobCard(
-                job: job,
-                onUnsave: () async {
-                  await _jobRepository.toggleSaveJob(job.id, true);
-                  _loadSavedJobs();
-                },
-              ),
-            ),
-          ),
-      ],
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(int count) {
     return Row(
       children: [
         const Text(
@@ -86,7 +68,7 @@ class _FavoritesSectionState extends State<FavoritesSection> {
         ),
         const Spacer(),
         Text(
-          '${_savedJobs.length} SAVED',
+          '$count SAVED',
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,

@@ -9,7 +9,8 @@ import 'package:jobgo/presentation/widgets/candidate/job_detail/job_benefits_sec
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_apply_button.dart';
 import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
 
-import 'package:jobgo/data/repositories/job_repository.dart';
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 /// Trang chi tiết công việc
 class JobDetailPage extends StatefulWidget {
@@ -22,30 +23,6 @@ class JobDetailPage extends StatefulWidget {
 }
 
 class _JobDetailPageState extends State<JobDetailPage> {
-  late bool _isBookmarked;
-  final JobRepository _jobRepository = JobRepository();
-
-  @override
-  void initState() {
-    super.initState();
-    _isBookmarked = widget.job.isBookmarked;
-  }
-
-  Future<void> _toggleBookmark() async {
-    final oldState = _isBookmarked;
-    setState(() => _isBookmarked = !_isBookmarked);
-
-    try {
-      if (_isBookmarked) {
-        _showSavedPopup();
-      }
-      await _jobRepository.toggleSaveJob(widget.job.id, oldState);
-    } catch (e) {
-      // Revert if error
-      setState(() => _isBookmarked = oldState);
-    }
-  }
-
   void _showSavedPopup() {
     final overlay = Overlay.of(context);
     late OverlayEntry entry;
@@ -77,22 +54,30 @@ class _JobDetailPageState extends State<JobDetailPage> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              transitionBuilder: (child, anim) =>
-                  ScaleTransition(scale: anim, child: child),
-              child: Icon(
-                _isBookmarked
-                    ? Icons.bookmark_rounded
-                    : Icons.bookmark_border_rounded,
-                key: ValueKey(_isBookmarked),
-                color: _isBookmarked
-                    ? AppColors.warning
-                    : AppColors.textSecondary,
-              ),
-            ),
-            onPressed: _toggleBookmark,
+          Consumer<BookmarkProvider>(
+            builder: (context, provider, child) {
+              final isSaved = provider.isBookmarked(widget.job.id);
+              return IconButton(
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, anim) =>
+                      ScaleTransition(scale: anim, child: child),
+                  child: Icon(
+                    isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                    key: ValueKey(isSaved),
+                    color: isSaved
+                        ? AppColors.warning
+                        : AppColors.textSecondary,
+                  ),
+                ),
+                onPressed: () {
+                  if (!isSaved) _showSavedPopup();
+                  provider.toggleBookmark(widget.job.id);
+                },
+              );
+            },
           ),
           IconButton(
             icon: const Icon(
