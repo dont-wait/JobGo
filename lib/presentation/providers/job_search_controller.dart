@@ -1,5 +1,6 @@
 import 'dart:developer' as dev;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/data/models/job_model.dart';
@@ -35,6 +36,15 @@ class SearchFilterOptions {
     );
   }
 
+  bool get isDefault =>
+      !fullTime &&
+      !partTime &&
+      !remote &&
+      !contract &&
+      salaryRange == const RangeValues(0, 200) &&
+      experiences.isEmpty &&
+      location.isEmpty;
+
   SearchFilterOptions copyWith({
     bool? fullTime,
     bool? partTime,
@@ -54,6 +64,31 @@ class SearchFilterOptions {
       location: location ?? this.location,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is SearchFilterOptions &&
+        other.fullTime == fullTime &&
+        other.partTime == partTime &&
+        other.remote == remote &&
+        other.contract == contract &&
+        other.salaryRange == salaryRange &&
+        listEquals(other.experiences, experiences) &&
+        other.location == location;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    fullTime,
+    partTime,
+    remote,
+    contract,
+    salaryRange,
+    Object.hashAll(experiences),
+    location,
+  );
 }
 
 class JobSearchProvider extends ChangeNotifier {
@@ -181,7 +216,7 @@ class JobSearchProvider extends ChangeNotifier {
     final shouldNotify =
         _searchQuery.isNotEmpty ||
         _selectedQuickFilter != null ||
-        _advancedFilters != SearchFilterOptions.initial();
+        !_advancedFilters.isDefault;
 
     _searchQuery = '';
     _selectedQuickFilter = null;

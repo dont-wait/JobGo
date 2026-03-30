@@ -66,9 +66,7 @@ class _SearchPageState extends State<SearchPage> {
       padding: const EdgeInsets.only(right: 8),
       child: GestureDetector(
         onTap: () {
-          setState(() {
-            provider.setQuickFilter(isSelected ? null : label);
-          });
+          provider.setQuickFilter(isSelected ? null : label);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
