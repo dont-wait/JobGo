@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/post_new_job_banner.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/job_status_tab_bar.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/draft_job_card.dart';
-import 'package:jobgo/presentation/widgets/employer/manage_jobs/published_job_card.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/closed_job_card.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/post_job_page.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
@@ -76,17 +74,6 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
             const SizedBox(height: 24),
             DraftJobCard(jobTitle: 'Product Marketing Manager'),
             const SizedBox(height: 32),
-            ...MockJobs.recentJobs.map(
-              (job) => Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: PublishedJobCard(
-                  jobTitle: job.title,
-                  jobId: job.id,
-                  postedTime: job.postedTime,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
             ClosedJobCard(jobTitle: 'Frontend Developer', applicantsCount: 5),
             const SizedBox(height: 40),
           ],
@@ -94,20 +81,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
 
       case 1:
         return Column(
-          children: [
-            const SizedBox(height: 20),
-            ...MockJobs.recentJobs.map(
-              (job) => Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: PublishedJobCard(
-                  jobTitle: job.title,
-                  jobId: job.id,
-                  postedTime: job.postedTime,
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-          ],
+          children: [const SizedBox(height: 20), const SizedBox(height: 40)],
         );
 
       case 2:

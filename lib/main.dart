@@ -18,10 +18,18 @@ import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 import 'package:jobgo/presentation/providers/employer_provider.dart';
 
-//  Flag để biết đang ở flow register
+// Flag để biết đang ở flow register
 bool isInRegisterFlow = false;
-// Thêm vào đầu file main.dart
-bool isInForgotPasswordFlow = false; //  thêm
+bool isInForgotPasswordFlow = false;
+
+/// Helper: parse role string from database to UserRole enum
+UserRole parseUserRole(String? roleStr) {
+  if (roleStr == null) return UserRole.candidate;
+  final role = roleStr.trim().toLowerCase();
+  if (role == 'employer') return UserRole.employer;
+  if (role == 'admin') return UserRole.admin;
+  return UserRole.candidate;
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -94,10 +102,7 @@ class _MainAppState extends State<MainApp> {
                       .maybeSingle();
 
                   if (userData != null) {
-                    final roleStr = userData['u_role'] as String;
-                    final role = roleStr == 'employer'
-                        ? UserRole.employer
-                        : UserRole.candidate;
+                    final role = parseUserRole(userData['u_role'] as String?);
 
                     navigatorKey.currentState?.pushNamedAndRemoveUntil(
                       '/main',
@@ -162,23 +167,39 @@ class _MainAppState extends State<MainApp> {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  Future<Map<String, dynamic>?>? _roleFuture;
+  String? _lastUserId;
 
   @override
   Widget build(BuildContext context) {
     final session = Supabase.instance.client.auth.currentSession;
 
     if (session == null) {
+      _roleFuture = null;
+      _lastUserId = null;
       return const WelcomePage();
     }
 
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: Supabase.instance.client
+    // Refresh future only if user changed (or first time)
+    if (_roleFuture == null || _lastUserId != session.user.id) {
+      _lastUserId = session.user.id;
+      _roleFuture = Supabase.instance.client
           .from('users')
           .select('u_role')
           .eq('auth_uid', session.user.id)
-          .maybeSingle(),
+          .maybeSingle();
+    }
+
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _roleFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
@@ -192,11 +213,7 @@ class AuthWrapper extends StatelessWidget {
           return const WelcomePage();
         }
 
-        final roleStr = snapshot.data!['u_role'] as String;
-        final role = roleStr == 'employer'
-            ? UserRole.employer
-            : UserRole.candidate;
-
+        final role = parseUserRole(snapshot.data!['u_role'] as String?);
         return AppShell(role: role);
       },
     );

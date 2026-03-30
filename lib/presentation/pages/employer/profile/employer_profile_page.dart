@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/presentation/pages/employer/candidate_response/candidate_response_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_edit_profile_page.dart';
 import 'package:jobgo/presentation/pages/settings/settings_page.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';

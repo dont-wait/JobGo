@@ -1,7 +1,5 @@
 import 'package:jobgo/data/mockdata/mock_interview.dart';
 
-import 'mock_jobs.dart';
-
 /// Application status enum matching ERD `a_status varchar(20)`
 enum ApplicationStatus {
   pending,
@@ -31,6 +29,9 @@ class MockApplication {
   final String logoColor;
   final String logoText;
   final String? logoUrl;
+  final String salary;
+  final double? salaryMin;
+  final double? salaryMax;
 
   // Interview schedule (only for interview-stage applications)
   final MockInterviewSchedule? interviewSchedule;
@@ -51,38 +52,11 @@ class MockApplication {
     required this.logoColor,
     required this.logoText,
     this.logoUrl,
+    this.salary = '',
+    this.salaryMin,
+    this.salaryMax,
     this.interviewSchedule,
   });
-
-  /// Helper: create from a MockJob
-  static MockApplication fromJob({
-    required int id,
-    required MockJob job,
-    required ApplicationStatus status,
-    required DateTime appliedAt,
-    String coverLetter = '',
-    String cvUrl = '',
-    String? internalNotes,
-    int candidateId = 1,
-  }) {
-    return MockApplication(
-      id: id,
-      coverLetter: coverLetter,
-      status: status,
-      cvUrl: cvUrl,
-      internalNotes: internalNotes,
-      appliedAt: appliedAt,
-      updatedAt: appliedAt,
-      jobId: job.id,
-      candidateId: candidateId,
-      jobTitle: job.title,
-      company: job.company,
-      location: job.location,
-      logoColor: job.logoColor,
-      logoText: job.logoText,
-      logoUrl: job.logoUrl,
-    );
-  }
 
   String get statusLabel {
     switch (status) {
@@ -110,6 +84,16 @@ class MockApplication {
     if (diff.inDays < 14) return 'Applied 1 week ago';
     return 'Applied ${(diff.inDays / 7).floor()} weeks ago';
   }
+
+  String get formattedSalary {
+    if (salaryMin != null && salaryMax != null) {
+      if (salaryMin! >= 1000 && salaryMax! >= 1000) {
+        return "\$${(salaryMin! / 1000).toInt()}k - \$${(salaryMax! / 1000).toInt()}k";
+      }
+      return "\$${salaryMin!.toInt()} - \$${salaryMax!.toInt()}";
+    }
+    return salary.isNotEmpty ? salary : "Negotiable";
+  }
 }
 
 class MockApplications {
@@ -117,7 +101,8 @@ class MockApplications {
     // ── Applied / Pending ──
     MockApplication(
       id: 1,
-      coverLetter: 'I am excited to apply for the Senior Product Designer role...',
+      coverLetter:
+          'I am excited to apply for the Senior Product Designer role...',
       status: ApplicationStatus.pending,
       cvUrl: 'https://example.com/cv/sarah_designer.pdf',
       appliedAt: DateTime(2026, 2, 28),
@@ -129,6 +114,9 @@ class MockApplications {
       location: 'San Francisco, CA',
       logoColor: '0xFF1A1A2E',
       logoText: 'TC',
+      salary: '\$140k - \$180k',
+      salaryMin: 140000,
+      salaryMax: 180000,
     ),
     MockApplication(
       id: 2,
@@ -145,6 +133,9 @@ class MockApplications {
       location: 'Remote',
       logoColor: '0xFF9CA3AF',
       logoText: 'IS',
+      salary: '\$80k - \$120k',
+      salaryMin: 80000,
+      salaryMax: 120000,
     ),
     MockApplication(
       id: 3,
@@ -200,7 +191,8 @@ class MockApplications {
         interviewType: 'Video Call',
         location: 'Google Meet - link will be sent via email',
         contactPerson: 'Emily Carter, HR Manager',
-        note: 'Please prepare a 10-min presentation about your recent Flutter project',
+        note:
+            'Please prepare a 10-min presentation about your recent Flutter project',
         employerId: 1,
         candidateId: 1,
       ),
@@ -225,7 +217,8 @@ class MockApplications {
         interviewType: 'On-site',
         location: '456 Market St, Floor 8, San Francisco, CA',
         contactPerson: 'James Wong, Tech Lead',
-        note: 'Bring your laptop for a live coding session. Ask for James at reception.',
+        note:
+            'Bring your laptop for a live coding session. Ask for James at reception.',
         employerId: 2,
         candidateId: 1,
       ),
@@ -268,10 +261,12 @@ class MockApplications {
 
   /// Filter by tab
   static List<MockApplication> get applied => all
-      .where((a) =>
-          a.status == ApplicationStatus.pending ||
-          a.status == ApplicationStatus.reviewing ||
-          a.status == ApplicationStatus.rejected)
+      .where(
+        (a) =>
+            a.status == ApplicationStatus.pending ||
+            a.status == ApplicationStatus.reviewing ||
+            a.status == ApplicationStatus.rejected,
+      )
       .toList();
 
   static List<MockApplication> get interviews =>

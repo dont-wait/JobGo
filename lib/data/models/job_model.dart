@@ -1,5 +1,3 @@
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
-
 class JobModel {
   final String id;
   final String title;
@@ -9,6 +7,8 @@ class JobModel {
   final String? logoUrl;
   final String location;
   final String salary;
+  final double? salaryMin;
+  final double? salaryMax;
   final String type;
   final String postedTime;
   final bool isBookmarked;
@@ -28,6 +28,8 @@ class JobModel {
     this.logoUrl,
     this.location = '',
     this.salary = '',
+    this.salaryMin,
+    this.salaryMax,
     this.type = '',
     this.postedTime = '',
     this.isBookmarked = false,
@@ -48,6 +50,8 @@ class JobModel {
     String? logoUrl,
     String? location,
     String? salary,
+    double? salaryMin,
+    double? salaryMax,
     String? type,
     String? postedTime,
     bool? isBookmarked,
@@ -67,6 +71,8 @@ class JobModel {
       logoUrl: logoUrl ?? this.logoUrl,
       location: location ?? this.location,
       salary: salary ?? this.salary,
+      salaryMin: salaryMin ?? this.salaryMin,
+      salaryMax: salaryMax ?? this.salaryMax,
       type: type ?? this.type,
       postedTime: postedTime ?? this.postedTime,
       isBookmarked: isBookmarked ?? this.isBookmarked,
@@ -92,16 +98,32 @@ class JobModel {
           (json['j_company'] ??
                   json['company_name'] ??
                   json['company'] ??
+                  json['employers']?['e_company_name'] ??
                   'Unknown Company')
               .toString(),
-      logoColor: (json['logo_color'] ?? json['j_logo_color'] ?? '0xFF1A3A4A')
-          .toString(),
-      logoText: (json['logo_text'] ?? json['j_logo_text'] ?? 'JG').toString(),
-      logoUrl: json['logo_url']?.toString(),
+      logoColor:
+          (json['logo_color'] ??
+                  json['j_logo_color'] ??
+                  json['employers']?['logo_color'] ??
+                  '0xFF1A3A4A')
+              .toString(),
+      logoText:
+          (json['logo_text'] ??
+                  json['j_logo_text'] ??
+                  json['employers']?['logo_text'] ??
+                  'JG')
+              .toString(),
+      logoUrl:
+          (json['logo_url'] ??
+                  json['j_logo_url'] ??
+                  json['employers']?['e_logo_url'])
+              ?.toString(),
       location: (json['j_location'] ?? json['location'] ?? '').toString(),
       salary:
           (json['j_salary'] ?? json['salary'] ?? json['j_compensation'] ?? '')
               .toString(),
+      salaryMin: _toDoubleValue(json['j_salary_min'] ?? json['salary_min']),
+      salaryMax: _toDoubleValue(json['j_salary_max'] ?? json['salary_max']),
       type: (json['j_type'] ?? json['job_type'] ?? json['type'] ?? '')
           .toString(),
       postedTime:
@@ -126,50 +148,6 @@ class JobModel {
     );
   }
 
-  factory JobModel.fromMockJob(MockJob job) {
-    return JobModel(
-      id: job.id,
-      title: job.title,
-      company: job.company,
-      logoColor: job.logoColor,
-      logoText: job.logoText,
-      logoUrl: job.logoUrl,
-      location: job.location,
-      salary: job.salary,
-      type: job.type,
-      postedTime: job.postedTime,
-      isBookmarked: job.isBookmarked,
-      badge: job.badge,
-      description: job.description,
-      requirements: job.requirements,
-      benefits: job.benefits,
-      tags: job.tags,
-      applicants: job.applicants,
-    );
-  }
-
-  MockJob toMockJob() {
-    return MockJob(
-      id: id,
-      title: title,
-      company: company,
-      logoColor: logoColor,
-      logoText: logoText,
-      logoUrl: logoUrl,
-      location: location,
-      salary: salary,
-      type: type,
-      postedTime: postedTime,
-      isBookmarked: isBookmarked,
-      badge: badge,
-      description: description,
-      requirements: requirements,
-      benefits: benefits,
-      tags: tags,
-      applicants: applicants,
-    );
-  }
-
   Map<String, dynamic> toJson() {
     return {
       'j_id': id,
@@ -180,6 +158,8 @@ class JobModel {
       'logo_url': logoUrl,
       'j_location': location,
       'j_salary': salary,
+      'j_salary_min': salaryMin,
+      'j_salary_max': salaryMax,
       'j_type': type,
       'j_posted_at': postedTime,
       'j_is_bookmarked': isBookmarked,
@@ -214,5 +194,50 @@ class JobModel {
     if (value == null) return null;
     if (value is int) return value;
     return int.tryParse(value.toString());
+  }
+
+  static double? _toDoubleValue(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    return double.tryParse(value.toString());
+  }
+
+  String get formattedSalary {
+    if (salaryMin != null && salaryMax != null) {
+      return "${_formatMoney(salaryMin!)} - ${_formatMoney(salaryMax!)}";
+    }
+    return salary.isNotEmpty ? salary : "Negotiable";
+  }
+
+  String _formatMoney(double value) {
+    if (value >= 1000000) {
+      return "\$${(value / 1000000).toStringAsFixed(1)}M";
+    } else if (value >= 1000) {
+      final kValue = (value / 1000).toInt();
+      return "\$${kValue}k";
+    }
+    return "\$${value.toInt()}";
+  }
+
+  String get postedTimeAgo {
+    if (postedTime.isEmpty) return 'Just now';
+    try {
+      final DateTime dt = DateTime.parse(postedTime);
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+
+      if (diff.isNegative) return 'Just now';
+
+      if (diff.inMinutes < 1) return 'Just now';
+      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+      if (diff.inHours < 24) return '${diff.inHours}h ago';
+      if (diff.inDays < 7) return '${diff.inDays}d ago';
+      if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}w ago';
+
+      return '${(diff.inDays / 30).floor()}mo ago';
+    } catch (_) {
+      return postedTime;
+    }
   }
 }

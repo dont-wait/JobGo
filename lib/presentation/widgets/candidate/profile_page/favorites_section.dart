@@ -156,7 +156,7 @@ class _FavoriteJobCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    job.salary,
+                    job.formattedSalary,
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,

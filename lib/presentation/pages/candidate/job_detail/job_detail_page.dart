@@ -121,9 +121,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
 
                   // ── Info Grid: Salary / Job Type / Posted ──
                   JobInfoGrid(
-                    salary: widget.job.salary,
+                    salary: widget.job.formattedSalary,
                     jobType: widget.job.type,
-                    postedTime: widget.job.postedTime,
+                    postedTime: widget.job.postedTimeAgo,
                   ),
 
                   const SizedBox(height: 24),
