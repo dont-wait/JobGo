@@ -6,11 +6,7 @@ class RecommendedJobCard extends StatelessWidget {
   final MockJob job;
   final VoidCallback? onTap;
 
-  const RecommendedJobCard({
-    super.key,
-    required this.job,
-    this.onTap,
-  });
+  const RecommendedJobCard({super.key, required this.job, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +45,20 @@ class RecommendedJobCard extends StatelessWidget {
             // Company name
             Text(
               job.company,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                const Icon(Icons.access_time, size: 10, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(
+                  job.postedTime,
+                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                ),
+              ],
             ),
           ],
         ),
