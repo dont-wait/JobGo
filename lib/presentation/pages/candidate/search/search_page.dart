@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/widgets/candidate/search/search_job_card.dart';
 import 'package:jobgo/presentation/pages/candidate/search/FilterBottomSheet.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/data/repositories/job_repository.dart';
+import 'package:jobgo/data/models/job_model.dart';
+import 'dart:async';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,7 +17,11 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
+  final JobRepository _jobRepository = JobRepository();
+  List<JobModel> _jobs = [];
+  bool _isLoading = false;
   int _selectedFilter = -1;
+  Timer? _debounce;
 
   final List<String> _filters = [
     'Remote',
@@ -26,16 +32,40 @@ class _SearchPageState extends State<SearchPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _performSearch(''); // Tải danh sách mặc định khi vào trang
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(query);
+    });
+  }
+
+  Future<void> _performSearch(String query) async {
+    setState(() => _isLoading = true);
+    try {
+      final results = await _jobRepository.searchJobs(query);
+      setState(() {
+        _jobs = results;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Lấy data trực tiếp trong build method
-    final jobs = MockJobs.recentJobs;
-
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -56,6 +86,7 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                       child: TextField(
                         controller: _searchController,
+                        onChanged: _onSearchChanged,
                         decoration: const InputDecoration(
                           hintText: 'Search job title or keyword',
                           hintStyle: TextStyle(
@@ -172,7 +203,7 @@ class _SearchPageState extends State<SearchPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${jobs.length} jobs found',
+                    '${_jobs.length} jobs found',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -204,17 +235,26 @@ class _SearchPageState extends State<SearchPage> {
 
             // ── Job Results List ──
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                itemCount: jobs.length,
-                itemBuilder: (context, index) {
-                  final job = jobs[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: SearchJobCard(job: job),
-                  );
-                },
-              ),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _jobs.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No results found.',
+                        style: TextStyle(color: AppColors.textSecondary),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                      itemCount: _jobs.length,
+                      itemBuilder: (context, index) {
+                        final job = _jobs[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: SearchJobCard(job: job.toMockJob()),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
