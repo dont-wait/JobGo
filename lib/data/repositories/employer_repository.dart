@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/employer_model.dart';
 
@@ -9,7 +10,6 @@ class EmployerRepository {
     if (user == null) return null;
 
     try {
-      // 1. Get internal u_id from users table
       final userData = await _supabase
           .from('users')
           .select('u_id')
@@ -18,7 +18,6 @@ class EmployerRepository {
 
       final uId = userData['u_id'] as int;
 
-      // 2. Get employer data with a JOIN to users table to get the recruiter name (u_name)
       final employerData = await _supabase
           .from('employers')
           .select('*, users(u_name)')
@@ -43,6 +42,31 @@ class EmployerRepository {
     } catch (e) {
       print('Error updating employer profile: $e');
       return false;
+    }
+  }
+
+  /// Uploads a logo file to Supabase Storage and returns the public URL.
+  Future<String?> uploadLogo(File file, String fileName) async {
+    try {
+      final path = 'logos/$fileName';
+
+      // 1. Upload the file
+      await _supabase.storage
+          .from('logos')
+          .upload(
+            path,
+            file,
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+          );
+
+      // 2. Get the public URL
+      final String publicUrl = _supabase.storage
+          .from('logos')
+          .getPublicUrl(path);
+      return publicUrl;
+    } catch (e) {
+      print('Error uploading logo: $e');
+      return null;
     }
   }
 }
