@@ -16,6 +16,8 @@ import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
+import 'package:jobgo/presentation/providers/employer_provider.dart';
+
 //  Flag để biết đang ở flow register
 bool isInRegisterFlow = false;
 // Thêm vào đầu file main.dart
@@ -45,6 +47,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => BookmarkProvider()..loadInitialBookmarks(),
         ),
+        ChangeNotifierProvider(create: (_) => EmployerProvider()),
       ],
       child: const MainApp(),
     ),
@@ -72,18 +75,40 @@ class _MainAppState extends State<MainApp> {
             final event = data.event;
 
             if (event == AuthChangeEvent.signedIn) {
-              // Không navigate nếu đang ở flow register/verify
               if (isInRegisterFlow) return;
               if (isInForgotPasswordFlow) return;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
                 final context = navigatorKey.currentContext;
                 if (context == null) return;
 
-                navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                  '/main',
-                  (route) => false,
-                  arguments: UserRole.candidate,
-                );
+                // ── Tự động nhận diện Role khi Login ──
+                try {
+                  final userId = data.session?.user.id;
+                  if (userId == null) return;
+
+                  final userData = await Supabase.instance.client
+                      .from('users')
+                      .select('u_role')
+                      .eq('auth_uid', userId)
+                      .maybeSingle();
+
+                  if (userData != null) {
+                    final roleStr = userData['u_role'] as String;
+                    final role = roleStr == 'employer'
+                        ? UserRole.employer
+                        : UserRole.candidate;
+
+                    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                      '/main',
+                      (route) => false,
+                      arguments: role,
+                    );
+                  }
+                } catch (e) {
+                  print('Error navigating after sign-in: $e');
+                  Supabase.instance.client.auth.signOut();
+                }
               });
             } else if (event == AuthChangeEvent.signedOut) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -120,9 +145,7 @@ class _MainAppState extends State<MainApp> {
       scrollBehavior: const MaterialScrollBehavior().copyWith(
         dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
       ),
-      home: Supabase.instance.client.auth.currentSession != null
-          ? const AppShell(role: UserRole.candidate)
-          : const WelcomePage(),
+      home: const AuthWrapper(),
       onGenerateRoute: (settings) {
         if (settings.name == '/main') {
           final role = settings.arguments as UserRole? ?? UserRole.candidate;
@@ -134,6 +157,47 @@ class _MainAppState extends State<MainApp> {
         '/login': (context) => const LoginPage(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/register': (context) => const RegisterRolePage(),
+      },
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final session = Supabase.instance.client.auth.currentSession;
+
+    if (session == null) {
+      return const WelcomePage();
+    }
+
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: Supabase.instance.client
+          .from('users')
+          .select('u_role')
+          .eq('auth_uid', session.user.id)
+          .maybeSingle(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasError || snapshot.data == null) {
+          // If error or user not found in table, logout and go to welcome
+          Supabase.instance.client.auth.signOut();
+          return const WelcomePage();
+        }
+
+        final roleStr = snapshot.data!['u_role'] as String;
+        final role = roleStr == 'employer'
+            ? UserRole.employer
+            : UserRole.candidate;
+
+        return AppShell(role: role);
       },
     );
   }
