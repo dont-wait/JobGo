@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/presentation/pages/candidate/search/search_page.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/home_search_bar.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/recommended_job_card.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/recent_job_tile.dart';
@@ -51,7 +52,10 @@ class HomePage extends StatelessWidget {
               // Search bar
               HomeSearchBar(
                 onTap: () {
-                  // TODO: Navigate to search page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SearchPage()),
+                  );
                 },
               ),
               const SizedBox(height: 24),
@@ -95,9 +99,7 @@ class HomePage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => JobDetailPage(job: job),
-                ),
+                MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
               );
             },
           );
@@ -115,10 +117,8 @@ class HomePage extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: MockJobs.recentJobs.length,
-      separatorBuilder: (_, __) => const Divider(
-        color: AppColors.divider,
-        height: 1,
-      ),
+      separatorBuilder: (_, __) =>
+          const Divider(color: AppColors.divider, height: 1),
       itemBuilder: (context, index) {
         final job = MockJobs.recentJobs[index];
         return RecentJobTile(
@@ -126,9 +126,7 @@ class HomePage extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => JobDetailPage(job: job),
-              ),
+              MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
             );
           },
           onBookmark: () {
