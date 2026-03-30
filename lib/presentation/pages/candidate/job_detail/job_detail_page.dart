@@ -9,6 +9,9 @@ import 'package:jobgo/presentation/widgets/candidate/job_detail/job_benefits_sec
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_apply_button.dart';
 import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
 
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/bookmark_provider.dart';
+
 /// Trang chi tiết công việc
 class JobDetailPage extends StatefulWidget {
   final MockJob job;
@@ -20,28 +23,11 @@ class JobDetailPage extends StatefulWidget {
 }
 
 class _JobDetailPageState extends State<JobDetailPage> {
-  late bool _isBookmarked;
-
-  @override
-  void initState() {
-    super.initState();
-    _isBookmarked = widget.job.isBookmarked;
-  }
-
-  void _toggleBookmark() {
-    setState(() => _isBookmarked = !_isBookmarked);
-    if (_isBookmarked) {
-      _showSavedPopup();
-    }
-  }
-
   void _showSavedPopup() {
     final overlay = Overlay.of(context);
     late OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (_) => _SavedPopup(
-        onDone: () => entry.remove(),
-      ),
+      builder: (_) => _SavedPopup(onDone: () => entry.remove()),
     );
     overlay.insert(entry);
   }
@@ -68,22 +54,30 @@ class _JobDetailPageState extends State<JobDetailPage> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              transitionBuilder: (child, anim) =>
-                  ScaleTransition(scale: anim, child: child),
-              child: Icon(
-                _isBookmarked
-                    ? Icons.bookmark_rounded
-                    : Icons.bookmark_border_rounded,
-                key: ValueKey(_isBookmarked),
-                color: _isBookmarked
-                    ? AppColors.warning
-                    : AppColors.textSecondary,
-              ),
-            ),
-            onPressed: _toggleBookmark,
+          Consumer<BookmarkProvider>(
+            builder: (context, provider, child) {
+              final isSaved = provider.isBookmarked(widget.job.id);
+              return IconButton(
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, anim) =>
+                      ScaleTransition(scale: anim, child: child),
+                  child: Icon(
+                    isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                    key: ValueKey(isSaved),
+                    color: isSaved
+                        ? AppColors.warning
+                        : AppColors.textSecondary,
+                  ),
+                ),
+                onPressed: () {
+                  if (!isSaved) _showSavedPopup();
+                  provider.toggleBookmark(widget.job.id);
+                },
+              );
+            },
           ),
           IconButton(
             icon: const Icon(
@@ -135,13 +129,15 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   const SizedBox(height: 24),
 
                   // ── Tags (nếu có) ──
-                  if (widget.job.tags != null && widget.job.tags!.isNotEmpty) ...[
+                  if (widget.job.tags != null &&
+                      widget.job.tags!.isNotEmpty) ...[
                     _buildTags(),
                     const SizedBox(height: 24),
                   ],
 
                   // ── About the Role ──
-                  if (widget.job.description != null && widget.job.description!.isNotEmpty) ...[
+                  if (widget.job.description != null &&
+                      widget.job.description!.isNotEmpty) ...[
                     JobDescriptionSection(description: widget.job.description!),
                     const SizedBox(height: 24),
                   ],
@@ -149,12 +145,15 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   // ── Requirements ──
                   if (widget.job.requirements != null &&
                       widget.job.requirements!.isNotEmpty) ...[
-                    JobRequirementsSection(requirements: widget.job.requirements!),
+                    JobRequirementsSection(
+                      requirements: widget.job.requirements!,
+                    ),
                     const SizedBox(height: 24),
                   ],
 
                   // ── Benefits ──
-                  if (widget.job.benefits != null && widget.job.benefits!.isNotEmpty) ...[
+                  if (widget.job.benefits != null &&
+                      widget.job.benefits!.isNotEmpty) ...[
                     JobBenefitsSection(benefits: widget.job.benefits!),
                     const SizedBox(height: 16),
                   ],
@@ -164,9 +163,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
 
           // ── Apply Button cố định ở dưới ──
-          JobApplyButton(
-            onPressed: () => navigateToApply(context, widget.job),
-          ),
+          JobApplyButton(onPressed: () => navigateToApply(context, widget.job)),
         ],
       ),
     );
@@ -281,10 +278,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
         Text(
           // Xử lý số nhiều tiếng Anh: 1 applicant / 5 applicants
           '${widget.job.applicants} applicant${widget.job.applicants! > 1 ? 's' : ''} so far',
-          style: const TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -369,7 +363,10 @@ class _SavedPopupState extends State<_SavedPopup>
               scale: _scale,
               child: Container(
                 width: 200,
-                padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 28,
+                  horizontal: 24,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),

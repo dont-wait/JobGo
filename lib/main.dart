@@ -13,6 +13,9 @@ import 'package:jobgo/presentation/pages/auth/register/register_role_page.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
 
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/bookmark_provider.dart';
+
 //  Flag để biết đang ở flow register
 bool isInRegisterFlow = false;
 // Thêm vào đầu file main.dart
@@ -36,7 +39,16 @@ Future<void> main() async {
     }
   });
 
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => BookmarkProvider()..loadInitialBookmarks(),
+        ),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
