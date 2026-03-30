@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/employer_provider.dart';
@@ -13,6 +15,7 @@ class EmployerEditProfilePage extends StatefulWidget {
 
 class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
   final _formKey = GlobalKey<FormState>();
+  final ImagePicker _picker = ImagePicker();
 
   late final TextEditingController _companyCtrl;
   late final TextEditingController _addressCtrl;
@@ -49,6 +52,39 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
     _phoneCtrl.dispose();
     _emailCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUploadLogo() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+
+      if (image != null && mounted) {
+        final success = await context
+            .read<EmployerProvider>()
+            .uploadAndChangeLogo(File(image.path));
+
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Logo uploaded successfully!')),
+          );
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Failed to upload logo. Please check Supabase Storage permissions.',
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+    }
   }
 
   Future<void> _save() async {
@@ -119,87 +155,98 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
               ),
             ),
           ),
-          body: provider.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        _buildAvatar(provider),
-                        const SizedBox(height: 28),
-                        _buildField(
-                          label: 'Company Name',
-                          controller: _companyCtrl,
-                          icon: Icons.business_outlined,
-                        ),
-                        _buildField(
-                          label: 'Company Address',
-                          controller: _addressCtrl,
-                          icon: Icons.location_on_outlined,
-                        ),
-                        _buildField(
-                          label: 'Industry',
-                          controller: _industryCtrl,
-                          icon: Icons.category_outlined,
-                        ),
-                        _buildField(
-                          label: 'Company Size',
-                          controller: _companySizeCtrl,
-                          icon: Icons.people_outline_rounded,
-                        ),
-                        _buildField(
-                          label: 'Phone',
-                          controller: _phoneCtrl,
-                          icon: Icons.phone_outlined,
-                          keyboardType: TextInputType.phone,
-                        ),
-                        _buildField(
-                          label: 'Email',
-                          controller: _emailCtrl,
-                          icon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        _buildField(
-                          label: 'Website',
-                          controller: _websiteCtrl,
-                          icon: Icons.language_outlined,
-                          keyboardType: TextInputType.url,
-                        ),
-                        _buildField(
-                          label: 'Description',
-                          controller: _descriptionCtrl,
-                          icon: Icons.info_outline_rounded,
-                          maxLines: 4,
-                        ),
-                        const SizedBox(height: 32),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: _save,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: AppColors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            child: const Text(
-                              'Save Changes',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                              ),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildAvatar(provider),
+                      const SizedBox(height: 28),
+                      _buildField(
+                        label: 'Company Name',
+                        controller: _companyCtrl,
+                        icon: Icons.business_outlined,
+                      ),
+                      _buildField(
+                        label: 'Company Address',
+                        controller: _addressCtrl,
+                        icon: Icons.location_on_outlined,
+                      ),
+                      _buildField(
+                        label: 'Industry',
+                        controller: _industryCtrl,
+                        icon: Icons.category_outlined,
+                      ),
+                      _buildField(
+                        label: 'Company Size',
+                        controller: _companySizeCtrl,
+                        icon: Icons.people_outline_rounded,
+                      ),
+                      _buildField(
+                        label: 'Phone',
+                        controller: _phoneCtrl,
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      _buildField(
+                        label: 'Email',
+                        controller: _emailCtrl,
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      _buildField(
+                        label: 'Website',
+                        controller: _websiteCtrl,
+                        icon: Icons.language_outlined,
+                        keyboardType: TextInputType.url,
+                      ),
+                      _buildField(
+                        label: 'Description',
+                        controller: _descriptionCtrl,
+                        icon: Icons.info_outline_rounded,
+                        maxLines: 4,
+                      ),
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: provider.isLoading ? null : _save,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
                             ),
                           ),
+                          child: provider.isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Save Changes',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -216,35 +263,43 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.border, width: 3),
-              color: AppColors.lightBackground,
+              color: AppColors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: CircleAvatar(
-              radius: 47,
-              backgroundImage:
-                  (employer?.logoUrl != null && employer!.logoUrl!.isNotEmpty)
-                  ? NetworkImage(employer.logoUrl!)
-                  : null,
-              backgroundColor: AppColors.lightBackground,
-              child: (employer?.logoUrl == null || employer!.logoUrl!.isEmpty)
-                  ? const Icon(
+            child: ClipOval(
+              child: provider.isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.all(30.0),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : (employer?.logoUrl != null && employer!.logoUrl!.isNotEmpty)
+                  ? Image.network(
+                      employer.logoUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.business,
+                        size: 40,
+                        color: AppColors.textHint,
+                      ),
+                    )
+                  : const Icon(
                       Icons.business,
                       size: 40,
                       color: AppColors.textHint,
-                    )
-                  : null,
+                    ),
             ),
           ),
           Positioned(
             bottom: 0,
             right: 0,
             child: GestureDetector(
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Logo upload feature coming soon!'),
-                  ),
-                );
-              },
+              onTap: provider.isLoading ? null : _pickAndUploadLogo,
               child: Container(
                 width: 32,
                 height: 32,

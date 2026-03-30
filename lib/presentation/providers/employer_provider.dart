@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:jobgo/data/models/employer_model.dart';
-import 'package:jobgo/data/repositories/employer_repository.dart';
+import '../../data/models/employer_model.dart';
+import '../../data/repositories/employer_repository.dart';
 
 class EmployerProvider extends ChangeNotifier {
   final EmployerRepository _repository = EmployerRepository();
+
   EmployerModel? _employer;
   bool _isLoading = false;
 
@@ -30,9 +32,9 @@ class EmployerProvider extends ChangeNotifier {
       _employer!.id!,
       updatedEmployer,
     );
+
     if (success) {
-      _employer = updatedEmployer.copyWith(); // Keep current IDs
-      // Note: copyWith in EmployerModel preserves IDs by default if not passed
+      _employer = updatedEmployer;
     }
 
     _isLoading = false;
@@ -40,8 +42,34 @@ class EmployerProvider extends ChangeNotifier {
     return success;
   }
 
-  void clearProfile() {
-    _employer = null;
+  /// Picks a new logo, uploads it to Supabase, and updates the profile URL.
+  Future<bool> uploadAndChangeLogo(File file) async {
+    if (_employer?.id == null) return false;
+
+    _isLoading = true;
     notifyListeners();
+
+    final fileName =
+        'logo_${_employer!.id}_${DateTime.now().millisecondsSinceEpoch}.png';
+    final logoUrl = await _repository.uploadLogo(file, fileName);
+
+    if (logoUrl != null) {
+      final updatedEmployer = _employer!.copyWith(logoUrl: logoUrl);
+      final success = await _repository.updateEmployerProfile(
+        _employer!.id!,
+        updatedEmployer,
+      );
+
+      if (success) {
+        _employer = updatedEmployer;
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
   }
 }
