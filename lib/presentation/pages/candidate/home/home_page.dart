@@ -247,8 +247,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               },
-              onBookmark: () {
-                // TODO: Toggle bookmark
+              onBookmark: () async {
+                await _jobRepository.toggleSaveJob(job.id, job.isBookmarked);
+                _loadJobs(query: _searchQuery);
               },
             );
           },
