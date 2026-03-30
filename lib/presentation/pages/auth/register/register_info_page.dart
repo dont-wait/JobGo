@@ -117,18 +117,58 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
           password: passwordController.text.trim(),
         );
 
+        // if (response.user != null) 
+        // {
+        //   // Insert vào bảng users ngay
+        //   await supabase.from('users').insert({
+        //     'auth_uid': response.user!.id,
+        //     'u_email': emailController.text.trim(),
+        //     'u_name': nameController.text.trim(),
+        //     'u_role': widget.role.name,
+        //     'u_password': passwordController.text.trim(),
+        //   });
+
+        //   if (mounted) {
+        //     isInRegisterFlow = true; // bật flag
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (_) => RegisterVerifyEmailPage(
+        //           email: emailController.text.trim(),
+        //           role: widget.role,
+        //           name: nameController.text.trim(),
+        //           password: passwordController.text.trim(),
+        //         ),
+        //       ),
+        //     );
+        //   }
+        // } 
         if (response.user != null) {
-          // Insert vào bảng users ngay
-          await supabase.from('users').insert({
+          // Insert vào bảng users trước
+          final insertedUser = await supabase.from('users').insert({
             'auth_uid': response.user!.id,
             'u_email': emailController.text.trim(),
             'u_name': nameController.text.trim(),
             'u_role': widget.role.name,
             'u_password': passwordController.text.trim(),
-          });
+          }).select('u_id').single(); // ✅ lấy u_id vừa tạo
+
+          final uId = insertedUser['u_id'] as int;
+
+          // Insert vào bảng candidates hoặc employers tùy role
+          if (widget.role == UserRole.candidate) {
+            await supabase.from('candidates').insert({
+              'c_full_name': nameController.text.trim(),
+              'u_id': uId,
+            });
+          } else if (widget.role == UserRole.employer) {
+            await supabase.from('employers').insert({
+              'u_id': uId,
+            });
+          }
 
           if (mounted) {
-            isInRegisterFlow = true; // bật flag
+            isInRegisterFlow = true;
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -141,12 +181,10 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
               ),
             );
           }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đăng ký thất bại')),
-          );
         }
+        
       } on AuthApiException catch (e) {
+        if (!mounted) return;
         if (e.code == 'over_email_send_rate_limit') {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Quá nhiều lần thử, vui lòng thử lại sau.')),

@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 import 'dart:async';
 
@@ -13,6 +12,9 @@ import 'package:jobgo/presentation/pages/auth/login/login_page.dart';
 import 'package:jobgo/presentation/pages/auth/register/register_role_page.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
+
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 //  Flag để biết đang ở flow register
 bool isInRegisterFlow = false;
@@ -37,7 +39,16 @@ Future<void> main() async {
     }
   });
 
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => BookmarkProvider()..loadInitialBookmarks(),
+        ),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -55,28 +66,41 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    _authStateSubscription =
-        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      final event = data.event;
+    _authStateSubscription = Supabase.instance.client.auth.onAuthStateChange
+        .listen(
+          (data) {
+            final event = data.event;
 
-      if (event == AuthChangeEvent.signedIn) {
-        // Không navigate nếu đang ở flow register/verify
-        if (isInRegisterFlow) return;
-        if (isInForgotPasswordFlow) return;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          final context = navigatorKey.currentContext;
-          if (context == null) return;
+            if (event == AuthChangeEvent.signedIn) {
+              // Không navigate nếu đang ở flow register/verify
+              if (isInRegisterFlow) return;
+              if (isInForgotPasswordFlow) return;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final context = navigatorKey.currentContext;
+                if (context == null) return;
 
-          navigatorKey.currentState?.pushNamedAndRemoveUntil(
-            '/main',
-            (route) => false,
-            arguments: UserRole.candidate,
-          );
-        });
-      }
-    }, onError: (error) {
-      print('Auth state error: $error');
-    });
+                navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                  '/main',
+                  (route) => false,
+                  arguments: UserRole.candidate,
+                );
+              });
+            } else if (event == AuthChangeEvent.signedOut) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final context = navigatorKey.currentContext;
+                if (context == null) return;
+
+                navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                  '/login',
+                  (route) => false,
+                );
+              });
+            }
+          },
+          onError: (error) {
+            print('Auth state error: $error');
+          },
+        );
   }
 
   @override
@@ -94,18 +118,15 @@ class _MainAppState extends State<MainApp> {
       theme: AppTheme.lightTheme,
       // Giữ scrollBehavior từ file gốc
       scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.touch,
-          PointerDeviceKind.mouse,
-        },
+        dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
       ),
-      home: const WelcomePage(),
+      home: Supabase.instance.client.auth.currentSession != null
+          ? const AppShell(role: UserRole.candidate)
+          : const WelcomePage(),
       onGenerateRoute: (settings) {
         if (settings.name == '/main') {
           final role = settings.arguments as UserRole? ?? UserRole.candidate;
-          return MaterialPageRoute(
-            builder: (_) => AppShell(role: role),
-          );
+          return MaterialPageRoute(builder: (_) => AppShell(role: role));
         }
         return null;
       },

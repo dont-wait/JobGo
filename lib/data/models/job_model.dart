@@ -148,6 +148,28 @@ class JobModel {
     );
   }
 
+  MockJob toMockJob() {
+    return MockJob(
+      id: id,
+      title: title,
+      company: company,
+      logoColor: logoColor,
+      logoText: logoText,
+      logoUrl: logoUrl,
+      location: location,
+      salary: salary,
+      type: type,
+      postedTime: postedTime,
+      isBookmarked: isBookmarked,
+      badge: badge,
+      description: description,
+      requirements: requirements,
+      benefits: benefits,
+      tags: tags,
+      applicants: applicants,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'j_id': id,

@@ -89,7 +89,7 @@ class HomePage extends StatelessWidget {
 
   Widget _buildRecommendedJobs() {
     return SizedBox(
-      height: 155,
+      height: 190,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: MockJobs.recommendedJobs.length,

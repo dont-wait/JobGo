@@ -4,6 +4,8 @@ import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
 import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 /// Card hiển thị 1 kết quả tìm kiếm công việc
 class SearchJobCard extends StatelessWidget {
@@ -70,7 +72,30 @@ class SearchJobCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (job.badge != null) _buildBadge(job.badge!),
+                Row(
+                  children: [
+                    if (job.badge != null) _buildBadge(job.badge!),
+                    Consumer<BookmarkProvider>(
+                      builder: (context, provider, child) {
+                        final isSaved = provider.isBookmarked(job.id);
+                        return IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: Icon(
+                            isSaved
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border_rounded,
+                            color: isSaved
+                                ? AppColors.warning
+                                : AppColors.textSecondary,
+                            size: 24,
+                          ),
+                          onPressed: () => provider.toggleBookmark(job.id),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
 
