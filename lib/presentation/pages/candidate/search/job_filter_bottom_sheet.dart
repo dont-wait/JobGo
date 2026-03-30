@@ -46,10 +46,17 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
       partTime = false;
       remote = false;
       contract = false;
-      salaryRange = const RangeValues(0, 200);
+      salaryRange = SearchFilterOptions.defaultSalaryRange;
       selectedExperiences.clear();
       locationController.clear();
     });
+  }
+
+  String _formatSalaryValue(int value) {
+    return value.toString().replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => ',',
+    );
   }
 
   void _applyFilters() {
@@ -185,8 +192,8 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                     Center(
                       child: Text(
                         salaryRange.start.round() == salaryRange.end.round()
-                            ? '\$${salaryRange.start.round()}k+'
-                            : '\$${salaryRange.start.round()}k - \$${salaryRange.end.round()}k+',
+                            ? '\$${_formatSalaryValue(salaryRange.start.round())}+'
+                            : '\$${_formatSalaryValue(salaryRange.start.round())} - \$${_formatSalaryValue(salaryRange.end.round())}+',
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -197,8 +204,8 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                     RangeSlider(
                       values: salaryRange,
                       min: 0,
-                      max: 200,
-                      divisions: 40,
+                      max: SearchFilterOptions.defaultSalaryRange.end,
+                      divisions: 100,
                       activeColor: AppColors.primary,
                       inactiveColor: AppColors.lightBackground,
                       onChanged: (values) {
@@ -209,7 +216,7 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                     ),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Text('\$0'), Text('\$200k+')],
+                      children: [Text('\$0'), Text('\$10,000+')],
                     ),
                     const SizedBox(height: 28),
                     const Text(

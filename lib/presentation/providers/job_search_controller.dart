@@ -1,11 +1,11 @@
-import 'dart:developer' as dev;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/data/models/job_model.dart';
 
 class SearchFilterOptions {
+  static const RangeValues defaultSalaryRange = RangeValues(0, 10000);
+
   final bool fullTime;
   final bool partTime;
   final bool remote;
@@ -30,7 +30,7 @@ class SearchFilterOptions {
       partTime: false,
       remote: false,
       contract: false,
-      salaryRange: RangeValues(0, 200),
+      salaryRange: defaultSalaryRange,
       experiences: [],
       location: '',
     );
@@ -41,7 +41,7 @@ class SearchFilterOptions {
       !partTime &&
       !remote &&
       !contract &&
-      salaryRange == const RangeValues(0, 200) &&
+      salaryRange == defaultSalaryRange &&
       experiences.isEmpty &&
       location.isEmpty;
 
@@ -154,9 +154,7 @@ class JobSearchProvider extends ChangeNotifier {
               .select('j_id')
               .eq('u_id', currentUserId);
           savedJobIds.addAll((savedResponse as List).map((row) => row['j_id']));
-        } catch (e) {
-          dev.log('Unable to load saved jobs: $e');
-        }
+        } catch (_) {}
       }
 
       _allJobs = (jobsResponse as List)
@@ -167,10 +165,8 @@ class JobSearchProvider extends ChangeNotifier {
             ),
           )
           .toList();
-      dev.log('Loaded ${_allJobs.length} jobs from Supabase');
       _hasLoadedOnce = true;
     } catch (e) {
-      dev.log('Unable to load jobs from Supabase: $e');
       _allJobs = [];
       _errorMessage = 'Không tải được dữ liệu từ Supabase.';
       _hasLoadedOnce = true;
@@ -346,13 +342,13 @@ class JobSearchProvider extends ChangeNotifier {
   int _extractSalaryK(String salaryText) {
     if (salaryText.trim().isEmpty) return 0;
 
-    final normalized = salaryText.toLowerCase();
-    final withK = RegExp(r'(\d{2,3})\s*k').firstMatch(normalized);
+    final normalized = salaryText.toLowerCase().replaceAll(',', '');
+    final withK = RegExp(r'(\d+(?:\.\d+)?)\s*k').firstMatch(normalized);
     if (withK != null) {
-      return int.tryParse(withK.group(1) ?? '') ?? 0;
+      return double.tryParse(withK.group(1) ?? '')?.round() ?? 0;
     }
 
-    final withoutK = RegExp(r'(\d{2,3})').firstMatch(normalized);
+    final withoutK = RegExp(r'(\d{1,7})').firstMatch(normalized);
     if (withoutK != null) {
       return int.tryParse(withoutK.group(1) ?? '') ?? 0;
     }
