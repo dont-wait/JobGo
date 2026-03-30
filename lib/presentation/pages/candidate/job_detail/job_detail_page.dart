@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_info_grid.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_description_section.dart';
@@ -11,7 +11,7 @@ import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dar
 
 /// Trang chi tiết công việc
 class JobDetailPage extends StatefulWidget {
-  final MockJob job;
+  final JobModel job;
 
   const JobDetailPage({super.key, required this.job});
 
@@ -39,9 +39,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
     final overlay = Overlay.of(context);
     late OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (_) => _SavedPopup(
-        onDone: () => entry.remove(),
-      ),
+      builder: (_) => _SavedPopup(onDone: () => entry.remove()),
     );
     overlay.insert(entry);
   }
@@ -135,13 +133,15 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   const SizedBox(height: 24),
 
                   // ── Tags (nếu có) ──
-                  if (widget.job.tags != null && widget.job.tags!.isNotEmpty) ...[
+                  if (widget.job.tags != null &&
+                      widget.job.tags!.isNotEmpty) ...[
                     _buildTags(),
                     const SizedBox(height: 24),
                   ],
 
                   // ── About the Role ──
-                  if (widget.job.description != null && widget.job.description!.isNotEmpty) ...[
+                  if (widget.job.description != null &&
+                      widget.job.description!.isNotEmpty) ...[
                     JobDescriptionSection(description: widget.job.description!),
                     const SizedBox(height: 24),
                   ],
@@ -149,12 +149,15 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   // ── Requirements ──
                   if (widget.job.requirements != null &&
                       widget.job.requirements!.isNotEmpty) ...[
-                    JobRequirementsSection(requirements: widget.job.requirements!),
+                    JobRequirementsSection(
+                      requirements: widget.job.requirements!,
+                    ),
                     const SizedBox(height: 24),
                   ],
 
                   // ── Benefits ──
-                  if (widget.job.benefits != null && widget.job.benefits!.isNotEmpty) ...[
+                  if (widget.job.benefits != null &&
+                      widget.job.benefits!.isNotEmpty) ...[
                     JobBenefitsSection(benefits: widget.job.benefits!),
                     const SizedBox(height: 16),
                   ],
@@ -164,9 +167,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
 
           // ── Apply Button cố định ở dưới ──
-          JobApplyButton(
-            onPressed: () => navigateToApply(context, widget.job),
-          ),
+          JobApplyButton(onPressed: () => navigateToApply(context, widget.job)),
         ],
       ),
     );
@@ -281,10 +282,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
         Text(
           // Xử lý số nhiều tiếng Anh: 1 applicant / 5 applicants
           '${widget.job.applicants} applicant${widget.job.applicants! > 1 ? 's' : ''} so far',
-          style: const TextStyle(
-            fontSize: 13,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -369,7 +367,10 @@ class _SavedPopupState extends State<_SavedPopup>
               scale: _scale,
               child: Container(
                 width: 200,
-                padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 28,
+                  horizontal: 24,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(24),

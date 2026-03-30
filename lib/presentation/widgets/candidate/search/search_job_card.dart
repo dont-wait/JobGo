@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/pages/candidate/job_detail/job_detail_page.dart';
 import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
 
 /// Card hiển thị 1 kết quả tìm kiếm công việc
 class SearchJobCard extends StatelessWidget {
-  final MockJob job;
+  final JobModel job;
 
   const SearchJobCard({super.key, required this.job});
 
@@ -116,7 +116,10 @@ class SearchJobCard extends StatelessWidget {
                 runSpacing: 6,
                 children: job.tags!.take(3).map((tag) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.lightBackground,
                       borderRadius: BorderRadius.circular(6),
@@ -139,17 +142,27 @@ class SearchJobCard extends StatelessWidget {
             // ── Row 4: Posted time + Apply button ──
             Row(
               children: [
-                const Icon(Icons.schedule_rounded, size: 14, color: AppColors.textHint),
+                const Icon(
+                  Icons.schedule_rounded,
+                  size: 14,
+                  color: AppColors.textHint,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   job.postedTime.isNotEmpty ? job.postedTime : 'Recently',
-                  style: const TextStyle(fontSize: 11, color: AppColors.textHint),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textHint,
+                  ),
                 ),
                 if (job.applicants != null && job.applicants! > 0) ...[
                   const SizedBox(width: 12),
                   Text(
                     '${job.applicants} applicants',
-                    style: const TextStyle(fontSize: 11, color: AppColors.textHint),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textHint,
+                    ),
                   ),
                 ],
                 const Spacer(),
@@ -168,7 +181,13 @@ class SearchJobCard extends StatelessWidget {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize: const Size(0, 32),
                     ),
-                    child: const Text('Apply Now', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                    child: const Text(
+                      'Apply Now',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -184,7 +203,9 @@ class SearchJobCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isUrgent ? AppColors.error.withOpacity(0.1) : AppColors.primary.withOpacity(0.1),
+        color: isUrgent
+            ? AppColors.error.withOpacity(0.1)
+            : AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(

@@ -2,7 +2,7 @@ import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/data/models/job_model.dart';
 
 class SearchFilterOptions {
   final bool fullTime;
@@ -59,7 +59,7 @@ class SearchFilterOptions {
 class JobSearchProvider extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  List<MockJob> _allJobs = [];
+  List<JobModel> _allJobs = [];
   String _searchQuery = '';
   String? _selectedQuickFilter;
   SearchFilterOptions _advancedFilters = SearchFilterOptions.initial();
@@ -68,7 +68,7 @@ class JobSearchProvider extends ChangeNotifier {
   bool _hasLoadedOnce = false;
   String? _errorMessage;
 
-  List<MockJob> get allJobs => List.unmodifiable(_allJobs);
+  List<JobModel> get allJobs => List.unmodifiable(_allJobs);
   String get searchQuery => _searchQuery;
   String? get selectedQuickFilter => _selectedQuickFilter;
   SearchFilterOptions get advancedFilters => _advancedFilters;
@@ -76,7 +76,7 @@ class JobSearchProvider extends ChangeNotifier {
   bool get isRefreshing => _isRefreshing;
   String? get errorMessage => _errorMessage;
 
-  List<MockJob> get filteredJobs {
+  List<JobModel> get filteredJobs {
     final query = _searchQuery.trim().toLowerCase();
     final jobs = _allJobs.where((job) {
       return _matchesQuery(job, query) &&
@@ -201,7 +201,7 @@ class JobSearchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _matchesQuery(MockJob job, String query) {
+  bool _matchesQuery(JobModel job, String query) {
     if (query.isEmpty) return true;
 
     final searchableText = <String>[
@@ -218,7 +218,7 @@ class JobSearchProvider extends ChangeNotifier {
     return searchableText.contains(query);
   }
 
-  bool _matchesQuickFilter(MockJob job) {
+  bool _matchesQuickFilter(JobModel job) {
     final filter = _selectedQuickFilter;
     if (filter == null || filter.isEmpty) return true;
 
@@ -240,7 +240,7 @@ class JobSearchProvider extends ChangeNotifier {
     }
   }
 
-  bool _matchesAdvancedFilters(MockJob job) {
+  bool _matchesAdvancedFilters(JobModel job) {
     final filters = _advancedFilters;
 
     if (filters.fullTime ||
@@ -276,7 +276,7 @@ class JobSearchProvider extends ChangeNotifier {
     return true;
   }
 
-  bool _matchesExperienceLevel(MockJob job, List<String> experiences) {
+  bool _matchesExperienceLevel(JobModel job, List<String> experiences) {
     final searchableText = <String>[
       job.title,
       job.description ?? '',
@@ -289,7 +289,7 @@ class JobSearchProvider extends ChangeNotifier {
     });
   }
 
-  bool _containsExperience(MockJob job) {
+  bool _containsExperience(JobModel job) {
     final searchableText = <String>[
       job.title,
       job.description ?? '',
@@ -324,7 +324,7 @@ class JobSearchProvider extends ChangeNotifier {
     return 0;
   }
 
-  int _relevanceScore(MockJob job, String query) {
+  int _relevanceScore(JobModel job, String query) {
     if (query.isEmpty) return 0;
 
     final title = job.title.toLowerCase();
@@ -338,7 +338,7 @@ class JobSearchProvider extends ChangeNotifier {
     return 10;
   }
 
-  MockJob _mapJob(Map<String, dynamic> json, bool isBookmarked) {
+  JobModel _mapJob(Map<String, dynamic> json, bool isBookmarked) {
     final employer = json['employers'];
     final employerMap = employer is Map<String, dynamic>
         ? employer
@@ -399,7 +399,7 @@ class JobSearchProvider extends ChangeNotifier {
       json['j_badge'] ?? (json['j_is_urgent'] == true ? 'URGENT' : ''),
     );
 
-    return MockJob(
+    return JobModel(
       id: _stringValue(json['j_id'] ?? json['id'], fallback: ''),
       title: title,
       company: company,
