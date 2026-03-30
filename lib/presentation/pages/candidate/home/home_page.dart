@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/data/mockdata/mock_jobs.dart';
 import 'package:jobgo/presentation/pages/candidate/search/search_page.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/home_search_bar.dart';
@@ -99,7 +100,9 @@ class HomePage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
+                MaterialPageRoute(
+                  builder: (_) => JobDetailPage(job: JobModel.fromMockJob(job)),
+                ),
               );
             },
           );
@@ -126,7 +129,9 @@ class HomePage extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
+              MaterialPageRoute(
+                builder: (_) => JobDetailPage(job: JobModel.fromMockJob(job)),
+              ),
             );
           },
           onBookmark: () {

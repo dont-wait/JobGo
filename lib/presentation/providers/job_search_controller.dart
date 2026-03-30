@@ -132,6 +132,7 @@ class JobSearchProvider extends ChangeNotifier {
             ),
           )
           .toList();
+      dev.log('Loaded ${_allJobs.length} jobs from Supabase');
       _hasLoadedOnce = true;
     } catch (e) {
       dev.log('Unable to load jobs from Supabase: $e');

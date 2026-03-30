@@ -1,3 +1,5 @@
+import 'package:jobgo/data/mockdata/mock_jobs.dart';
+
 class JobModel {
   final String id;
   final String title;
@@ -121,6 +123,28 @@ class JobModel {
       applicants: _toIntValue(
         json['j_applicants'] ?? json['applicants'] ?? json['application_count'],
       ),
+    );
+  }
+
+  factory JobModel.fromMockJob(MockJob job) {
+    return JobModel(
+      id: job.id,
+      title: job.title,
+      company: job.company,
+      logoColor: job.logoColor,
+      logoText: job.logoText,
+      logoUrl: job.logoUrl,
+      location: job.location,
+      salary: job.salary,
+      type: job.type,
+      postedTime: job.postedTime,
+      isBookmarked: job.isBookmarked,
+      badge: job.badge,
+      description: job.description,
+      requirements: job.requirements,
+      benefits: job.benefits,
+      tags: job.tags,
+      applicants: job.applicants,
     );
   }
 

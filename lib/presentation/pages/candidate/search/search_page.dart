@@ -210,6 +210,16 @@ class _SearchPageState extends State<SearchPage> {
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+                    child: Text(
+                      'Loaded from Supabase: ${provider.allJobs.length}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
                   if (provider.isLoading && jobs.isEmpty)
                     const Expanded(
                       child: Center(child: CircularProgressIndicator()),
