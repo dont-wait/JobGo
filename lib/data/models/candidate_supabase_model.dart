@@ -56,5 +56,45 @@ class CandidateSupabaseModel {
       email: user?['u_email'] as String?,
       role: user?['u_role'] as String?,
     );
+    
   }
+  
+  CandidateSupabaseModel copyWith({
+    int? cId,
+    String? fullName,
+    String? dateOfBirth,
+    String? gender,
+    String? address,
+    String? skill,
+    String? phone,
+    String? avatarUrl,
+    String? education,
+    String? experience,
+    String? resume,
+    double? desiredSalaryMin,
+    double? desiredSalaryMax,
+    int? uId,
+    String? email,
+    String? role,
+  }) {
+    return CandidateSupabaseModel(
+      cId: cId ?? this.cId,
+      fullName: fullName ?? this.fullName,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      gender: gender ?? this.gender,
+      address: address ?? this.address,
+      skill: skill ?? this.skill,
+      phone: phone ?? this.phone,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      education: education ?? this.education,
+      experience: experience ?? this.experience,
+      resume: resume ?? this.resume,
+      desiredSalaryMin: desiredSalaryMin ?? this.desiredSalaryMin,
+      desiredSalaryMax: desiredSalaryMax ?? this.desiredSalaryMax,
+      uId: uId ?? this.uId,
+      email: email ?? this.email,
+      role: role ?? this.role,
+    );
+  }
+
 }

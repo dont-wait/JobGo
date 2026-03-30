@@ -63,4 +63,11 @@ class ProfileProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+  void updateResume(String url) {
+    if (_candidate != null) {
+      _candidate = _candidate!.copyWith(resume: url);
+      notifyListeners();
+    }
+  }
+
 }
