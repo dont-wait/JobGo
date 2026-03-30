@@ -92,9 +92,7 @@ class _FavoriteJobCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => JobDetailPage(job: job.toMockJob()),
-          ),
+          MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
         );
       },
       child: Container(
