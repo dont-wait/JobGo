@@ -9,7 +9,7 @@ class CandidateSupabaseModel {
   final String? avatarUrl;
   final String? education;
   final String? experience;
-  final String? resume;
+  final List<String>? resumes;
   final double? desiredSalaryMin;
   final double? desiredSalaryMax;
   final int uId;
@@ -31,7 +31,7 @@ class CandidateSupabaseModel {
     this.avatarUrl,
     this.education,
     this.experience,
-    this.resume,
+    this.resumes,
     this.desiredSalaryMin,
     this.desiredSalaryMax,
     required this.uId,
@@ -58,7 +58,7 @@ class CandidateSupabaseModel {
       avatarUrl: _nullableStringValue(json['c_avatar_url']),
       education: _nullableStringValue(json['c_education']),
       experience: _nullableStringValue(json['c_experience']),
-      resume: _nullableStringValue(json['c_resume']),
+      resumes: _toList(json['c_resume'] ?? json['resume']),
       desiredSalaryMin: _toDouble(json['c_desired_salary_min']),
       desiredSalaryMax: _toDouble(json['c_desired_salary_max']),
       uId: _toInt(json['u_id']) ?? 0,
@@ -82,7 +82,7 @@ class CandidateSupabaseModel {
     String? avatarUrl,
     String? education,
     String? experience,
-    String? resume,
+    List<String>? resumes,
     double? desiredSalaryMin,
     double? desiredSalaryMax,
     int? uId,
@@ -104,7 +104,7 @@ class CandidateSupabaseModel {
       avatarUrl: avatarUrl ?? this.avatarUrl,
       education: education ?? this.education,
       experience: experience ?? this.experience,
-      resume: resume ?? this.resume,
+      resumes: resumes ?? this.resumes,
       desiredSalaryMin: desiredSalaryMin ?? this.desiredSalaryMin,
       desiredSalaryMax: desiredSalaryMax ?? this.desiredSalaryMax,
       uId: uId ?? this.uId,
@@ -217,6 +217,9 @@ class CandidateSupabaseModel {
     skillList.join(' '),
   ].join(' ').toLowerCase();
 
+  String? get resume =>
+      (resumes != null && resumes!.isNotEmpty) ? resumes!.first : null;
+
   String get initials {
     final parts = displayName
         .split(RegExp(r'\s+'))
@@ -229,7 +232,9 @@ class CandidateSupabaseModel {
   }
 
   String get resumeFileName {
-    final rawResume = _cleanValue(resume, fallback: '');
+    final rawResume = (resumes != null && resumes!.isNotEmpty)
+        ? resumes!.first
+        : '';
     if (rawResume.isEmpty) {
       return '${displayName.toLowerCase().replaceAll(RegExp(r'\s+'), '_')}_resume.pdf';
     }
@@ -344,5 +349,22 @@ class CandidateSupabaseModel {
     if (value == null) return null;
     if (value is DateTime) return value;
     return DateTime.tryParse(value.toString());
+  }
+
+  static List<String>? _toList(dynamic value) {
+    if (value == null) return null;
+    if (value is List) {
+      return value.map((e) => e.toString()).toList();
+    }
+    // If it's a string like "{url1,url2}", it might be from a direct SQL query
+    if (value is String) {
+      if (value.startsWith('{') && value.endsWith('}')) {
+        final content = value.substring(1, value.length - 1);
+        if (content.isEmpty) return [];
+        return content.split(',').map((e) => e.trim()).toList();
+      }
+      return [value];
+    }
+    return null;
   }
 }

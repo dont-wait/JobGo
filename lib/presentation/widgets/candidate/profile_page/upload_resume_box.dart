@@ -115,10 +115,7 @@ class _UploadResumeBoxState extends State<UploadResumeBox> {
           const SizedBox(height: 4),
           const Text(
             'PDF, DOCX up to 10MB',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
           const SizedBox(height: 12),
           ElevatedButton(
@@ -169,26 +166,11 @@ class _UploadResumeBoxState extends State<UploadResumeBox> {
           .from('cv-bucket')
           .getPublicUrl(filePath);
 
-      // Lấy u_id
-      final userRow = await supabase
-          .from('users')
-          .select('u_id')
-          .or('auth_uid.eq.${authUser.id},u_email.eq.${authUser.email}')
-          .maybeSingle();
-
-      if (userRow == null) return;
-      final uId = userRow['u_id'] as int;
-
-      // Update c_resume trong bảng candidates
-      await supabase
-          .from('candidates')
-          .update({'c_resume': publicUrl})
-          .eq('u_id', uId);
+      // Update c_resume trong bảng candidates - sử dụng ProfileProvider để thêm vào mảng
+      if (!mounted) return;
+      await context.read<ProfileProvider>().addResume(publicUrl);
 
       if (!mounted) return;
-
-      // Reload profile để hiển thị CV mới
-      context.read<ProfileProvider>().reloadProfile();
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -198,9 +180,9 @@ class _UploadResumeBoxState extends State<UploadResumeBox> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Upload thất bại: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Upload thất bại: $e')));
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }

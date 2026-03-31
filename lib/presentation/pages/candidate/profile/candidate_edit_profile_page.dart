@@ -25,7 +25,6 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _educationCtrl;
   late final TextEditingController _experienceCtrl;
-  late final TextEditingController _cvUrlCtrl;
   late final TextEditingController _salaryMinCtrl;
   late final TextEditingController _salaryMaxCtrl;
   late final TextEditingController _emailCtrl;
@@ -44,9 +43,12 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
     _phoneCtrl = TextEditingController(text: c?.phone ?? '');
     _educationCtrl = TextEditingController(text: c?.education ?? '');
     _experienceCtrl = TextEditingController(text: c?.experience ?? '');
-    _cvUrlCtrl = TextEditingController(text: c?.resume ?? '');
-    _salaryMinCtrl = TextEditingController(text: c?.desiredSalaryMin?.toString() ?? '');
-    _salaryMaxCtrl = TextEditingController(text: c?.desiredSalaryMax?.toString() ?? '');
+    _salaryMinCtrl = TextEditingController(
+      text: c?.desiredSalaryMin?.toString() ?? '',
+    );
+    _salaryMaxCtrl = TextEditingController(
+      text: c?.desiredSalaryMax?.toString() ?? '',
+    );
     _emailCtrl = TextEditingController(text: c?.email ?? '');
     _titleCtrl = TextEditingController(text: c?.title ?? '');
     _summaryCtrl = TextEditingController(text: c?.summary ?? '');
@@ -62,7 +64,6 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
     _phoneCtrl.dispose();
     _educationCtrl.dispose();
     _experienceCtrl.dispose();
-    _cvUrlCtrl.dispose();
     _salaryMinCtrl.dispose();
     _salaryMaxCtrl.dispose();
     _emailCtrl.dispose();
@@ -87,31 +88,38 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
         }
 
         // UPDATE bảng candidates
-        await supabase.from('candidates').update({
-          'c_full_name': _nameCtrl.text.trim(),
-          'c_date_of_birth': _dobCtrl.text.trim().isEmpty ? null : _dobCtrl.text.trim(),
-          'c_gender': _genderCtrl.text.trim(),
-          'c_address': _addressCtrl.text.trim(),
-          'c_skill': _skillCtrl.text.trim(),
-          'c_phone': _phoneCtrl.text.trim(),
-          'c_education': _educationCtrl.text.trim(),
-          'c_experience': _experienceCtrl.text.trim(),
-          'c_resume': _cvUrlCtrl.text.trim(),
-          'c_desired_salary_min': _salaryMinCtrl.text.trim().isEmpty
-              ? null
-              : double.tryParse(_salaryMinCtrl.text.trim()),
-          'c_desired_salary_max': _salaryMaxCtrl.text.trim().isEmpty
-              ? null
-              : double.tryParse(_salaryMaxCtrl.text.trim()),
-          'c_title': _titleCtrl.text.trim(),
-          'c_summary': _summaryCtrl.text.trim(),
-        }).eq('u_id', uId);
+        await supabase
+            .from('candidates')
+            .update({
+              'c_full_name': _nameCtrl.text.trim(),
+              'c_date_of_birth': _dobCtrl.text.trim().isEmpty
+                  ? null
+                  : _dobCtrl.text.trim(),
+              'c_gender': _genderCtrl.text.trim(),
+              'c_address': _addressCtrl.text.trim(),
+              'c_skill': _skillCtrl.text.trim(),
+              'c_phone': _phoneCtrl.text.trim(),
+              'c_education': _educationCtrl.text.trim(),
+              'c_experience': _experienceCtrl.text.trim(),
+              'c_desired_salary_min': _salaryMinCtrl.text.trim().isEmpty
+                  ? null
+                  : double.tryParse(_salaryMinCtrl.text.trim()),
+              'c_desired_salary_max': _salaryMaxCtrl.text.trim().isEmpty
+                  ? null
+                  : double.tryParse(_salaryMaxCtrl.text.trim()),
+              'c_title': _titleCtrl.text.trim(),
+              'c_summary': _summaryCtrl.text.trim(),
+            })
+            .eq('u_id', uId);
 
         //  UPDATE u_name trong bảng users nếu đổi tên
-        await supabase.from('users').update({
-          'u_name': _nameCtrl.text.trim(),
-          'u_phone': _phoneCtrl.text.trim(),
-        }).eq('u_id', uId);
+        await supabase
+            .from('users')
+            .update({
+              'u_name': _nameCtrl.text.trim(),
+              'u_phone': _phoneCtrl.text.trim(),
+            })
+            .eq('u_id', uId);
 
         if (!mounted) return;
 
@@ -128,9 +136,9 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi cập nhật: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Lỗi cập nhật: $e')));
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -168,20 +176,78 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
               _buildAvatar(widget.candidate?.avatarUrl),
               const SizedBox(height: 28),
 
-              _buildField(label: 'Full Name', controller: _nameCtrl, icon: Icons.person_outline),
-              _buildField(label: 'Date of Birth', controller: _dobCtrl, icon: Icons.cake_outlined),
-              _buildField(label: 'Gender', controller: _genderCtrl, icon: Icons.wc_outlined),
-              _buildField(label: 'Address', controller: _addressCtrl, icon: Icons.home_outlined),
-              _buildField(label: 'Skill', controller: _skillCtrl, icon: Icons.build_outlined, maxLines: 2),
-              _buildField(label: 'Phone', controller: _phoneCtrl, icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
-              _buildField(label: 'Email', controller: _emailCtrl, icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress),
-              _buildField(label: 'Education', controller: _educationCtrl, icon: Icons.school_outlined),
-              _buildField(label: 'Experience', controller: _experienceCtrl, icon: Icons.work_outline, maxLines: 2),
-              _buildField(label: 'CV URL', controller: _cvUrlCtrl, icon: Icons.picture_as_pdf_outlined, keyboardType: TextInputType.url),
-              _buildField(label: 'Desired Salary Min', controller: _salaryMinCtrl, icon: Icons.attach_money, keyboardType: TextInputType.number),
-              _buildField(label: 'Desired Salary Max', controller: _salaryMaxCtrl, icon: Icons.attach_money, keyboardType: TextInputType.number),
-              _buildField(label: 'Job Title', controller: _titleCtrl, icon: Icons.title_outlined),
-              _buildField(label: 'Summary', controller: _summaryCtrl, icon: Icons.description, maxLines: 3),
+              _buildField(
+                label: 'Full Name',
+                controller: _nameCtrl,
+                icon: Icons.person_outline,
+              ),
+              _buildField(
+                label: 'Date of Birth',
+                controller: _dobCtrl,
+                icon: Icons.cake_outlined,
+              ),
+              _buildField(
+                label: 'Gender',
+                controller: _genderCtrl,
+                icon: Icons.wc_outlined,
+              ),
+              _buildField(
+                label: 'Address',
+                controller: _addressCtrl,
+                icon: Icons.home_outlined,
+              ),
+              _buildField(
+                label: 'Skill',
+                controller: _skillCtrl,
+                icon: Icons.build_outlined,
+                maxLines: 2,
+              ),
+              _buildField(
+                label: 'Phone',
+                controller: _phoneCtrl,
+                icon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
+              _buildField(
+                label: 'Email',
+                controller: _emailCtrl,
+                icon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              _buildField(
+                label: 'Education',
+                controller: _educationCtrl,
+                icon: Icons.school_outlined,
+              ),
+              _buildField(
+                label: 'Experience',
+                controller: _experienceCtrl,
+                icon: Icons.work_outline,
+                maxLines: 2,
+              ),
+              _buildField(
+                label: 'Desired Salary Min',
+                controller: _salaryMinCtrl,
+                icon: Icons.attach_money,
+                keyboardType: TextInputType.number,
+              ),
+              _buildField(
+                label: 'Desired Salary Max',
+                controller: _salaryMaxCtrl,
+                icon: Icons.attach_money,
+                keyboardType: TextInputType.number,
+              ),
+              _buildField(
+                label: 'Job Title',
+                controller: _titleCtrl,
+                icon: Icons.title_outlined,
+              ),
+              _buildField(
+                label: 'Summary',
+                controller: _summaryCtrl,
+                icon: Icons.description,
+                maxLines: 3,
+              ),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
@@ -225,7 +291,11 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
                 : null,
             backgroundColor: AppColors.lightBackground,
             child: avatarUrl == null
-                ? const Icon(Icons.person_outline, size: 40, color: AppColors.textHint)
+                ? const Icon(
+                    Icons.person_outline,
+                    size: 40,
+                    color: AppColors.textHint,
+                  )
                 : null,
           ),
           Positioned(
@@ -243,7 +313,11 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.white, width: 2),
                 ),
-                child: const Icon(Icons.camera_alt_rounded, size: 16, color: AppColors.white),
+                child: const Icon(
+                  Icons.camera_alt_rounded,
+                  size: 16,
+                  color: AppColors.white,
+                ),
               ),
             ),
           ),
@@ -264,12 +338,14 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
+          Text(
+            label,
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
-            )),
+            ),
+          ),
           const SizedBox(height: 6),
           TextFormField(
             controller: controller,
@@ -300,10 +376,14 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
               ),
             ),
-            validator: (v) => v == null || v.trim().isEmpty ? '$label is required' : null,
+            validator: (v) =>
+                v == null || v.trim().isEmpty ? '$label is required' : null,
           ),
         ],
       ),

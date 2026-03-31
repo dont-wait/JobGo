@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
 import '../../../../presentation/pages/settings/settings_page.dart';
+import '../../../../data/models/candidate_supabase_model.dart';
 import '../../../../presentation/providers/profile_provider.dart';
 import '../../../widgets/candidate/profile_page/skills_section.dart';
 import '../../../widgets/candidate/profile_page/profile_header.dart';
@@ -26,9 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     // Load profile khi vào trang
-    Future.microtask(() =>
-      context.read<ProfileProvider>().loadProfile()
-    );
+    Future.microtask(() => context.read<ProfileProvider>().loadProfile());
   }
 
   @override
@@ -73,7 +72,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const SettingsPage(role: UserRole.candidate),
+                      builder: (_) =>
+                          const SettingsPage(role: UserRole.candidate),
                     ),
                   );
                 },
@@ -118,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Widget _buildInfoTab(candidate) {
+  Widget _buildInfoTab(CandidateSupabaseModel? candidate) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -131,28 +131,41 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         const SizedBox(height: 12),
-        if (candidate?.resume != null)
-          ResumeCard(
-            title: candidate!.resume!,
-            subtitle: 'CV của bạn',
-            isDefault: true,
+        if (candidate?.resumes != null && candidate!.resumes!.isNotEmpty)
+          ...candidate.resumes!
+              .map(
+                (url) => ResumeCard(
+                  title: url.split('/').last,
+                  subtitle:
+                      'Tải lên vào ${candidate.createdAt != null ? candidate.createdAt!.toString().substring(0, 10) : "Gần đây"}',
+                  onTap: () {
+                    // TODO: view resume URL
+                  },
+                  onDelete: () {
+                    context.read<ProfileProvider>().removeResume(url);
+                  },
+                ),
+              )
+              .toList(),
+        if (candidate?.title != null && candidate!.title!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            child: Text(
+              'Vị trí mong muốn: ${candidate.title}',
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            ),
           ),
-          if (candidate?.title != null && candidate!.title!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                'Vị trí mong muốn: ${candidate.title}',
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        if (candidate?.summary != null && candidate!.summary!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              candidate.summary!,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
               ),
             ),
-          if (candidate?.summary != null && candidate!.summary!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                candidate.summary!,
-                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
-              ),
-            ),
+          ),
         const SizedBox(height: 16),
         const UploadResumeBox(),
       ],
