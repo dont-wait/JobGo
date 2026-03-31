@@ -17,6 +17,8 @@ class CandidateSupabaseModel {
   final String? role;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? title;
+  final String? summary;
 
   CandidateSupabaseModel({
     required this.cId,
@@ -37,6 +39,8 @@ class CandidateSupabaseModel {
     this.role,
     this.createdAt,
     this.updatedAt,
+    this.title,
+    this.summary,
   });
 
   factory CandidateSupabaseModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +66,8 @@ class CandidateSupabaseModel {
       role: _nullableStringValue(user?['u_role'] ?? json['u_role']),
       createdAt: _toDateTime(json['c_created_at'] ?? json['created_at']),
       updatedAt: _toDateTime(json['c_updated_at'] ?? json['updated_at']),
+      title: _nullableStringValue(json['c_title']),
+      summary: _nullableStringValue(json['c_summary']),
     );
   }
 
@@ -84,6 +90,8 @@ class CandidateSupabaseModel {
     String? role,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? title,
+    String? summary,
   }) {
     return CandidateSupabaseModel(
       cId: cId ?? this.cId,
@@ -104,6 +112,8 @@ class CandidateSupabaseModel {
       role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      title: title ?? this.title,
+      summary: summary ?? this.summary,
     );
   }
 
