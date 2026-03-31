@@ -6,6 +6,7 @@ class Step1JobDetailsWidget extends StatelessWidget {
   final TextEditingController locationController;
   final String selectedCategory;
   final String selectedEmploymentType;
+  final List<String> categoryOptions;
   final ValueChanged<String> onCategoryChanged;
   final ValueChanged<String> onEmploymentTypeChanged;
 
@@ -15,12 +16,29 @@ class Step1JobDetailsWidget extends StatelessWidget {
     required this.locationController,
     required this.selectedCategory,
     required this.selectedEmploymentType,
+    this.categoryOptions = const [
+      'Select Category',
+      'Engineering',
+      'Design',
+      'Marketing',
+      'Product',
+      'Operations',
+      'Sales',
+      'Business',
+    ],
     required this.onCategoryChanged,
     required this.onEmploymentTypeChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final availableCategories = List<String>.from(categoryOptions);
+    if (selectedCategory.isNotEmpty &&
+        selectedCategory != 'Select Category' &&
+        !availableCategories.contains(selectedCategory)) {
+      availableCategories.insert(1, selectedCategory);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,14 +59,14 @@ class Step1JobDetailsWidget extends StatelessWidget {
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: selectedCategory,
-          items: [
-            'Select Category',
-            'Engineering',
-            'Design',
-            'Marketing',
-            'Product',
-          ].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-          onChanged: (v) => onCategoryChanged(v!),
+          items: availableCategories
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
+          onChanged: (v) {
+            if (v != null) {
+              onCategoryChanged(v);
+            }
+          },
           decoration: const InputDecoration(),
         ),
         const SizedBox(height: 20),

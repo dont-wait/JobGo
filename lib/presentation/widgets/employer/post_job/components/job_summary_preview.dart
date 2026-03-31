@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/models/employer_job_model.dart';
 
 class JobSummaryPreview extends StatelessWidget {
-  final String jobTitle;
-  final String location;
-  final String experience;
+  final EmployerJobModel job;
 
-  const JobSummaryPreview({
-    super.key,
-    required this.jobTitle,
-    required this.location,
-    required this.experience,
-  });
+  const JobSummaryPreview({super.key, required this.job});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +32,7 @@ class JobSummaryPreview extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  jobTitle,
+                  job.title.isEmpty ? 'Untitled Job' : job.title,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -48,30 +42,42 @@ class JobSummaryPreview extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              const Icon(
-                Icons.location_on_outlined,
-                size: 18,
-                color: AppColors.textSecondary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                location,
-                style: const TextStyle(color: AppColors.textSecondary),
-              ),
-              const Spacer(),
-              const Icon(
-                Icons.timeline_outlined,
-                size: 18,
-                color: AppColors.textSecondary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                experience,
-                style: const TextStyle(color: AppColors.textSecondary),
-              ),
-            ],
+              _buildMetaChip(Icons.location_on_outlined, job.location),
+              _buildMetaChip(Icons.work_outline, job.employmentType),
+              _buildMetaChip(Icons.people_outline, job.positionsLabel),
+              _buildMetaChip(Icons.event_outlined, job.deadlineLabel),
+              _buildMetaChip(Icons.payments_outlined, job.salaryLabel),
+            ].where((widget) => widget != null).cast<Widget>().toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetaChip(IconData icon, String value) {
+    if (value.trim().isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: AppColors.primary),
+          const SizedBox(width: 6),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),

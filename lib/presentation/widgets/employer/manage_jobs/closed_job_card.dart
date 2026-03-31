@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+
+import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class ClosedJobCard extends StatelessWidget {
-  final String jobTitle;
-  final int applicantsCount;
-  final String endedTime;
+  final EmployerJobModel job;
+  final VoidCallback onReopen;
+  final VoidCallback onDelete;
+  final VoidCallback? onViewHistory;
 
   const ClosedJobCard({
     super.key,
-    required this.jobTitle,
-    required this.applicantsCount,
-    this.endedTime = 'Ended 1 week ago',
+    required this.job,
+    required this.onReopen,
+    required this.onDelete,
+    this.onViewHistory,
   });
 
   @override
@@ -27,16 +31,27 @@ class ClosedJobCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
-                'CLOSED',
-                style: TextStyle(
-                  color: AppColors.error,
-                  fontWeight: FontWeight.w600,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'CLOSED',
+                  style: TextStyle(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
                 ),
               ),
               const Spacer(),
               Text(
-                endedTime,
+                job.updatedLabel,
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
@@ -46,7 +61,7 @@ class ClosedJobCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            jobTitle,
+            job.title.isEmpty ? 'Untitled Job' : job.title,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           Row(
@@ -58,12 +73,12 @@ class ClosedJobCard extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                '$applicantsCount Applicants',
+                '${job.applicationCount} Applicants',
                 style: const TextStyle(color: AppColors.textSecondary),
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () {},
+                onTap: onViewHistory,
                 child: const Text(
                   'View History →',
                   style: TextStyle(color: AppColors.primary),
@@ -76,7 +91,7 @@ class ClosedJobCard extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: onReopen,
                   icon: const Icon(Icons.refresh, size: 18),
                   label: const Text('Reopen'),
                 ),
@@ -84,7 +99,7 @@ class ClosedJobCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: onDelete,
                   icon: const Icon(
                     Icons.delete_outline,
                     size: 18,

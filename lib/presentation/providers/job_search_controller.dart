@@ -419,7 +419,7 @@ class JobSearchProvider extends ChangeNotifier {
 
     final benefits = _toStringList(json['j_benefits'] ?? json['benefits']);
 
-    final description = _stringValue(
+    final description = _textValue(
       json['j_description'] ?? json['description'] ?? '',
     );
 
@@ -460,20 +460,128 @@ class JobSearchProvider extends ChangeNotifier {
 
   List<String> _toStringList(dynamic value) {
     if (value == null) return [];
+
+    final items = <String>[];
+
+    void addValue(dynamic entry) {
+      if (entry == null) return;
+
+      if (entry is List) {
+        for (final nested in entry) {
+          addValue(nested);
+        }
+        return;
+      }
+
+      final raw = entry.toString().trim();
+      if (raw.isEmpty) return;
+
+      if ((raw.startsWith('[') && raw.endsWith(']')) ||
+          (raw.startsWith('{') && raw.endsWith('}'))) {
+        final inner = raw.substring(1, raw.length - 1).trim();
+        if (inner.isEmpty) return;
+
+        if (inner.contains('\n')) {
+          for (final part in inner.split('\n')) {
+            addValue(part);
+          }
+          return;
+        }
+
+        if (inner.contains(',')) {
+          for (final part in inner.split(',')) {
+            addValue(part);
+          }
+          return;
+        }
+
+        addValue(inner);
+        return;
+      }
+
+      if (raw.contains('\n')) {
+        for (final part in raw.split('\n')) {
+          addValue(part);
+        }
+        return;
+      }
+
+      if (raw.contains(',')) {
+        for (final part in raw.split(',')) {
+          addValue(part);
+        }
+        return;
+      }
+
+      final cleaned = _stripListDecorators(raw);
+      if (cleaned.isNotEmpty) {
+        items.add(cleaned);
+      }
+    }
+
+    addValue(value);
+    return items;
+  }
+
+  String _textValue(dynamic value) {
+    if (value == null) return '';
     if (value is List) {
       return value
           .map((item) => item.toString().trim())
           .where((item) => item.isNotEmpty)
-          .toList();
+          .join('\n');
     }
 
-    final stringValue = value.toString().trim();
-    if (stringValue.isEmpty) return [];
-    return stringValue
-        .split(',')
-        .map((item) => item.trim())
-        .where((item) => item.isNotEmpty)
-        .toList();
+    final text = value.toString().trim();
+    if (text.isEmpty) return '';
+
+    if ((text.startsWith('[') && text.endsWith(']')) ||
+        (text.startsWith('{') && text.endsWith('}'))) {
+      final inner = text.substring(1, text.length - 1).trim();
+      if (inner.isEmpty) return '';
+
+      if (inner.contains('\n')) {
+        return inner
+            .split('\n')
+            .map(_stripListDecorators)
+            .where((item) => item.isNotEmpty)
+            .join('\n');
+      }
+
+      if (inner.contains(',')) {
+        return inner
+            .split(',')
+            .map(_stripListDecorators)
+            .where((item) => item.isNotEmpty)
+            .join('\n');
+      }
+
+      return _stripListDecorators(inner);
+    }
+
+    return _stripListDecorators(text);
+  }
+
+  String _stripListDecorators(String value) {
+    var cleaned = value.trim();
+
+    while (cleaned.isNotEmpty &&
+        (cleaned.startsWith('[') ||
+            cleaned.startsWith('{') ||
+            cleaned.startsWith('"') ||
+            cleaned.startsWith("'"))) {
+      cleaned = cleaned.substring(1).trim();
+    }
+
+    while (cleaned.isNotEmpty &&
+        (cleaned.endsWith(']') ||
+            cleaned.endsWith('}') ||
+            cleaned.endsWith('"') ||
+            cleaned.endsWith("'"))) {
+      cleaned = cleaned.substring(0, cleaned.length - 1).trim();
+    }
+
+    return cleaned;
   }
 
   int _intValue(dynamic value) {
