@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/core/configs/theme/app_colors.dart';
+
 class PreviewBottomActions extends StatelessWidget {
   final Future<void> Function() onSaveDraft;
   final Future<void> Function() onConfirm;
@@ -59,7 +61,7 @@ class PreviewBottomActions extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: isBusy ? null : () => onConfirm(),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: AppColors.orange,
                     minimumSize: const Size(double.infinity, 52),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),

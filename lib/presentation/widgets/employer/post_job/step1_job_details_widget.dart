@@ -16,16 +16,7 @@ class Step1JobDetailsWidget extends StatelessWidget {
     required this.locationController,
     required this.selectedCategory,
     required this.selectedEmploymentType,
-    this.categoryOptions = const [
-      'Select Category',
-      'Engineering',
-      'Design',
-      'Marketing',
-      'Product',
-      'Operations',
-      'Sales',
-      'Business',
-    ],
+    required this.categoryOptions,
     required this.onCategoryChanged,
     required this.onEmploymentTypeChanged,
   });

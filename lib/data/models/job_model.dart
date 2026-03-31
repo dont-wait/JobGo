@@ -135,7 +135,7 @@ class JobModel {
         json['j_posted_at'] ?? json['created_at'] ?? json['j_create_at'] ?? '',
       ),
       isBookmarked: json['j_is_bookmarked'] == true,
-      badge: _stringValue(json['j_badge'] ?? ''),
+      badge: _nullableStringValue(json['j_badge']),
       description: _toTextValue(json['j_description'] ?? json['description']),
       requirements: _toStringList(
         json['j_requirements'] ?? json['requirements'],
@@ -165,7 +165,7 @@ class JobModel {
       'j_type': type,
       'j_posted_at': postedTime,
       'j_is_bookmarked': isBookmarked,
-      'j_badge': badge,
+      'j_badge': _nullableStringValue(badge),
       'j_description': _toTextList(description),
       'j_requirements': requirements,
       'j_benefits': benefits,
@@ -178,6 +178,12 @@ class JobModel {
     if (value == null) return fallback;
     final result = value.toString().trim();
     return result.isEmpty ? fallback : result;
+  }
+
+  static String? _nullableStringValue(dynamic value) {
+    if (value == null) return null;
+    final result = value.toString().trim();
+    return result.isEmpty ? null : result;
   }
 
   static List<String> _toStringList(dynamic value) {

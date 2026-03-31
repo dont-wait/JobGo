@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/data/repositories/employer_job_repository.dart';
+import 'package:jobgo/data/repositories/job_category_repository.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/job_post_preview_page.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/job_step_progress.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step1_job_details_widget.dart';
@@ -22,6 +23,7 @@ class PostJobPage extends StatefulWidget {
 
 class _PostJobPageState extends State<PostJobPage> {
   final EmployerJobRepository _repository = EmployerJobRepository();
+  final JobCategoryRepository _categoryRepository = JobCategoryRepository();
 
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
@@ -34,16 +36,7 @@ class _PostJobPageState extends State<PostJobPage> {
   );
   final TextEditingController deadlineController = TextEditingController();
 
-  static const List<String> _baseCategoryOptions = [
-    'Select Category',
-    'Engineering',
-    'Design',
-    'Marketing',
-    'Product',
-    'Operations',
-    'Sales',
-    'Business',
-  ];
+  List<String> _categoryOptions = ['Select Category'];
 
   int currentStep = 1;
   String selectedCategory = 'Select Category';
@@ -65,14 +58,6 @@ class _PostJobPageState extends State<PostJobPage> {
     deadlineController,
   ];
 
-  List<String> get _categoryOptions {
-    final options = [..._baseCategoryOptions];
-    if (!options.contains(selectedCategory)) {
-      options.insert(0, selectedCategory);
-    }
-    return options;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -80,6 +65,38 @@ class _PostJobPageState extends State<PostJobPage> {
       controller.addListener(_handleTextChanged);
     }
     _seedFromInitialJob();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final categories = await _categoryRepository.fetchJobCategories();
+      if (!mounted) return;
+
+      setState(() {
+        _categoryOptions = _buildCategoryOptions(categories);
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _categoryOptions = ['Select Category'];
+      });
+    }
+  }
+
+  List<String> _buildCategoryOptions(List<String> categories) {
+    final options = <String>['Select Category'];
+
+    for (final category in categories) {
+      final trimmed = category.trim();
+      if (trimmed.isEmpty || trimmed == 'Select Category') continue;
+      if (!options.contains(trimmed)) {
+        options.add(trimmed);
+      }
+    }
+
+    return options;
   }
 
   void _seedFromInitialJob() {
@@ -284,6 +301,15 @@ class _PostJobPageState extends State<PostJobPage> {
       await _repository.saveJob(_draftJob, publish: publish);
       if (!mounted) return false;
 
+      _showSnackBar(
+        publish
+            ? (widget.isEditing
+                  ? 'Job updated successfully!'
+                  : 'Job posted successfully!')
+            : 'Draft saved successfully!',
+        backgroundColor: AppColors.success,
+      );
+
       if (popAfterSuccess) {
         Navigator.pop(context, true);
       }
@@ -301,10 +327,10 @@ class _PostJobPageState extends State<PostJobPage> {
     }
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+  void _showSnackBar(String message, {Color? backgroundColor}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: backgroundColor),
+    );
   }
 
   void _nextStep() {

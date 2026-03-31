@@ -101,6 +101,9 @@ class PreviewCompanyHeader extends StatelessWidget {
 
     final parsed = int.tryParse(hex, radix: 16);
     if (parsed == null) return const Color(0xFF1E2937);
-    return Color(parsed);
+
+    // Normalize 24-bit RGB values (RRGGBB) to opaque ARGB.
+    final argb = parsed <= 0x00FFFFFF ? (parsed | 0xFF000000) : parsed;
+    return Color(argb);
   }
 }

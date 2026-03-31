@@ -112,12 +112,23 @@ class Step3PerksSalaryWidget extends StatelessWidget {
 
   Future<void> _pickDeadline(BuildContext context) async {
     final now = DateTime.now();
-    final initialDate = selectedDeadline ?? now.add(const Duration(days: 14));
+    final firstDate = DateUtils.dateOnly(now);
+    final lastDate = DateUtils.dateOnly(now.add(const Duration(days: 3650)));
+    var initialDate = DateUtils.dateOnly(
+      selectedDeadline ?? now.add(const Duration(days: 14)),
+    );
+
+    if (initialDate.isBefore(firstDate)) {
+      initialDate = firstDate;
+    } else if (initialDate.isAfter(lastDate)) {
+      initialDate = lastDate;
+    }
+
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDate,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 3650)),
+      firstDate: firstDate,
+      lastDate: lastDate,
     );
 
     if (pickedDate != null) {

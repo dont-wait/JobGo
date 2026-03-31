@@ -24,7 +24,6 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
 
   int _currentTab = 0;
   bool _isLoading = true;
-  bool _isRefreshing = false;
   String? _errorMessage;
   List<EmployerJobModel> _jobs = [];
 
@@ -35,9 +34,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
   }
 
   Future<void> _loadJobs({bool refresh = false}) async {
-    if (refresh) {
-      setState(() => _isRefreshing = true);
-    } else {
+    if (!refresh) {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
@@ -63,7 +60,6 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _isRefreshing = false;
       });
     }
   }

@@ -175,7 +175,7 @@ class EmployerJobModel {
       applicationCount:
           _intValue(json['j_application_count'] ?? json['application_count']) ??
           0,
-      badge: _stringValue(json['j_badge'] ?? json['badge']),
+      badge: _nullableStringValue(json['j_badge'] ?? json['badge']),
       tags: _stringList(json['j_tags'] ?? json['tags']),
       benefits: _stringList(json['j_benefits'] ?? json['benefits']),
       createdAt: _dateValue(json['j_create_at'] ?? json['created_at']),
@@ -216,7 +216,7 @@ class EmployerJobModel {
           ? 'draft'
           : moderationStatus.trim(),
       'j_application_count': applicationCount,
-      'j_badge': badge,
+      'j_badge': _nullableStringValue(badge),
       'j_tags': List<String>.from(tags),
       'j_benefits': List<String>.from(benefits),
     };
@@ -247,7 +247,7 @@ class EmployerJobModel {
           ? 'draft'
           : moderationStatus.trim(),
       'j_application_count': applicationCount,
-      'j_badge': badge,
+      'j_badge': _nullableStringValue(badge),
       'j_tags': List<String>.from(tags),
       'j_benefits': List<String>.from(benefits),
     };
@@ -393,6 +393,12 @@ class EmployerJobModel {
     if (value == null) return fallback;
     final text = value.toString().trim();
     return text.isEmpty ? fallback : text;
+  }
+
+  static String? _nullableStringValue(dynamic value) {
+    if (value == null) return null;
+    final text = value.toString().trim();
+    return text.isEmpty ? null : text;
   }
 
   static int? _intValue(dynamic value) {
