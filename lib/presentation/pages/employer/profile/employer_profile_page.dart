@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/presentation/pages/employer/company/company_profile_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_edit_profile_page.dart';
 import 'package:jobgo/presentation/pages/settings/settings_page.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
@@ -92,6 +93,15 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                 _buildSectionTitle('COMPANY MANAGEMENT'),
                 const SizedBox(height: 10),
                 _buildMenuCard([
+                  _SettingsItem(
+                    icon: Icons.account_balance_rounded,
+                    iconBg: const Color(0xFFE3F2FD),
+                    iconColor: AppColors.primary,
+                    label: 'Company Profile',
+                    subtitle: 'View public company page',
+                    onTap: () => _navigateToCompanyProfile(context),
+                  ),
+
                   _SettingsItem(
                     icon: Icons.business_outlined,
                     iconBg: const Color(0xFFE3F2FD),
@@ -407,4 +417,13 @@ class _SettingsItem {
     this.labelColor,
     this.showChevron = true,
   });
+}
+
+void _navigateToCompanyProfile(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const CompanyProfilePage(),
+    ),
+  );
 }
