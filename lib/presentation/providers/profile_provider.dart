@@ -44,10 +44,7 @@ class ProfileProvider extends ChangeNotifier {
           .eq('u_id', uId)
           .maybeSingle();
 
-      _candidate = data != null
-          ? CandidateSupabaseModel.fromJson(data)
-          : null;
-
+      _candidate = data != null ? CandidateSupabaseModel.fromJson(data) : null;
     } catch (e) {
       _error = 'Lỗi: $e';
     } finally {
@@ -63,11 +60,11 @@ class ProfileProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
   void updateResume(String url) {
     if (_candidate != null) {
       _candidate = _candidate!.copyWith(resume: url);
       notifyListeners();
     }
   }
-
 }

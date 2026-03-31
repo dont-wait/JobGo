@@ -56,6 +56,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => BookmarkProvider()..loadInitialBookmarks(),
         ),
+        ChangeNotifierProvider(create: (_) => EmployerProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: const MainApp(),
@@ -214,7 +215,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return const WelcomePage();
         }
 
-        final role = parseUserRole(snapshot.data!['u_role'] as String?);
+        final roleStr = snapshot.data!['u_role'] as String?;
+        final role = parseUserRole(roleStr);
         return AppShell(role: role);
       },
     );
