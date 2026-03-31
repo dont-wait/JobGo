@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/presentation/pages/employer/company/company_profile_page.dart';
+import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_edit_profile_page.dart';
 import 'package:jobgo/presentation/pages/settings/settings_page.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
@@ -101,7 +102,21 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                     subtitle: 'View public company page',
                     onTap: () => _navigateToCompanyProfile(context),
                   ),
-
+                  _SettingsItem(
+                    icon: Icons.schedule,
+                    iconBg: const Color(0xFFE3F2FD),
+                    iconColor: AppColors.primary,
+                    label: 'Lịch hẹn phỏng vấn',
+                    subtitle: 'Quản lý lịch phỏng vấn',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const InterviewSchedulePage(),
+                        ),
+                      );
+                    },
+                  ),
                   _SettingsItem(
                     icon: Icons.business_outlined,
                     iconBg: const Color(0xFFE3F2FD),
