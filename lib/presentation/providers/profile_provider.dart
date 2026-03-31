@@ -102,6 +102,28 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> replaceResume(String oldUrl, String newUrl) async {
+    if (_candidate != null) {
+      final currentResumes = _candidate!.resumes ?? [];
+      final newResumes = currentResumes
+          .map((e) => e == oldUrl ? newUrl : e)
+          .toList();
+
+      try {
+        final supabase = Supabase.instance.client;
+        await supabase
+            .from('candidates')
+            .update({'c_resume': newResumes})
+            .eq('c_id', _candidate!.cId);
+
+        _candidate = _candidate!.copyWith(resumes: newResumes);
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error replacing resume: $e');
+      }
+    }
+  }
+
   Future<void> removeResume(String url) async {
     if (_candidate != null) {
       final currentResumes = _candidate!.resumes ?? [];
