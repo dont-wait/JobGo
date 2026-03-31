@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -60,6 +61,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => EmployerProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => InterviewProvider()),
+        ChangeNotifierProvider(create: (_) => ApplicationProvider()),
       ],
       child: const MainApp(),
     ),
@@ -157,8 +159,17 @@ class _MainAppState extends State<MainApp> {
       home: const AuthWrapper(),
       onGenerateRoute: (settings) {
         if (settings.name == '/main') {
-          final role = settings.arguments as UserRole? ?? UserRole.candidate;
-          return MaterialPageRoute(builder: (_) => AppShell(role: role));
+          UserRole role = UserRole.candidate;
+          if (settings.arguments is UserRole) {
+            role = settings.arguments as UserRole;
+          } else if (settings.arguments is Map<String, dynamic>) {
+            final args = settings.arguments as Map<String, dynamic>;
+            role = (args['role'] as UserRole?) ?? UserRole.candidate;
+          }
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => AppShell(role: role),
+          );
         }
         return null;
       },

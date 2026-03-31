@@ -11,16 +11,16 @@ class ApplicantCard extends StatelessWidget {
   String get badgeText => application.statusLabel;
 
   Color get badgeColor {
-    switch (application.status.trim().toLowerCase()) {
-      case 'interview':
+    switch (application.status) {
+      case ApplicationStatus.interview:
         return const Color(0xFFF59E0B);
-      case 'hired':
+      case ApplicationStatus.hired:
         return AppColors.success;
-      case 'rejected':
+      case ApplicationStatus.rejected:
         return AppColors.error;
-      case 'reviewing':
+      case ApplicationStatus.reviewing:
         return const Color(0xFF8B5CF6);
-      case 'withdrawn':
+      case ApplicationStatus.withdrawn:
         return AppColors.textSecondary;
       default:
         return AppColors.primary;

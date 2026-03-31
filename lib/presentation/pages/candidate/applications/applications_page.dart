@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/data/mockdata/mock_applications.dart';
-import 'package:jobgo/data/mockdata/mock_interview.dart';
-import 'package:jobgo/presentation/pages/candidate/applications/application_detail_page.dart';
-import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/data/models/job_applicant_model.dart';
+import 'package:jobgo/presentation/providers/application_provider.dart';
+import 'package:jobgo/presentation/providers/profile_provider.dart';
+import 'package:provider/provider.dart';
+import 'application_detail_page.dart';
 
 class ApplicationsPage extends StatefulWidget {
   const ApplicationsPage({super.key});
@@ -21,6 +21,14 @@ class _ApplicationsPageState extends State<ApplicationsPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    // Fetch applications on init
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final profile = context.read<ProfileProvider>().candidate;
+      if (profile != null) {
+        context.read<ApplicationProvider>().fetchMyApplications(profile.cId);
+      }
+    });
   }
 
   @override
@@ -37,10 +45,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0.5,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: const Text(
           'Application History',
@@ -50,25 +55,80 @@ class _ApplicationsPageState extends State<ApplicationsPage>
             fontWeight: FontWeight.w700,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: AppColors.textPrimary),
-            onPressed: () {},
-          ),
-          const ProfileAvatar(role: UserRole.candidate),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: _buildTabBar(),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _ApplicationList(applications: MockApplications.applied),
-          _ApplicationList(applications: MockApplications.interviews),
-          _ApplicationList(applications: MockApplications.accepted),
-        ],
+      body: Consumer<ProfileProvider>(
+        builder: (context, profileProvider, child) {
+          final profile = profileProvider.candidate;
+          if (profile == null) {
+            if (profileProvider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Could not load profile'),
+                  TextButton(
+                    onPressed: () => profileProvider.loadProfile(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return Consumer<ApplicationProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading && provider.applications.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (provider.error != null) {
+                return Center(child: Text(provider.error!));
+              }
+
+              final allApps = provider.applications;
+
+              // Only fetch if empty to avoid infinite loops, or use a better strategy
+              if (allApps.isEmpty && !provider.isLoading) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  provider.fetchMyApplications(profile.cId);
+                });
+              }
+
+              // Filter by tab
+              final appliedApps = allApps
+                  .where(
+                    (a) =>
+                        a.status == ApplicationStatus.pending ||
+                        a.status == ApplicationStatus.reviewing ||
+                        a.status == ApplicationStatus.rejected ||
+                        a.status == ApplicationStatus.withdrawn,
+                  )
+                  .toList();
+
+              final interviewApps = allApps
+                  .where((a) => a.status == ApplicationStatus.interview)
+                  .toList();
+              final acceptedApps = allApps
+                  .where((a) => a.status == ApplicationStatus.hired)
+                  .toList();
+
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  _ApplicationList(applications: appliedApps),
+                  _ApplicationList(applications: interviewApps),
+                  _ApplicationList(applications: acceptedApps),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -105,7 +165,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
 // Application List (per tab)
 // ─────────────────────────────────────────────
 class _ApplicationList extends StatelessWidget {
-  final List<MockApplication> applications;
+  final List<JobApplicantModel> applications;
   const _ApplicationList({required this.applications});
 
   @override
@@ -122,7 +182,7 @@ class _ApplicationList extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'No applications yet',
+              'No applications found',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -131,7 +191,7 @@ class _ApplicationList extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Applications will appear here',
+              'Your applications for this category will appear here',
               style: TextStyle(fontSize: 13, color: AppColors.textHint),
             ),
           ],
@@ -156,43 +216,51 @@ class _ApplicationList extends StatelessWidget {
 // Single Application Card
 // ─────────────────────────────────────────────
 class _ApplicationCard extends StatelessWidget {
-  final MockApplication application;
+  final JobApplicantModel application;
   const _ApplicationCard({required this.application});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _navigateToDetail(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+    final job = application.job;
+    if (job == null) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ApplicationDetailPage(application: application),
             ),
-          ],
-        ),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Top row: Logo + Title + Status badge ──
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Company logo
-                _buildLogo(),
+                _buildLogo(job),
                 const SizedBox(width: 12),
-                // Title & Company
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        application.jobTitle,
+                        job.title,
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -202,7 +270,7 @@ class _ApplicationCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${application.company} • ${application.location}',
+                        '${job.company} • ${job.location}',
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
@@ -210,7 +278,7 @@ class _ApplicationCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        application.formattedSalary,
+                        job.formattedSalary,
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -221,18 +289,13 @@ class _ApplicationCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Status badge
                 _buildStatusBadge(),
               ],
             ),
-
             const SizedBox(height: 14),
-
-            // ── Bottom row: Applied time + Action ──
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Applied time
                 Row(
                   children: [
                     const Icon(
@@ -242,16 +305,16 @@ class _ApplicationCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      application.appliedTimeAgo,
+                      'Applied on ${_formatDate(application.appliedAt ?? DateTime.now())}',
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: AppColors.textHint,
                       ),
                     ),
                   ],
                 ),
-                // Action button
-                _buildActionButton(context),
+                if (application.status == ApplicationStatus.pending)
+                  _WithdrawButton(application: application),
               ],
             ),
           ],
@@ -260,26 +323,21 @@ class _ApplicationCard extends StatelessWidget {
     );
   }
 
-  void _navigateToDetail(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ApplicationDetailPage(application: application),
-      ),
-    );
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 
-  Widget _buildLogo() {
+  Widget _buildLogo(dynamic job) {
     return Container(
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: Color(int.parse(application.logoColor)),
+        color: Color(int.parse(job.logoColor)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
         child: Text(
-          application.logoText,
+          job.logoText,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w700,
@@ -292,6 +350,8 @@ class _ApplicationCard extends StatelessWidget {
 
   Widget _buildStatusBadge() {
     final (Color bg, Color fg) = _statusColors;
+    String label = application.status.name.toUpperCase();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -299,7 +359,7 @@ class _ApplicationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        application.statusLabel,
+        label,
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
@@ -326,408 +386,83 @@ class _ApplicationCard extends StatelessWidget {
         return (const Color(0xFFF5F5F5), const Color(0xFF616161));
     }
   }
+}
 
-  Widget _buildActionButton(BuildContext context) {
-    switch (application.status) {
-      case ApplicationStatus.hired:
-        return _actionChip(
-          label: 'Onboarding',
-          bgColor: AppColors.success,
-          textColor: Colors.white,
-          icon: Icons.arrow_forward_rounded,
-          onTap: () => _navigateToDetail(context),
+class _WithdrawButton extends StatefulWidget {
+  final JobApplicantModel application;
+  const _WithdrawButton({required this.application});
+
+  @override
+  State<_WithdrawButton> createState() => _WithdrawButtonState();
+}
+
+class _WithdrawButtonState extends State<_WithdrawButton> {
+  bool _isWithdrawing = false;
+
+  Future<void> _handleWithdraw() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rút hồ sơ?'),
+        content: const Text('Bạn có chắc chắn muốn rút hồ sơ ứng tuyển này?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Rút hồ sơ', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    if (!mounted) return;
+    setState(() => _isWithdrawing = true);
+
+    final profile = context.read<ProfileProvider>().candidate;
+    if (profile == null) return;
+
+    final success = await context.read<ApplicationProvider>().withdraw(
+      widget.application.applicationId,
+      profile.cId,
+    );
+
+    if (mounted) {
+      setState(() => _isWithdrawing = false);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Đã rút hồ sơ thành công')),
         );
-      case ApplicationStatus.rejected:
-        return _actionText(
-          'View Feedback',
-          AppColors.primary,
-          onTap: () => _navigateToDetail(context),
-        );
-      case ApplicationStatus.interview:
-        return _actionText(
-          'View Schedule',
-          AppColors.primary,
-          onTap: () {
-            if (application.interviewSchedule != null) {
-              _showInterviewDetail(context, application);
-            }
-          },
-        );
-      case ApplicationStatus.reviewing:
-        return _actionText(
-          'View Details',
-          AppColors.primary,
-          onTap: () => _navigateToDetail(context),
-        );
-      case ApplicationStatus.pending:
-      case ApplicationStatus.withdrawn:
-        return _actionText(
-          'View Details',
-          AppColors.primary,
-          onTap: () => _navigateToDetail(context),
-        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Rút hồ sơ thất bại')));
+      }
     }
   }
 
-  Widget _actionText(String text, Color color, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap ?? () {},
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-  Widget _actionChip({
-    required String label,
-    required Color bgColor,
-    required Color textColor,
-    IconData? icon,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap ?? () {},
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
+  @override
+  Widget build(BuildContext context) {
+    return _isWithdrawing
+        ? const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        : GestureDetector(
+            onTap: _handleWithdraw,
+            child: const Text(
+              'Withdraw',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: textColor,
+                color: Colors.red,
               ),
             ),
-            if (icon != null) ...[
-              const SizedBox(width: 4),
-              Icon(icon, size: 14, color: textColor),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ── Interview Detail Bottom Sheet ──
-  static void _showInterviewDetail(BuildContext context, MockApplication app) {
-    final schedule = app.interviewSchedule!;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) =>
-          _InterviewDetailSheet(application: app, schedule: schedule),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// Interview Detail Bottom Sheet
-// ─────────────────────────────────────────────
-class _InterviewDetailSheet extends StatelessWidget {
-  final MockApplication application;
-  final MockInterviewSchedule schedule;
-
-  const _InterviewDetailSheet({
-    required this.application,
-    required this.schedule,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Handle bar
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Title
-            const Text(
-              'Interview Schedule',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Job info card
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.lightBackground,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Color(int.parse(application.logoColor)),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        application.logoText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          application.jobTitle,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          application.company,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Interview details
-            _detailRow(
-              icon: Icons.calendar_today_rounded,
-              iconColor: AppColors.primary,
-              label: 'Date',
-              value: schedule.formattedDate,
-            ),
-            const SizedBox(height: 16),
-            _detailRow(
-              icon: Icons.access_time_rounded,
-              iconColor: AppColors.orange,
-              label: 'Time',
-              value: schedule.formattedTime,
-            ),
-            const SizedBox(height: 16),
-            _detailRow(
-              icon: Icons.videocam_rounded,
-              iconColor: const Color(0xFF6A1B9A),
-              label: 'Type',
-              value: schedule.interviewType,
-            ),
-            const SizedBox(height: 16),
-            _detailRow(
-              icon: Icons.location_on_rounded,
-              iconColor: AppColors.error,
-              label: 'Location',
-              value: schedule.location,
-            ),
-            const SizedBox(height: 16),
-            _detailRow(
-              icon: Icons.person_rounded,
-              iconColor: AppColors.success,
-              label: 'Contact',
-              value: schedule.contactPerson,
-            ),
-
-            // Note (if available)
-            if (schedule.note != null && schedule.note!.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF8E1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFFFE082)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.info_outline_rounded,
-                      size: 18,
-                      color: Color(0xFFF9A825),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Note',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFF57F17),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            schedule.note!,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: AppColors.textPrimary,
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-
-            const SizedBox(height: 24),
-
-            // Action buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(
-                        color: AppColors.border,
-                        width: 1.5,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Close',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.calendar_month_rounded, size: 18),
-                    label: const Text(
-                      'Add to Calendar',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _detailRow({
-    required IconData icon,
-    required Color iconColor,
-    required String label,
-    required String value,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, size: 18, color: iconColor),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.textHint,
-                  letterSpacing: 0.3,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+          );
   }
 }
