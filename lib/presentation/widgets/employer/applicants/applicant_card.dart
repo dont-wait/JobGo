@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/data/mockdata/mock_applications.dart';
-import 'package:jobgo/data/mockdata/mock_candidate.dart';
+import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile_page.dart';
 
 class ApplicantCard extends StatelessWidget {
-  final MockApplication application;
+  final JobApplicantModel application;
 
   const ApplicantCard({super.key, required this.application});
 
   String get badgeText => application.statusLabel;
 
   Color get badgeColor {
-    switch (application.status) {
-      case ApplicationStatus.interview:
+    switch (application.status.trim().toLowerCase()) {
+      case 'interview':
         return const Color(0xFFF59E0B);
-      case ApplicationStatus.hired:
+      case 'hired':
         return AppColors.success;
-      case ApplicationStatus.rejected:
+      case 'rejected':
         return AppColors.error;
-      case ApplicationStatus.reviewing:
+      case 'reviewing':
         return const Color(0xFF8B5CF6);
-      case ApplicationStatus.withdrawn:
+      case 'withdrawn':
         return AppColors.textSecondary;
       default:
         return AppColors.primary;
@@ -30,10 +29,7 @@ class ApplicantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final candidate = mockCandidatesData.firstWhere(
-      (c) => c.id == application.candidateId,
-      orElse: () => mockCandidatesData.first,
-    );
+    final candidate = application.candidate;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -47,10 +43,7 @@ class ApplicantCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundImage: NetworkImage(candidate.avatarUrl),
-              ),
+              _buildAvatar(candidate.avatarUrl, candidate.initials),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -59,7 +52,7 @@ class ApplicantCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          candidate.fullName,
+                          candidate.displayName,
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
@@ -103,7 +96,7 @@ class ApplicantCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${(85 + application.id * 3)}% Match',
+                          application.matchLabel,
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ],
@@ -121,8 +114,10 @@ class ApplicantCard extends StatelessWidget {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          CandidateProfilePage(candidate: candidate),
+                      builder: (_) => CandidateProfilePage(
+                        candidate: candidate,
+                        application: application,
+                      ),
                     ),
                   ),
                   child: const Text('View Profile'),
@@ -142,6 +137,26 @@ class ApplicantCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(String? avatarUrl, String initials) {
+    final imageUrl = avatarUrl?.trim() ?? '';
+
+    if (imageUrl.isNotEmpty) {
+      return CircleAvatar(radius: 28, backgroundImage: NetworkImage(imageUrl));
+    }
+
+    return CircleAvatar(
+      radius: 28,
+      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+      child: Text(
+        initials,
+        style: const TextStyle(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
