@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/providers/profile_provider.dart';
 
 // ── Candidate pages ──
 import 'package:jobgo/presentation/pages/candidate/home/home_page.dart';
@@ -44,6 +46,34 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _currentIndex = 0;
+  bool _indexInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load profile early so pages like ApplicationsPage have it
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final profileProvider = context.read<ProfileProvider>();
+      if (profileProvider.candidate == null) {
+        profileProvider.loadProfile();
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_indexInitialized) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Map<String, dynamic> && args.containsKey('initialIndex')) {
+        final idx = args['initialIndex'] as int;
+        if (idx >= 0 && idx < _pages.length) {
+          _currentIndex = idx;
+        }
+      }
+      _indexInitialized = true;
+    }
+  }
 
   /// Chuyển sang trang Profile (index ẩn = 5) mà vẫn giữ shell.
   void goToProfile() {
@@ -123,27 +153,36 @@ class _AppShellState extends State<AppShell> {
     final pages = _pages;
     final icons = _navIcons;
 
-    return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: pages),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(icons.length, (i) {
-                return _buildNavItem(icons[i], i);
-              }),
+    return PopScope(
+      canPop: _currentIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_currentIndex != 0) {
+          setState(() => _currentIndex = 0);
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(index: _currentIndex, children: pages),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(icons.length, (i) {
+                  return _buildNavItem(icons[i], i);
+                }),
+              ),
             ),
           ),
         ),

@@ -44,10 +44,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0.5,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: const Text(
           'Application History',
@@ -62,43 +59,73 @@ class _ApplicationsPageState extends State<ApplicationsPage>
           child: _buildTabBar(),
         ),
       ),
-      body: Consumer<ApplicationProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+      body: Consumer<ProfileProvider>(
+        builder: (context, profileProvider, child) {
+          final profile = profileProvider.candidate;
+          if (profile == null) {
+            if (profileProvider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Could not load profile'),
+                  TextButton(
+                    onPressed: () => profileProvider.loadProfile(),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
           }
 
-          if (provider.error != null) {
-            return Center(child: Text(provider.error!));
-          }
+          return Consumer<ApplicationProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading && provider.applications.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          final allApps = provider.applications;
+              if (provider.error != null) {
+                return Center(child: Text(provider.error!));
+              }
 
-          // Filter by tab
-          final appliedApps = allApps
-              .where(
-                (a) =>
-                    a.status == ApplicationStatus.pending ||
-                    a.status == ApplicationStatus.reviewing ||
-                    a.status == ApplicationStatus.rejected ||
-                    a.status == ApplicationStatus.withdrawn,
-              )
-              .toList();
+              final allApps = provider.applications;
 
-          final interviewApps = allApps
-              .where((a) => a.status == ApplicationStatus.interview)
-              .toList();
-          final acceptedApps = allApps
-              .where((a) => a.status == ApplicationStatus.hired)
-              .toList();
+              // Only fetch if empty to avoid infinite loops, or use a better strategy
+              if (allApps.isEmpty && !provider.isLoading) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  provider.fetchMyApplications(profile.cId);
+                });
+              }
 
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              _ApplicationList(applications: appliedApps),
-              _ApplicationList(applications: interviewApps),
-              _ApplicationList(applications: acceptedApps),
-            ],
+              // Filter by tab
+              final appliedApps = allApps
+                  .where(
+                    (a) =>
+                        a.status == ApplicationStatus.pending ||
+                        a.status == ApplicationStatus.reviewing ||
+                        a.status == ApplicationStatus.rejected ||
+                        a.status == ApplicationStatus.withdrawn,
+                  )
+                  .toList();
+
+              final interviewApps = allApps
+                  .where((a) => a.status == ApplicationStatus.interview)
+                  .toList();
+              final acceptedApps = allApps
+                  .where((a) => a.status == ApplicationStatus.hired)
+                  .toList();
+
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  _ApplicationList(applications: appliedApps),
+                  _ApplicationList(applications: interviewApps),
+                  _ApplicationList(applications: acceptedApps),
+                ],
+              );
+            },
           );
         },
       ),

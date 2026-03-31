@@ -71,7 +71,22 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_currentStep == 2) return _buildSuccessScreen();
+    if (_currentStep == 2) {
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          // Forced back button from success screen goes to home
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/main',
+            (route) => false,
+            arguments: {'role': UserRole.candidate, 'initialIndex': 0},
+          );
+        },
+        child: _buildSuccessScreen(),
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -789,14 +804,16 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () {
+                    // Navigate to main shell and tell it to show the Applications tab
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       '/main',
                       (route) => false,
-                      arguments: UserRole.candidate,
+                      arguments: {
+                        'role': UserRole.candidate,
+                        'initialIndex': 2, // ApplicationsPage index
+                      },
                     );
-                    // Open application history tab by navigating to main with correct index if possible
-                    // For now, just go to main
                   },
                   icon: const Icon(Icons.arrow_forward_rounded, size: 20),
                   label: const Text(

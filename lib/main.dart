@@ -159,8 +159,17 @@ class _MainAppState extends State<MainApp> {
       home: const AuthWrapper(),
       onGenerateRoute: (settings) {
         if (settings.name == '/main') {
-          final role = settings.arguments as UserRole? ?? UserRole.candidate;
-          return MaterialPageRoute(builder: (_) => AppShell(role: role));
+          UserRole role = UserRole.candidate;
+          if (settings.arguments is UserRole) {
+            role = settings.arguments as UserRole;
+          } else if (settings.arguments is Map<String, dynamic>) {
+            final args = settings.arguments as Map<String, dynamic>;
+            role = (args['role'] as UserRole?) ?? UserRole.candidate;
+          }
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => AppShell(role: role),
+          );
         }
         return null;
       },
