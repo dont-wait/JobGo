@@ -1,30 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/data/mockdata/mock_candidate.dart';
-import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
+import 'package:jobgo/data/models/candidate_supabase_model.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
 
 class TalentSearchWidget extends StatelessWidget {
-  final List<CandidateModel> candidates;
+  final List<CandidateSupabaseModel> candidates;
+  final bool isLoading;
   final String selectedRole;
-  final String? selectedExperience;
-  final String? selectedLocation;
+  final String selectedExperience;
+  final String selectedLocation;
+  final List<String> roleOptions;
+  final List<String> experienceOptions;
+  final List<String> locationOptions;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onRoleChanged;
-  final ValueChanged<String?> onExperienceChanged;
-  final ValueChanged<String?> onLocationChanged;
+  final ValueChanged<String> onExperienceChanged;
+  final ValueChanged<String> onLocationChanged;
+  final VoidCallback onRetry;
+  final ValueChanged<CandidateSupabaseModel> onCandidateTap;
 
   const TalentSearchWidget({
     super.key,
     required this.candidates,
+    required this.isLoading,
     required this.selectedRole,
     required this.selectedExperience,
     required this.selectedLocation,
+    required this.roleOptions,
+    required this.experienceOptions,
+    required this.locationOptions,
     required this.onSearchChanged,
     required this.onRoleChanged,
     required this.onExperienceChanged,
     required this.onLocationChanged,
+    required this.onRetry,
+    required this.onCandidateTap,
   });
 
   @override
@@ -39,7 +51,10 @@ class TalentSearchWidget extends StatelessWidget {
             _buildSearchBar(),
             _buildFilterChips(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
               child: Text(
                 'RECOMMENDED CANDIDATES (${candidates.length})',
                 style: const TextStyle(
@@ -65,13 +80,18 @@ class TalentSearchWidget extends StatelessWidget {
         children: [
           const Text(
             'Find Talent',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
           Row(
             children: [
               IconButton(
                 icon: const Icon(Icons.tune, color: AppColors.textPrimary),
-                onPressed: () {},
+                onPressed: onRetry,
+                tooltip: 'Refresh candidates',
               ),
               const ProfileAvatar(role: UserRole.employer),
             ],
@@ -122,22 +142,20 @@ class TalentSearchWidget extends StatelessWidget {
           children: [
             _buildCustomDropdown(
               value: selectedRole,
-              items: const ['All Roles', 'Designer', 'Developer', 'Engineer'],
+              items: roleOptions,
               isPrimary: true,
-              onChanged: (val) { if (val != null) onRoleChanged(val); },
+              onChanged: onRoleChanged,
             ),
             const SizedBox(width: 8),
             _buildCustomDropdown(
-              hint: 'Experience Level',
               value: selectedExperience,
-              items: const ['All', 'Senior', 'Junior', 'Intern'],
+              items: experienceOptions,
               onChanged: onExperienceChanged,
             ),
             const SizedBox(width: 8),
             _buildCustomDropdown(
-              hint: 'Location',
               value: selectedLocation,
-              items: const ['All', 'London', 'San Francisco', 'Berlin'],
+              items: locationOptions,
               onChanged: onLocationChanged,
             ),
           ],
@@ -147,10 +165,9 @@ class TalentSearchWidget extends StatelessWidget {
   }
 
   Widget _buildCustomDropdown({
-    String? hint,
-    required String? value,
+    required String value,
     required List<String> items,
-    required void Function(String?) onChanged,
+    required void Function(String) onChanged,
     bool isPrimary = false,
   }) {
     return Container(
@@ -158,18 +175,21 @@ class TalentSearchWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: isPrimary ? AppColors.primary : AppColors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: isPrimary ? AppColors.primary : AppColors.border),
+        border: Border.all(
+          color: isPrimary ? AppColors.primary : AppColors.border,
+        ),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isDense: true,
           value: value,
-          hint: hint != null
-              ? Text(hint, style: TextStyle(color: isPrimary ? AppColors.white : AppColors.textPrimary, fontSize: 13))
-              : null,
           icon: Padding(
             padding: const EdgeInsets.only(left: 4.0),
-            child: Icon(Icons.keyboard_arrow_down, color: isPrimary ? AppColors.white : AppColors.textSecondary, size: 16),
+            child: Icon(
+              Icons.keyboard_arrow_down,
+              color: isPrimary ? AppColors.white : AppColors.textSecondary,
+              size: 16,
+            ),
           ),
           dropdownColor: AppColors.white,
           style: TextStyle(
@@ -177,36 +197,53 @@ class TalentSearchWidget extends StatelessWidget {
             fontWeight: isPrimary ? FontWeight.w600 : FontWeight.w500,
             fontSize: 13,
           ),
-          items: items.map((item) => DropdownMenuItem<String>(
-            value: item,
-            child: Text(item, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13)),
-          )).toList(),
-          onChanged: onChanged,
+          items: items
+              .map(
+                (item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: (val) {
+            if (val != null) {
+              onChanged(val);
+            }
+          },
         ),
       ),
     );
   }
 
   Widget _buildCandidateList() {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     if (candidates.isEmpty) {
       return const Center(
-        child: Text('No candidates found matching your criteria.', style: TextStyle(color: AppColors.textSecondary)),
+        child: Text(
+          'No candidates found matching your criteria.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
       );
     }
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       itemCount: candidates.length,
       itemBuilder: (context, index) {
         final candidate = candidates[index];
-        final skillList = candidate.skill.split(',').map((s) => s.trim()).toList();
-        final formattedSalary = '${(candidate.desiredSalaryMin / 1000).toStringAsFixed(0)}k';
-        final combinedInfo = '${candidate.address} • \$$formattedSalary+';
         return CandidateCardWidget(
-          name: candidate.fullName,
-          title: candidate.experience,
-          info: combinedInfo,
-          skills: skillList,
-          avatarUrl: candidate.avatarUrl,
+          candidate: candidate,
+          onViewProfile: () => onCandidateTap(candidate),
+          onMessage: () {},
         );
       },
     );

@@ -48,12 +48,14 @@ class EmployerJobRepository {
         .order('j_update_at', ascending: false);
 
     final rows = response as List<dynamic>;
-    return rows
+    final jobs = rows
         .map(
           (row) =>
               EmployerJobModel.fromJson(Map<String, dynamic>.from(row as Map)),
         )
         .toList();
+
+    return _attachRealApplicationCounts(jobs);
   }
 
   Future<EmployerJobModel?> fetchJobById(int jobId) async {
@@ -67,8 +69,8 @@ class EmployerJobRepository {
         .maybeSingle();
 
     if (response == null) return null;
-    return EmployerJobModel.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return _withRealApplicationCount(
+      EmployerJobModel.fromJson(Map<String, dynamic>.from(response as Map)),
     );
   }
 
@@ -92,8 +94,8 @@ class EmployerJobRepository {
           .select('*, employers(*)')
           .single();
 
-      return EmployerJobModel.fromJson(
-        Map<String, dynamic>.from(response as Map),
+      return _withRealApplicationCount(
+        EmployerJobModel.fromJson(Map<String, dynamic>.from(response as Map)),
       );
     }
 
@@ -105,8 +107,8 @@ class EmployerJobRepository {
         .select('*, employers(*)')
         .single();
 
-    return EmployerJobModel.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return _withRealApplicationCount(
+      EmployerJobModel.fromJson(Map<String, dynamic>.from(response as Map)),
     );
   }
 
@@ -125,8 +127,8 @@ class EmployerJobRepository {
         .select('*, employers(*)')
         .single();
 
-    return EmployerJobModel.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return _withRealApplicationCount(
+      EmployerJobModel.fromJson(Map<String, dynamic>.from(response as Map)),
     );
   }
 
@@ -137,6 +139,55 @@ class EmployerJobRepository {
         .delete()
         .eq('j_id', jobId)
         .eq('e_id', employerId);
+  }
+
+  Future<List<EmployerJobModel>> _attachRealApplicationCounts(
+    List<EmployerJobModel> jobs,
+  ) async {
+    final jobIds = jobs.map((job) => job.id).whereType<int>().toList();
+    if (jobIds.isEmpty) {
+      return jobs;
+    }
+
+    final countsByJobId = await _fetchApplicationCounts(jobIds);
+    return jobs
+        .map(
+          (job) => job.copyWith(applicationCount: countsByJobId[job.id] ?? 0),
+        )
+        .toList();
+  }
+
+  Future<Map<int, int>> _fetchApplicationCounts(List<int> jobIds) async {
+    final response = await _supabase
+        .from('applications')
+        .select('j_id')
+        .inFilter('j_id', jobIds);
+
+    final countsByJobId = <int, int>{};
+    for (final row in response as List<dynamic>) {
+      final jobId = _toInt((row as Map)['j_id']);
+      if (jobId == null) continue;
+      countsByJobId[jobId] = (countsByJobId[jobId] ?? 0) + 1;
+    }
+
+    return countsByJobId;
+  }
+
+  Future<int> _fetchApplicationCount(int jobId) async {
+    final countsByJobId = await _fetchApplicationCounts([jobId]);
+    return countsByJobId[jobId] ?? 0;
+  }
+
+  Future<EmployerJobModel> _withRealApplicationCount(
+    EmployerJobModel job,
+  ) async {
+    final jobId = job.id;
+    if (jobId == null) {
+      return job;
+    }
+
+    final realCount = await _fetchApplicationCount(jobId);
+    return job.copyWith(applicationCount: realCount);
   }
 
   int? _toInt(dynamic value) {
