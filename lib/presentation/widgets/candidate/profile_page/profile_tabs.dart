@@ -11,12 +11,7 @@ class ProfileTabs extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const _tabs = [
-    'Info',
-    'Experience',
-    'Skills',
-    'Favorites',
-  ];
+  static const _tabs = ['Info', 'Experience', 'Skills', 'Favorites'];
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +53,7 @@ class _TabItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color:
-                  isActive ? AppColors.primary : AppColors.textHint,
+              color: isActive ? AppColors.primary : AppColors.textHint,
             ),
           ),
           const SizedBox(height: 6),

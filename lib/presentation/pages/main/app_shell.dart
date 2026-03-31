@@ -59,30 +59,30 @@ class _AppShellState extends State<AppShell> {
     switch (widget.role) {
       case UserRole.employer:
         return const [
-          DashboardPage(),              // 0
-          ManageJobsPage(),             // 1
-          TalentPage(),                 // 2
-          EmployerMessagesPage(),       // 3 — Tin nhắn
-          EmployerNotificationsPage(),  // 4 — Notification
-          EmployerProfilePage(),        // 5 — Profile ẩn
+          DashboardPage(), // 0
+          ManageJobsPage(), // 1
+          TalentPage(), // 2
+          EmployerMessagesPage(), // 3 — Tin nhắn
+          EmployerNotificationsPage(), // 4 — Notification
+          EmployerProfilePage(), // 5 — Profile ẩn
         ];
       case UserRole.admin:
         return const [
-          AdminDashboardPage(),     // 0
-          AdminSearchPage(),        // 1
-          UserManagementPage(),     // 2
-          JobModerationPage(),      // 3
-          AdminNotificationPage(),  // 4 — Notification (thay Profile)
-          AdminProfilePage(),       // 5 — Profile ẩn
+          AdminDashboardPage(), // 0
+          AdminSearchPage(), // 1
+          UserManagementPage(), // 2
+          JobModerationPage(), // 3
+          AdminNotificationPage(), // 4 — Notification (thay Profile)
+          AdminProfilePage(), // 5 — Profile ẩn
         ];
       case UserRole.candidate:
         return const [
-          HomePage(),               // 0
-          SearchPage(),             // 1
-          ApplicationsPage(),       // 2
-          MessagesPage(),           // 3
-          NotificationsPage(),      // 4 — Notification (thay Profile)
-          ProfilePage(),            // 5 — Profile ẩn
+          HomePage(), // 0
+          SearchPage(), // 1
+          ApplicationsPage(), // 2
+          MessagesPage(), // 3
+          NotificationsPage(), // 4 — Notification (thay Profile)
+          ProfilePage(), // 5 — Profile ẩn
         ];
     }
   }
@@ -154,11 +154,10 @@ class _AppShellState extends State<AppShell> {
   Widget _buildNavItem(IconData icon, int index) {
     final isSelected = _currentIndex == index;
 
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 64,
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _currentIndex = index),
+        behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/pages/candidate/applications/applications_page.dart';
 
 class ApplyJobPage extends StatefulWidget {
-  final MockJob job;
+  final JobModel job;
 
   const ApplyJobPage({super.key, required this.job});
 
@@ -66,9 +66,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
       body: Column(
         children: [
           _buildStepIndicator(),
-          Expanded(
-            child: _currentStep == 0 ? _buildStep1() : _buildStep2(),
-          ),
+          Expanded(child: _currentStep == 0 ? _buildStep1() : _buildStep2()),
           if (_currentStep == 0) _buildNextButton(),
         ],
       ),
@@ -95,7 +93,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: _currentStep == 0 ? AppColors.textPrimary : AppColors.primary,
+                  color: _currentStep == 0
+                      ? AppColors.textPrimary
+                      : AppColors.primary,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -104,7 +104,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: _currentStep == 0 ? AppColors.textSecondary : AppColors.primary,
+                  color: _currentStep == 0
+                      ? AppColors.textSecondary
+                      : AppColors.primary,
                   letterSpacing: _currentStep == 1 ? 0.5 : 0,
                 ),
               ),
@@ -202,7 +204,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isSelected ? AppColors.primary : AppColors.border,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.border,
                             width: 2,
                           ),
                         ),
@@ -542,7 +546,11 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                       shape: BoxShape.circle,
                       color: AppColors.primary,
                     ),
-                    child: const Icon(Icons.check_rounded, color: Colors.white, size: 42),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 42,
+                    ),
                   ),
                   Positioned(
                     bottom: 10,
@@ -554,7 +562,11 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.work_outline_rounded, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.work_outline_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -567,7 +579,11 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                         color: const Color(0xFFE8630A),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.notifications_active_outlined, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.notifications_active_outlined,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                   Positioned(
@@ -658,7 +674,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                     );
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ApplicationsPage()),
+                      MaterialPageRoute(
+                        builder: (_) => const ApplicationsPage(),
+                      ),
                     );
                   },
                   icon: const Icon(Icons.arrow_forward_rounded, size: 20),
@@ -739,8 +757,13 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             child: const Text('Next'),
           ),

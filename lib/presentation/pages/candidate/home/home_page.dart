@@ -19,17 +19,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final JobRepository _jobRepository = JobRepository();
+  final TextEditingController _searchController = TextEditingController();
+
   List<JobModel> _recommendedJobs = [];
   List<JobModel> _recentJobs = [];
   bool _isLoading = true;
-  int _currentPage = 0;
-  final int _pageSize = 4;
   bool _isLoadingMore = false;
+  int _currentPage = 0;
+  final int _pageSize = 10;
   bool _hasMore = true;
-
-  final TextEditingController _searchController = TextEditingController();
-  Timer? _debounce;
   String _searchQuery = '';
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadJobs({String query = ''}) async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _currentPage = 0;
@@ -52,28 +53,36 @@ class _HomePageState extends State<HomePage> {
       _searchQuery = query;
     });
 
-    final List<Future<List<JobModel>>> futures = [
-      _jobRepository.getRecommendedJobs(),
-    ];
+    try {
+      final List<Future<List<JobModel>>> futures = [
+        _jobRepository.getRecommendedJobs(),
+      ];
 
-    if (query.isEmpty) {
-      futures.add(_jobRepository.getRecentJobs(page: 0, pageSize: _pageSize));
-    } else {
-      futures.add(_jobRepository.searchJobs(query));
-    }
+      if (query.isEmpty) {
+        futures.add(_jobRepository.getRecentJobs(page: 0, pageSize: _pageSize));
+      } else {
+        futures.add(_jobRepository.searchJobs(query));
+      }
 
-    final results = await Future.wait(futures);
+      final results = await Future.wait(futures);
 
-    if (mounted) {
-      setState(() {
-        _recommendedJobs = results[0];
-        _recentJobs = results[1];
-        _isLoading = false;
-        // Search results are not paginated in current repo implementation
-        if (query.isNotEmpty || results[1].length < _pageSize) {
-          _hasMore = false;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          _recommendedJobs = results[0];
+          _recentJobs = results[1];
+          _isLoading = false;
+          // Search results aren't typically paginated in current repository search implementation
+          if (query.isNotEmpty || results[1].length < _pageSize) {
+            _hasMore = false;
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -137,7 +146,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _loadJobs,
+        onRefresh: () => _loadJobs(query: _searchQuery),
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
@@ -152,6 +161,7 @@ class _HomePageState extends State<HomePage> {
                       HomeSearchBar(
                         controller: _searchController,
                         onChanged: _onSearchChanged,
+                        onTap: () {}, // Not needed as it's interactive now
                       ),
                       const SizedBox(height: 24),
                       // Recommended Jobs
@@ -199,13 +209,11 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           final job = _recommendedJobs[index];
           return RecommendedJobCard(
-            job: job.toMockJob(),
+            job: job,
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => JobDetailPage(job: job.toMockJob()),
-                ),
+                MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
               );
             },
           );
@@ -238,18 +246,15 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (context, index) {
             final job = _recentJobs[index];
             return RecentJobTile(
-              job: job.toMockJob(),
+              job: job,
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => JobDetailPage(job: job.toMockJob()),
-                  ),
+                  MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
                 );
               },
-              onBookmark: () async {
-                await _jobRepository.toggleSaveJob(job.id, job.isBookmarked);
-                _loadJobs(query: _searchQuery);
+              onBookmark: () {
+                // Handled in RecentJobTile via BookmarkProvider
               },
             );
           },

@@ -92,9 +92,7 @@ class _FavoriteJobCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => JobDetailPage(job: job.toMockJob()),
-          ),
+          MaterialPageRoute(builder: (_) => JobDetailPage(job: job)),
         );
       },
       child: Container(
@@ -158,7 +156,7 @@ class _FavoriteJobCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    job.salary,
+                    job.formattedSalary,
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,

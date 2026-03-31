@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 class RecentJobTile extends StatelessWidget {
-  final MockJob job;
+  final JobModel job;
   final VoidCallback? onTap;
   final VoidCallback? onBookmark;
 
@@ -19,7 +19,11 @@ class RecentJobTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Color(int.parse(job.logoColor));
+    // Parse color string (e.g. 0xFF1A1A2E) to Color object safely
+    final colorVal = job.logoColor.startsWith('0x')
+        ? int.parse(job.logoColor.substring(2), radix: 16)
+        : int.tryParse(job.logoColor) ?? 0xFF1A3A4A;
+    final color = Color(0xFF000000 | colorVal);
 
     return GestureDetector(
       onTap: onTap,
@@ -58,17 +62,30 @@ class RecentJobTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
+                      Text(
+                        job.formattedSalary,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       const Icon(
                         Icons.access_time,
                         size: 12,
                         color: AppColors.textHint,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        job.postedTime,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textHint,
+                      Flexible(
+                        child: Text(
+                          job.postedTimeAgo,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textHint,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -78,11 +95,15 @@ class RecentJobTile extends StatelessWidget {
                         color: AppColors.textHint,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        '${job.applicants ?? 0} applicants',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textHint,
+                      Flexible(
+                        child: Text(
+                          '${job.applicants ?? 0} applicants',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textHint,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

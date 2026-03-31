@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/data/mockdata/mock_jobs.dart';
+import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_info_grid.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_description_section.dart';
@@ -14,7 +14,7 @@ import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 /// Trang chi tiết công việc
 class JobDetailPage extends StatefulWidget {
-  final MockJob job;
+  final JobModel job;
 
   const JobDetailPage({super.key, required this.job});
 
@@ -121,9 +121,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
 
                   // ── Info Grid: Salary / Job Type / Posted ──
                   JobInfoGrid(
-                    salary: widget.job.salary,
+                    salary: widget.job.formattedSalary,
                     jobType: widget.job.type,
-                    postedTime: widget.job.postedTime,
+                    postedTime: widget.job.postedTimeAgo,
                   ),
 
                   const SizedBox(height: 24),

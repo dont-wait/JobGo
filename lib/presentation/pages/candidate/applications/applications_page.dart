@@ -77,18 +77,13 @@ class _ApplicationsPageState extends State<ApplicationsPage>
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          bottom: BorderSide(color: AppColors.border, width: 1),
-        ),
+        border: Border(bottom: BorderSide(color: AppColors.border, width: 1)),
       ),
       child: TabBar(
         controller: _tabController,
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.textSecondary,
-        labelStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
+        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         unselectedLabelStyle: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -120,8 +115,11 @@ class _ApplicationList extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.description_outlined,
-                size: 64, color: AppColors.textHint.withValues(alpha: 0.5)),
+            Icon(
+              Icons.description_outlined,
+              size: 64,
+              color: AppColors.textHint.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: 16),
             const Text(
               'No applications yet',
@@ -166,86 +164,98 @@ class _ApplicationCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => _navigateToDetail(context),
       child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Top row: Logo + Title + Status badge ──
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Company logo
-              _buildLogo(),
-              const SizedBox(width: 12),
-              // Title & Company
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      application.jobTitle,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                        height: 1.3,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Top row: Logo + Title + Status badge ──
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Company logo
+                _buildLogo(),
+                const SizedBox(width: 12),
+                // Title & Company
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        application.jobTitle,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                          height: 1.3,
+                        ),
                       ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${application.company} • ${application.location}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        application.formattedSalary,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Status badge
+                _buildStatusBadge(),
+              ],
+            ),
+
+            const SizedBox(height: 14),
+
+            // ── Bottom row: Applied time + Action ──
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Applied time
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.access_time_rounded,
+                      size: 14,
+                      color: AppColors.textHint,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(width: 4),
                     Text(
-                      '${application.company} • ${application.location}',
+                      application.appliedTimeAgo,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textHint,
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              // Status badge
-              _buildStatusBadge(),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          // ── Bottom row: Applied time + Action ──
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Applied time
-              Row(
-                children: [
-                  const Icon(Icons.access_time_rounded,
-                      size: 14, color: AppColors.textHint),
-                  const SizedBox(width: 4),
-                  Text(
-                    application.appliedTimeAgo,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textHint,
-                    ),
-                  ),
-                ],
-              ),
-              // Action button
-              _buildActionButton(context),
-            ],
-          ),
-        ],
-      ),
+                // Action button
+                _buildActionButton(context),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -328,21 +338,34 @@ class _ApplicationCard extends StatelessWidget {
           onTap: () => _navigateToDetail(context),
         );
       case ApplicationStatus.rejected:
-        return _actionText('View Feedback', AppColors.primary,
-            onTap: () => _navigateToDetail(context));
+        return _actionText(
+          'View Feedback',
+          AppColors.primary,
+          onTap: () => _navigateToDetail(context),
+        );
       case ApplicationStatus.interview:
-        return _actionText('View Schedule', AppColors.primary, onTap: () {
-          if (application.interviewSchedule != null) {
-            _showInterviewDetail(context, application);
-          }
-        });
+        return _actionText(
+          'View Schedule',
+          AppColors.primary,
+          onTap: () {
+            if (application.interviewSchedule != null) {
+              _showInterviewDetail(context, application);
+            }
+          },
+        );
       case ApplicationStatus.reviewing:
-        return _actionText('View Details', AppColors.primary,
-            onTap: () => _navigateToDetail(context));
+        return _actionText(
+          'View Details',
+          AppColors.primary,
+          onTap: () => _navigateToDetail(context),
+        );
       case ApplicationStatus.pending:
       case ApplicationStatus.withdrawn:
-        return _actionText('View Details', AppColors.primary,
-            onTap: () => _navigateToDetail(context));
+        return _actionText(
+          'View Details',
+          AppColors.primary,
+          onTap: () => _navigateToDetail(context),
+        );
     }
   }
 
@@ -397,17 +420,14 @@ class _ApplicationCard extends StatelessWidget {
   }
 
   // ── Interview Detail Bottom Sheet ──
-  static void _showInterviewDetail(
-      BuildContext context, MockApplication app) {
+  static void _showInterviewDetail(BuildContext context, MockApplication app) {
     final schedule = app.interviewSchedule!;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _InterviewDetailSheet(
-        application: app,
-        schedule: schedule,
-      ),
+      builder: (_) =>
+          _InterviewDetailSheet(application: app, schedule: schedule),
     );
   }
 }
@@ -564,9 +584,7 @@ class _InterviewDetailSheet extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFF8E1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFFFFE082),
-                  ),
+                  border: Border.all(color: const Color(0xFFFFE082)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -616,7 +634,10 @@ class _InterviewDetailSheet extends StatelessWidget {
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(color: AppColors.border, width: 1.5),
+                      side: const BorderSide(
+                        color: AppColors.border,
+                        width: 1.5,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -639,7 +660,9 @@ class _InterviewDetailSheet extends StatelessWidget {
                     label: const Text(
                       'Add to Calendar',
                       style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w600),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
