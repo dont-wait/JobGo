@@ -29,6 +29,8 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
   late final TextEditingController _salaryMinCtrl;
   late final TextEditingController _salaryMaxCtrl;
   late final TextEditingController _emailCtrl;
+  late final TextEditingController _titleCtrl;
+  late final TextEditingController _summaryCtrl;
 
   @override
   void initState() {
@@ -46,6 +48,8 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
     _salaryMinCtrl = TextEditingController(text: c?.desiredSalaryMin?.toString() ?? '');
     _salaryMaxCtrl = TextEditingController(text: c?.desiredSalaryMax?.toString() ?? '');
     _emailCtrl = TextEditingController(text: c?.email ?? '');
+    _titleCtrl = TextEditingController(text: c?.title ?? '');
+    _summaryCtrl = TextEditingController(text: c?.summary ?? '');
   }
 
   @override
@@ -62,6 +66,8 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
     _salaryMinCtrl.dispose();
     _salaryMaxCtrl.dispose();
     _emailCtrl.dispose();
+    _titleCtrl.dispose();
+    _summaryCtrl.dispose();
     super.dispose();
   }
 
@@ -97,6 +103,8 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
           'c_desired_salary_max': _salaryMaxCtrl.text.trim().isEmpty
               ? null
               : double.tryParse(_salaryMaxCtrl.text.trim()),
+          'c_title': _titleCtrl.text.trim(),
+          'c_summary': _summaryCtrl.text.trim(),
         }).eq('u_id', uId);
 
         //  UPDATE u_name trong bảng users nếu đổi tên
@@ -172,7 +180,8 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
               _buildField(label: 'CV URL', controller: _cvUrlCtrl, icon: Icons.picture_as_pdf_outlined, keyboardType: TextInputType.url),
               _buildField(label: 'Desired Salary Min', controller: _salaryMinCtrl, icon: Icons.attach_money, keyboardType: TextInputType.number),
               _buildField(label: 'Desired Salary Max', controller: _salaryMaxCtrl, icon: Icons.attach_money, keyboardType: TextInputType.number),
-
+              _buildField(label: 'Job Title', controller: _titleCtrl, icon: Icons.title_outlined),
+              _buildField(label: 'Summary', controller: _summaryCtrl, icon: Icons.description, maxLines: 3),
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,

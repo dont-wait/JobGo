@@ -137,6 +137,22 @@ class _ProfilePageState extends State<ProfilePage> {
             subtitle: 'CV của bạn',
             isDefault: true,
           ),
+          if (candidate?.title != null && candidate!.title!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                'Vị trí mong muốn: ${candidate.title}',
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              ),
+            ),
+          if (candidate?.summary != null && candidate!.summary!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                candidate.summary!,
+                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              ),
+            ),
         const SizedBox(height: 16),
         const UploadResumeBox(),
       ],
