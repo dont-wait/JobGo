@@ -18,6 +18,8 @@ class JobModel {
   final List<String>? benefits;
   final List<String>? tags;
   final int? applicants;
+  final int? positions;
+  final String status;
 
   const JobModel({
     required this.id,
@@ -39,6 +41,8 @@ class JobModel {
     this.benefits,
     this.tags,
     this.applicants,
+    this.positions,
+    this.status = 'open',
   });
 
   JobModel copyWith({
@@ -61,6 +65,8 @@ class JobModel {
     List<String>? benefits,
     List<String>? tags,
     int? applicants,
+    int? positions,
+    String? status,
   }) {
     return JobModel(
       id: id ?? this.id,
@@ -82,6 +88,8 @@ class JobModel {
       benefits: benefits ?? this.benefits,
       tags: tags ?? this.tags,
       applicants: applicants ?? this.applicants,
+      positions: positions ?? this.positions,
+      status: status ?? this.status,
     );
   }
 
@@ -104,11 +112,15 @@ class JobModel {
             json['employers']?['logo_color'] ??
             '0xFF1A3A4A',
       ),
-      logoText: _stringValue(
+      logoText: _deriveLogoText(
         json['logo_text'] ??
             json['j_logo_text'] ??
-            json['employers']?['logo_text'] ??
-            'JG',
+            json['employers']?['logo_text'],
+        json['j_company'] ??
+            json['company_name'] ??
+            json['company'] ??
+            json['employers']?['e_company_name'] ??
+            'JobGo',
       ),
       logoUrl:
           _stringValue(
@@ -145,8 +157,13 @@ class JobModel {
         json['j_tags'] ?? json['tags'] ?? json['skills'] ?? json['keywords'],
       ),
       applicants: _toIntValue(
-        json['j_applicants'] ?? json['applicants'] ?? json['application_count'],
+        json['j_application_count'] ??
+            json['j_applicants'] ??
+            json['applicants'] ??
+            json['application_count'],
       ),
+      positions: _toIntValue(json['j_positions'] ?? json['positions']),
+      status: _stringValue(json['j_status'] ?? json['status'] ?? 'open'),
     );
   }
 
@@ -163,15 +180,35 @@ class JobModel {
       'j_salary_min': salaryMin,
       'j_salary_max': salaryMax,
       'j_type': type,
-      'j_posted_at': postedTime,
+      'j_create_at': postedTime,
       'j_is_bookmarked': isBookmarked,
       'j_badge': _nullableStringValue(badge),
       'j_description': _toTextList(description),
       'j_requirements': requirements,
       'j_benefits': benefits,
       'j_tags': tags,
-      'j_applicants': applicants,
+      'j_application_count': applicants,
+      'j_positions': positions,
+      'j_status': status,
     };
+  }
+
+  bool get isOpen => status.toLowerCase() == 'open';
+
+  static String _deriveLogoText(dynamic explicitValue, String companyName) {
+    if (explicitValue != null) {
+      final val = explicitValue.toString().trim();
+      if (val.isNotEmpty) return val;
+    }
+
+    final company = companyName.trim();
+    if (company.isEmpty) return 'JG';
+
+    final words = company.split(RegExp(r'\s+'));
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return company.substring(0, words[0].length >= 2 ? 2 : 1).toUpperCase();
   }
 
   static String _stringValue(dynamic value, {String fallback = ''}) {

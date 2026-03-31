@@ -4,10 +4,16 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 /// Nút "Apply Now" cố định ở dưới trang chi tiết
 class JobApplyButton extends StatelessWidget {
   final VoidCallback? onPressed;
+  final String label;
+  final bool isEnabled;
+  final bool isLoading;
 
   const JobApplyButton({
     super.key,
     this.onPressed,
+    this.label = 'Apply Now',
+    this.isEnabled = true,
+    this.isLoading = false,
   });
 
   @override
@@ -30,10 +36,12 @@ class JobApplyButton extends StatelessWidget {
           width: double.infinity,
           height: 52,
           child: ElevatedButton(
-            onPressed: onPressed,
+            onPressed: (isEnabled && !isLoading) ? onPressed : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: isEnabled ? AppColors.primary : AppColors.border,
               foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.border,
+              disabledForegroundColor: AppColors.textHint,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -43,7 +51,16 @@ class JobApplyButton extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            child: const Text('Apply Now'),
+            child: isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(label),
           ),
         ),
       ),

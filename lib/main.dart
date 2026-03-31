@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -60,6 +61,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => EmployerProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => InterviewProvider()),
+        ChangeNotifierProvider(create: (_) => ApplicationProvider()),
       ],
       child: const MainApp(),
     ),

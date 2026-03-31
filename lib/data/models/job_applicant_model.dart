@@ -1,4 +1,14 @@
 import 'candidate_supabase_model.dart';
+import 'job_model.dart';
+
+enum ApplicationStatus {
+  pending,
+  reviewing,
+  interview,
+  hired,
+  rejected,
+  withdrawn,
+}
 
 class JobApplicantModel {
   final int applicationId;
@@ -6,11 +16,12 @@ class JobApplicantModel {
   final int candidateId;
   final String coverLetter;
   final String? internalNotes;
-  final String status;
+  final ApplicationStatus status;
   final String cvUrl;
   final DateTime? appliedAt;
   final DateTime? updatedAt;
   final CandidateSupabaseModel candidate;
+  final JobModel? job;
 
   const JobApplicantModel({
     required this.applicationId,
@@ -23,10 +34,12 @@ class JobApplicantModel {
     this.appliedAt,
     this.updatedAt,
     required this.candidate,
+    this.job,
   });
 
   factory JobApplicantModel.fromJson(Map<String, dynamic> json) {
     final candidateJson = json['candidates'] as Map<String, dynamic>?;
+    final jobJson = json['jobs'] as Map<String, dynamic>?;
 
     return JobApplicantModel(
       applicationId: _toInt(json['a_id'] ?? json['id']) ?? 0,
@@ -36,21 +49,18 @@ class JobApplicantModel {
       internalNotes: _nullableStringValue(
         json['a_internal_notes'] ?? json['internal_notes'],
       ),
-      status: _stringValue(
-        json['a_status'] ?? json['status'],
-        fallback: 'pending',
-      ),
+      status: _toStatus(json['a_status'] ?? json['status']),
       cvUrl: _stringValue(json['a_cv_url'] ?? json['cv_url']),
       appliedAt: _toDateTime(json['a_applied_at'] ?? json['applied_at']),
       updatedAt: _toDateTime(json['a_updated_at'] ?? json['updated_at']),
       candidate: CandidateSupabaseModel.fromJson(
         candidateJson ?? const <String, dynamic>{},
       ),
+      job: jobJson != null ? JobModel.fromJson(jobJson) : null,
     );
   }
 
-  String get statusLabel =>
-      status.trim().isEmpty ? 'PENDING' : status.trim().toUpperCase();
+  String get statusLabel => status.name.toUpperCase();
 
   String get appliedTimeAgo {
     final appliedDate = appliedAt;
@@ -67,15 +77,13 @@ class JobApplicantModel {
   }
 
   int get matchScore {
-    final normalizedStatus = status.trim().toLowerCase();
-    final baseScore = switch (normalizedStatus) {
-      'interview' => 95,
-      'reviewing' => 91,
-      'pending' => 87,
-      'hired' => 98,
-      'rejected' => 72,
-      'withdrawn' => 68,
-      _ => 85,
+    final baseScore = switch (status) {
+      ApplicationStatus.interview => 95,
+      ApplicationStatus.reviewing => 91,
+      ApplicationStatus.pending => 87,
+      ApplicationStatus.hired => 98,
+      ApplicationStatus.rejected => 72,
+      ApplicationStatus.withdrawn => 68,
     };
 
     final skillBonus = candidate.skillList.length > 3
@@ -93,6 +101,16 @@ class JobApplicantModel {
     status,
     candidate.searchableText,
   ].join(' ').toLowerCase();
+
+  static ApplicationStatus _toStatus(dynamic value) {
+    if (value == null) return ApplicationStatus.pending;
+    final statusStr = value.toString().trim().toLowerCase();
+    if (statusStr == 'reviewed') return ApplicationStatus.reviewing;
+    return ApplicationStatus.values.firstWhere(
+      (e) => e.name == statusStr,
+      orElse: () => ApplicationStatus.pending,
+    );
+  }
 
   static String _stringValue(dynamic value, {String fallback = ''}) {
     if (value == null) return fallback;

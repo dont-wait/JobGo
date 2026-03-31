@@ -11,6 +11,8 @@ import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dar
 
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/bookmark_provider.dart';
+import 'package:jobgo/presentation/providers/application_provider.dart';
+import 'package:jobgo/presentation/providers/profile_provider.dart';
 
 /// Trang chi tiết công việc
 class JobDetailPage extends StatefulWidget {
@@ -23,6 +25,37 @@ class JobDetailPage extends StatefulWidget {
 }
 
 class _JobDetailPageState extends State<JobDetailPage> {
+  bool _hasAlreadyApplied = false;
+  bool _isLoadingStatus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkApplicationStatus();
+  }
+
+  Future<void> _checkApplicationStatus() async {
+    final profile = context.read<ProfileProvider>().candidate;
+    if (profile == null) return;
+
+    setState(() => _isLoadingStatus = true);
+
+    try {
+      final applied = await context.read<ApplicationProvider>().hasApplied(
+        int.parse(widget.job.id),
+        profile.cId,
+      );
+      if (mounted) {
+        setState(() {
+          _hasAlreadyApplied = applied;
+          _isLoadingStatus = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoadingStatus = false);
+    }
+  }
+
   void _showSavedPopup() {
     final overlay = Overlay.of(context);
     late OverlayEntry entry;
@@ -54,23 +87,16 @@ class _JobDetailPageState extends State<JobDetailPage> {
         ),
         centerTitle: true,
         actions: [
+          // Bookmark selector (rút gọn)
           Consumer<BookmarkProvider>(
             builder: (context, provider, child) {
               final isSaved = provider.isBookmarked(widget.job.id);
               return IconButton(
-                icon: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  transitionBuilder: (child, anim) =>
-                      ScaleTransition(scale: anim, child: child),
-                  child: Icon(
-                    isSaved
-                        ? Icons.bookmark_rounded
-                        : Icons.bookmark_border_rounded,
-                    key: ValueKey(isSaved),
-                    color: isSaved
-                        ? AppColors.warning
-                        : AppColors.textSecondary,
-                  ),
+                icon: Icon(
+                  isSaved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
+                  color: isSaved ? AppColors.warning : AppColors.textSecondary,
                 ),
                 onPressed: () {
                   if (!isSaved) _showSavedPopup();
@@ -85,16 +111,10 @@ class _JobDetailPageState extends State<JobDetailPage> {
               color: AppColors.textSecondary,
               size: 22,
             ),
-            onPressed: () {
-              // TODO: Implement share
-            },
+            onPressed: () {},
           ),
         ],
       ),
-      // Layout: Column chứa 2 phần:
-      // 1. Expanded(SingleChildScrollView) → nội dung scroll được
-      // 2. JobApplyButton → cố định ở dưới, không scroll theo
-      // Cách này đảm bảo nút Apply luôn hiển thị bất kể nội dung dài bao nhiêu.
       body: Column(
         children: [
           Expanded(
@@ -103,46 +123,32 @@ class _JobDetailPageState extends State<JobDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Header: Logo + Title + Company + Location ──
                   _buildHeader(),
-
                   const SizedBox(height: 20),
-
                   if (widget.job.badge != null) ...[
                     _buildBadge(),
                     const SizedBox(height: 16),
                   ],
-
-                  // ── Applicants count (nếu có) ──
                   if (widget.job.applicants != null) ...[
                     _buildApplicantsInfo(),
                     const SizedBox(height: 20),
                   ],
-
-                  // ── Info Grid: Salary / Job Type / Posted ──
                   JobInfoGrid(
                     salary: widget.job.formattedSalary,
                     jobType: widget.job.type,
                     postedTime: widget.job.postedTimeAgo,
                   ),
-
                   const SizedBox(height: 24),
-
-                  // ── Tags (nếu có) ──
                   if (widget.job.tags != null &&
                       widget.job.tags!.isNotEmpty) ...[
                     _buildTags(),
                     const SizedBox(height: 24),
                   ],
-
-                  // ── About the Role ──
                   if (widget.job.description != null &&
                       widget.job.description!.isNotEmpty) ...[
                     JobDescriptionSection(description: widget.job.description!),
                     const SizedBox(height: 24),
                   ],
-
-                  // ── Requirements ──
                   if (widget.job.requirements != null &&
                       widget.job.requirements!.isNotEmpty) ...[
                     JobRequirementsSection(
@@ -150,8 +156,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
                     ),
                     const SizedBox(height: 24),
                   ],
-
-                  // ── Benefits ──
                   if (widget.job.benefits != null &&
                       widget.job.benefits!.isNotEmpty) ...[
                     JobBenefitsSection(benefits: widget.job.benefits!),
@@ -162,8 +166,18 @@ class _JobDetailPageState extends State<JobDetailPage> {
             ),
           ),
 
-          // ── Apply Button cố định ở dưới ──
-          JobApplyButton(onPressed: () => navigateToApply(context, widget.job)),
+          // ── Apply Button với trạng thái applied check ──
+          JobApplyButton(
+            label: _hasAlreadyApplied
+                ? 'Applied'
+                : (widget.job.isOpen ? 'Apply Now' : 'Job Closed'),
+            isEnabled: !_hasAlreadyApplied && widget.job.isOpen,
+            isLoading: _isLoadingStatus,
+            onPressed: () => navigateToApply(context, widget.job).then((_) {
+              // Refresh status after applying
+              _checkApplicationStatus();
+            }),
+          ),
         ],
       ),
     );
@@ -172,7 +186,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
   Widget _buildHeader() {
     return Column(
       children: [
-        // Logo
         Center(
           child: CompanyLogo(
             imageUrl: widget.job.logoUrl,
@@ -185,8 +198,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
         ),
         const SizedBox(height: 16),
-
-        // Job Title
         Center(
           child: Text(
             widget.job.title,
@@ -199,8 +210,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
         ),
         const SizedBox(height: 6),
-
-        // Company Name
         Center(
           child: Text(
             widget.job.company,
@@ -212,8 +221,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
         ),
         const SizedBox(height: 6),
-
-        // Location
         if (widget.job.location.isNotEmpty)
           Center(
             child: Row(
@@ -239,9 +246,6 @@ class _JobDetailPageState extends State<JobDetailPage> {
     );
   }
 
-  /// Badge hiển thị trạng thái đặc biệt của công việc.
-  /// - 'URGENT' → nền đỏ nhạt, chữ đỏ (cảnh báo khẩn cấp)
-  /// - Các badge khác (TOP TALENT...) → nền xanh nhạt, chữ xanh primary
   Widget _buildBadge() {
     final isUrgent = widget.job.badge!.toUpperCase() == 'URGENT';
     return Center(
@@ -276,8 +280,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
         ),
         const SizedBox(width: 6),
         Text(
-          // Xử lý số nhiều tiếng Anh: 1 applicant / 5 applicants
-          '${widget.job.applicants} applicant${widget.job.applicants! > 1 ? 's' : ''} so far',
+          '${widget.job.applicants ?? 0} applicant${(widget.job.applicants ?? 0) != 1 ? 's' : ''} so far',
           style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
       ],
