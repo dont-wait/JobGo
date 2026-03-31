@@ -80,7 +80,7 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
           return;
         }
 
-        // ✅ UPDATE bảng candidates
+        // UPDATE bảng candidates
         await supabase.from('candidates').update({
           'c_full_name': _nameCtrl.text.trim(),
           'c_date_of_birth': _dobCtrl.text.trim().isEmpty ? null : _dobCtrl.text.trim(),
@@ -99,7 +99,7 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
               : double.tryParse(_salaryMaxCtrl.text.trim()),
         }).eq('u_id', uId);
 
-        // ✅ UPDATE u_name trong bảng users nếu đổi tên
+        //  UPDATE u_name trong bảng users nếu đổi tên
         await supabase.from('users').update({
           'u_name': _nameCtrl.text.trim(),
           'u_phone': _phoneCtrl.text.trim(),

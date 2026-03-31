@@ -1,107 +1,162 @@
-import 'package:flutter/material.dart';
-import '../../../../core/configs/theme/app_colors.dart';
-import '../../../../data/mockdata/mock_interview.dart';
 
+import 'package:flutter/material.dart';
+import 'package:jobgo/data/models/interview_schedule_model.dart';
+import '../../../../core/configs/theme/app_colors.dart';
 
 class InterviewCard extends StatelessWidget {
-  final MockInterviewSchedule schedule;
+  final InterviewScheduleModel schedule;
+  final VoidCallback? onTap; // thêm cái này để click
+  final VoidCallback? onDelete; // nếu muốn có nút xóa sau này
 
-  const InterviewCard({super.key, required this.schedule});
+  const InterviewCard({
+    super.key,
+    required this.schedule,
+    this.onTap,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.lightBackground.withOpacity(0.1), AppColors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return InkWell(
+      onTap: onTap, // xử lý click ở đây
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: AppColors.border),
         ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.15),
-            blurRadius: 6,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Tiêu đề loại phỏng vấn
-            Text(
-              schedule.interviewType,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Thời gian
-            Row(
-              children: [
-                const Icon(Icons.calendar_month, color: AppColors.primary),
-                const SizedBox(width: 8),
-                Text(
-                  "${schedule.formattedDate} • ${schedule.formattedTime}",
-                  style: const TextStyle(color: AppColors.textSecondary),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // Địa điểm
-            Row(
-              children: [
-                const Icon(Icons.location_on, color: Colors.redAccent),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    schedule.location,
-                    style: const TextStyle(color: AppColors.textSecondary),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // Người liên hệ
-            Row(
-              children: [
-                const Icon(Icons.person, color: Colors.blueAccent),
-                const SizedBox(width: 8),
-                Text(
-                  "Liên hệ: ${schedule.contactPerson}",
-                  style: const TextStyle(color: AppColors.textSecondary),
-                ),
-              ],
-            ),
-
-            // Ghi chú
-            if (schedule.note != null) ...[
-              const SizedBox(height: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // HEADER
               Row(
                 children: [
-                  const Icon(Icons.note_alt, color: Colors.orangeAccent),
-                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      "Ghi chú: ${schedule.note}",
-                      style: const TextStyle(color: AppColors.textSecondary),
+                      schedule.type,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        print("DELETE CLICKED");
+                        onDelete?.call();
+                      },
+                      customBorder: const CircleBorder(),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.delete_outline,
+                          size: 18,
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
+
+              const SizedBox(height: 6),
+
+              // Candidate + Job
+              Text(
+                "${schedule.candidateName} • ${schedule.jobTitle}",
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textHint,
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              // 🗓 Date + Time
+              _buildRow(
+                icon: Icons.calendar_today_rounded,
+                iconColor: AppColors.primary,
+                text:
+                    "${schedule.date.day}/${schedule.date.month}/${schedule.date.year} • "
+                    "${schedule.date.hour}:${schedule.date.minute.toString().padLeft(2, '0')}",
+              ),
+
+              const SizedBox(height: 8),
+
+              //  Location
+              _buildRow(
+                icon: Icons.location_on_rounded,
+                iconColor: Colors.redAccent,
+                text: schedule.location.isNotEmpty
+                    ? schedule.location
+                    : 'No location',
+              ),
+
+              const SizedBox(height: 8),
+
+              // Contact
+              _buildRow(
+                icon: Icons.person_outline,
+                iconColor: Colors.blueAccent,
+                text:
+                    "Liên hệ: ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : 'N/A'}",
+              ),
+
+              // 📝 Note
+              if (schedule.note.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                _buildRow(
+                  icon: Icons.note_alt_outlined,
+                  iconColor: Colors.orange,
+                  text: schedule.note,
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRow({
+    required IconData icon,
+    required Color iconColor,
+    required String text,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: iconColor),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
