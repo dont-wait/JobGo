@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jobgo/presentation/providers/profile_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_theme.dart';
@@ -55,7 +56,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => BookmarkProvider()..loadInitialBookmarks(),
         ),
-        ChangeNotifierProvider(create: (_) => EmployerProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: const MainApp(),
     ),
