@@ -61,10 +61,86 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateResume(String url) {
+  Future<void> addResume(String url) async {
     if (_candidate != null) {
-      _candidate = _candidate!.copyWith(resume: url);
-      notifyListeners();
+      final currentResumes = _candidate!.resumes ?? [];
+      // Chèn lên đầu mảng để làm default mới nhất
+      final newResumes = [url, ...currentResumes];
+
+      try {
+        final supabase = Supabase.instance.client;
+        await supabase
+            .from('candidates')
+            .update({'c_resume': newResumes})
+            .eq('c_id', _candidate!.cId);
+
+        _candidate = _candidate!.copyWith(resumes: newResumes);
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error adding resume: $e');
+      }
+    }
+  }
+
+  Future<void> setDefaultResume(String url) async {
+    if (_candidate != null) {
+      final currentResumes = _candidate!.resumes ?? [];
+      final newResumes = [url, ...currentResumes.where((e) => e != url)];
+
+      try {
+        final supabase = Supabase.instance.client;
+        await supabase
+            .from('candidates')
+            .update({'c_resume': newResumes})
+            .eq('c_id', _candidate!.cId);
+
+        _candidate = _candidate!.copyWith(resumes: newResumes);
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error setting default resume: $e');
+      }
+    }
+  }
+
+  Future<void> replaceResume(String oldUrl, String newUrl) async {
+    if (_candidate != null) {
+      final currentResumes = _candidate!.resumes ?? [];
+      final newResumes = currentResumes
+          .map((e) => e == oldUrl ? newUrl : e)
+          .toList();
+
+      try {
+        final supabase = Supabase.instance.client;
+        await supabase
+            .from('candidates')
+            .update({'c_resume': newResumes})
+            .eq('c_id', _candidate!.cId);
+
+        _candidate = _candidate!.copyWith(resumes: newResumes);
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error replacing resume: $e');
+      }
+    }
+  }
+
+  Future<void> removeResume(String url) async {
+    if (_candidate != null) {
+      final currentResumes = _candidate!.resumes ?? [];
+      final newResumes = currentResumes.where((e) => e != url).toList();
+
+      try {
+        final supabase = Supabase.instance.client;
+        await supabase
+            .from('candidates')
+            .update({'c_resume': newResumes})
+            .eq('c_id', _candidate!.cId);
+
+        _candidate = _candidate!.copyWith(resumes: newResumes);
+        notifyListeners();
+      } catch (e) {
+        debugPrint('Error removing resume: $e');
+      }
     }
   }
 }
