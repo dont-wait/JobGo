@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/presentation/widgets/employer/post_job/post_job_page.dart';
 
 class PostNewJobBanner extends StatelessWidget {
-  const PostNewJobBanner({super.key});
+  final VoidCallback onPressed;
+
+  const PostNewJobBanner({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +35,7 @@ class PostNewJobBanner extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PostJobPage()),
-              ),
+              onPressed: onPressed,
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text(
                 'Post New Job',

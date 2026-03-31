@@ -1,58 +1,351 @@
 import 'package:flutter/material.dart';
+
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/models/employer_job_model.dart';
+import 'package:jobgo/data/repositories/employer_job_repository.dart';
+import 'package:jobgo/data/repositories/job_category_repository.dart';
+import 'package:jobgo/presentation/widgets/employer/job_preview/job_post_preview_page.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/job_step_progress.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step1_job_details_widget.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step2_description_widget.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step3_perks_salary_widget.dart';
-import 'package:jobgo/presentation/widgets/employer/job_preview/job_post_preview_page.dart';
 
 class PostJobPage extends StatefulWidget {
-  const PostJobPage({super.key});
+  final EmployerJobModel? initialJob;
+
+  const PostJobPage({super.key, this.initialJob});
+
+  bool get isEditing => initialJob != null;
 
   @override
   State<PostJobPage> createState() => _PostJobPageState();
 }
 
 class _PostJobPageState extends State<PostJobPage> {
+  final EmployerJobRepository _repository = EmployerJobRepository();
+  final JobCategoryRepository _categoryRepository = JobCategoryRepository();
+
+  final TextEditingController jobTitleController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+  final TextEditingController minSalaryController = TextEditingController();
+  final TextEditingController maxSalaryController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController requirementsController = TextEditingController();
+  final TextEditingController positionsController = TextEditingController(
+    text: '1',
+  );
+  final TextEditingController deadlineController = TextEditingController();
+
+  List<String> _categoryOptions = ['Select Category'];
+
   int currentStep = 1;
-
-  // Controllers chung cho toàn bộ form
-  final jobTitleController = TextEditingController();
-  final locationController = TextEditingController();
-  final minSalaryController = TextEditingController();
-  final maxSalaryController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final requirementsController = TextEditingController();
-
   String selectedCategory = 'Select Category';
   String selectedEmploymentType = 'Full-time';
   List<String> selectedBenefits = [];
   List<String> selectedSkills = [];
+  bool salaryNegotiable = false;
+  DateTime? selectedDeadline;
+  bool _isSaving = false;
 
-  void _nextStep() {
-    if (currentStep < 3) {
-      setState(() => currentStep++);
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const JobPostPreviewPage()),
-      );
+  Iterable<TextEditingController> get _controllers => [
+    jobTitleController,
+    locationController,
+    minSalaryController,
+    maxSalaryController,
+    descriptionController,
+    requirementsController,
+    positionsController,
+    deadlineController,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    for (final controller in _controllers) {
+      controller.addListener(_handleTextChanged);
+    }
+    _seedFromInitialJob();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final categories = await _categoryRepository.fetchJobCategories();
+      if (!mounted) return;
+
+      setState(() {
+        _categoryOptions = _buildCategoryOptions(categories);
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _categoryOptions = ['Select Category'];
+      });
     }
   }
 
-  void _prevStep() {
-    if (currentStep > 1) setState(() => currentStep--);
+  List<String> _buildCategoryOptions(List<String> categories) {
+    final options = <String>['Select Category'];
+
+    for (final category in categories) {
+      final trimmed = category.trim();
+      if (trimmed.isEmpty || trimmed == 'Select Category') continue;
+      if (!options.contains(trimmed)) {
+        options.add(trimmed);
+      }
+    }
+
+    return options;
+  }
+
+  void _seedFromInitialJob() {
+    final job = widget.initialJob;
+    if (job == null) return;
+
+    jobTitleController.text = job.title;
+    locationController.text = job.location;
+    minSalaryController.text = job.salaryMin?.toString() ?? '';
+    maxSalaryController.text = job.salaryMax?.toString() ?? '';
+    descriptionController.text = job.description;
+    requirementsController.text = job.requirementsText;
+    positionsController.text = job.positions.toString();
+    selectedCategory = job.category.isNotEmpty
+        ? job.category
+        : selectedCategory;
+    selectedEmploymentType = job.employmentType.isNotEmpty
+        ? job.employmentType
+        : selectedEmploymentType;
+    selectedBenefits = List<String>.from(job.cleanedBenefits);
+    selectedSkills = List<String>.from(job.cleanedTags);
+    salaryNegotiable = job.salaryNegotiable;
+    selectedDeadline = job.deadline;
+    deadlineController.text = job.deadline == null
+        ? ''
+        : _formatDateForField(job.deadline!);
+  }
+
+  void _handleTextChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   void dispose() {
-    jobTitleController.dispose();
-    locationController.dispose();
-    minSalaryController.dispose();
-    maxSalaryController.dispose();
-    descriptionController.dispose();
-    requirementsController.dispose();
+    for (final controller in _controllers) {
+      controller.removeListener(_handleTextChanged);
+      controller.dispose();
+    }
     super.dispose();
+  }
+
+  EmployerJobModel get _draftJob {
+    return EmployerJobModel(
+      id: widget.initialJob?.id,
+      employerId: widget.initialJob?.employerId,
+      title: jobTitleController.text.trim(),
+      description: descriptionController.text.trim(),
+      requirementsText: requirementsController.text.trim(),
+      location: locationController.text.trim(),
+      employmentType: selectedEmploymentType,
+      category: selectedCategory == 'Select Category' ? '' : selectedCategory,
+      salaryMin: double.tryParse(minSalaryController.text.trim()),
+      salaryMax: double.tryParse(maxSalaryController.text.trim()),
+      salaryValue: _deriveSalaryValue(),
+      salaryNegotiable: salaryNegotiable,
+      positions: int.tryParse(positionsController.text.trim()) ?? 1,
+      deadline: selectedDeadline,
+      status: widget.initialJob?.status ?? 'draft',
+      moderationStatus: widget.initialJob?.moderationStatus ?? 'draft',
+      applicationCount: widget.initialJob?.applicationCount ?? 0,
+      badge: widget.initialJob?.badge,
+      tags: List<String>.from(selectedSkills),
+      benefits: List<String>.from(selectedBenefits),
+      createdAt: widget.initialJob?.createdAt,
+      updatedAt: widget.initialJob?.updatedAt,
+      companyName: widget.initialJob?.companyName ?? '',
+      companyLogoUrl: widget.initialJob?.companyLogoUrl ?? '',
+      companyLogoColor: widget.initialJob?.companyLogoColor ?? '0xFF1A3A4A',
+      companyLogoText: widget.initialJob?.companyLogoText ?? 'JG',
+    );
+  }
+
+  double? _deriveSalaryValue() {
+    final minSalary = double.tryParse(minSalaryController.text.trim());
+    final maxSalary = double.tryParse(maxSalaryController.text.trim());
+
+    if (minSalary != null && maxSalary != null) {
+      return (minSalary + maxSalary) / 2;
+    }
+
+    if (maxSalary != null) return maxSalary;
+    if (minSalary != null) return minSalary;
+    return null;
+  }
+
+  String _formatDateForField(DateTime dateTime) {
+    return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
+  }
+
+  String? _validateStep1() {
+    if (jobTitleController.text.trim().isEmpty) {
+      return 'Job title is required';
+    }
+    if (selectedCategory == 'Select Category') {
+      return 'Please choose a category';
+    }
+    if (locationController.text.trim().isEmpty) {
+      return 'Location is required';
+    }
+    return null;
+  }
+
+  String? _validateStep2() {
+    if (descriptionController.text.trim().isEmpty) {
+      return 'Job description is required';
+    }
+    if (requirementsController.text.trim().isEmpty) {
+      return 'Job requirements are required';
+    }
+    return null;
+  }
+
+  String? _validatePublish() {
+    final step1Error = _validateStep1();
+    if (step1Error != null) return step1Error;
+
+    final step2Error = _validateStep2();
+    if (step2Error != null) return step2Error;
+
+    if (selectedEmploymentType.trim().isEmpty) {
+      return 'Employment type is required';
+    }
+
+    final positions = int.tryParse(positionsController.text.trim()) ?? 0;
+    if (positions <= 0) {
+      return 'Open positions must be greater than 0';
+    }
+
+    if (selectedDeadline == null) {
+      return 'Please choose an application deadline';
+    }
+
+    if (!salaryNegotiable) {
+      final minSalary = double.tryParse(minSalaryController.text.trim());
+      final maxSalary = double.tryParse(maxSalaryController.text.trim());
+      if (minSalary == null && maxSalary == null) {
+        return 'Please add a salary range or mark the salary as negotiable';
+      }
+    }
+
+    return null;
+  }
+
+  String? _validateDraftSave() {
+    if (jobTitleController.text.trim().isEmpty) {
+      return 'Job title is required to save a draft';
+    }
+    return null;
+  }
+
+  Future<void> _saveDraftDirectly() async {
+    if (_isSaving) return;
+
+    final validationError = _validateDraftSave();
+    if (validationError != null) {
+      _showSnackBar(validationError);
+      return;
+    }
+
+    await _submitJob(false, popAfterSuccess: true);
+  }
+
+  Future<void> _openPreview() async {
+    final validationError = _validatePublish();
+    if (validationError != null) {
+      _showSnackBar(validationError);
+      return;
+    }
+
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => JobPostPreviewPage(
+          job: _draftJob,
+          isEditing: widget.isEditing,
+          onSubmit: (publish) => _submitJob(publish, popAfterSuccess: false),
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      Navigator.pop(context, true);
+    }
+  }
+
+  Future<bool> _submitJob(bool publish, {required bool popAfterSuccess}) async {
+    if (_isSaving) return false;
+
+    if (publish) {
+      final validationError = _validatePublish();
+      if (validationError != null) {
+        _showSnackBar(validationError);
+        return false;
+      }
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      await _repository.saveJob(_draftJob, publish: publish);
+      if (!mounted) return false;
+
+      _showSnackBar(
+        publish
+            ? (widget.isEditing
+                  ? 'Job updated successfully!'
+                  : 'Job posted successfully!')
+            : 'Draft saved successfully!',
+        backgroundColor: AppColors.success,
+      );
+
+      if (popAfterSuccess) {
+        Navigator.pop(context, true);
+      }
+
+      return true;
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(e.toString());
+      }
+      return false;
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
+
+  void _showSnackBar(String message, {Color? backgroundColor}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: backgroundColor),
+    );
+  }
+
+  void _nextStep() {
+    if (currentStep < 3) {
+      setState(() => currentStep++);
+      return;
+    }
+
+    _openPreview();
+  }
+
+  void _prevStep() {
+    if (currentStep > 1) {
+      setState(() => currentStep--);
+    }
   }
 
   @override
@@ -64,11 +357,11 @@ class _PostJobPageState extends State<PostJobPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
-          onPressed: () => Navigator.pop(context),
+          onPressed: _isSaving ? null : () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Post a New Job',
-          style: TextStyle(
+        title: Text(
+          widget.isEditing ? 'Edit Job' : 'Post a New Job',
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -76,12 +369,7 @@ class _PostJobPageState extends State<PostJobPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              // TODO: Save draft
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Draft saved')));
-            },
+            onPressed: _isSaving ? null : _saveDraftDirectly,
             child: const Text(
               'Save Draft',
               style: TextStyle(
@@ -118,6 +406,7 @@ class _PostJobPageState extends State<PostJobPage> {
           locationController: locationController,
           selectedCategory: selectedCategory,
           selectedEmploymentType: selectedEmploymentType,
+          categoryOptions: _categoryOptions,
           onCategoryChanged: (v) => setState(() => selectedCategory = v),
           onEmploymentTypeChanged: (v) =>
               setState(() => selectedEmploymentType = v),
@@ -133,9 +422,25 @@ class _PostJobPageState extends State<PostJobPage> {
         return Step3PerksSalaryWidget(
           minSalaryController: minSalaryController,
           maxSalaryController: maxSalaryController,
+          positionsController: positionsController,
+          deadlineController: deadlineController,
+          salaryNegotiable: salaryNegotiable,
+          selectedDeadline: selectedDeadline,
+          onSalaryNegotiableChanged: (value) => setState(() {
+            salaryNegotiable = value;
+          }),
+          onDeadlineChanged: (deadline) {
+            setState(() {
+              selectedDeadline = deadline;
+              deadlineController.text = deadline == null
+                  ? ''
+                  : _formatDateForField(deadline);
+            });
+          },
           selectedBenefits: selectedBenefits,
           onBenefitsChanged: (benefits) =>
               setState(() => selectedBenefits = benefits),
+          previewJob: _draftJob,
         );
       default:
         return const SizedBox();
@@ -160,7 +465,7 @@ class _PostJobPageState extends State<PostJobPage> {
           if (currentStep > 1)
             Expanded(
               child: OutlinedButton(
-                onPressed: _prevStep,
+                onPressed: _isSaving ? null : _prevStep,
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -173,7 +478,7 @@ class _PostJobPageState extends State<PostJobPage> {
           if (currentStep > 1) const SizedBox(width: 12),
           Expanded(
             child: ElevatedButton(
-              onPressed: _nextStep,
+              onPressed: _isSaving ? null : _nextStep,
               style: ElevatedButton.styleFrom(
                 backgroundColor: currentStep == 3
                     ? AppColors.orange
@@ -184,7 +489,7 @@ class _PostJobPageState extends State<PostJobPage> {
                 ),
               ),
               child: Text(
-                currentStep == 3 ? 'Post Job →' : 'Next Step',
+                currentStep == 3 ? 'Preview Job' : 'Next Step',
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),

@@ -4,22 +4,22 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 class EmploymentTypeSelector extends StatelessWidget {
   final String selectedType;
   final ValueChanged<String> onChanged;
+  final List<String> types;
 
   const EmploymentTypeSelector({
     super.key,
     required this.selectedType,
     required this.onChanged,
+    this.types = const ['Full-time', 'Part-time', 'Remote', 'Contract'],
   });
-
-  static const List<String> types = [
-    'Full-time',
-    'Part-time',
-    'Remote',
-    'Contract',
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final availableTypes = List<String>.from(types);
+    if (selectedType.isNotEmpty && !availableTypes.contains(selectedType)) {
+      availableTypes.insert(0, selectedType);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,7 +31,7 @@ class EmploymentTypeSelector extends StatelessWidget {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: types.map((type) {
+          children: availableTypes.map((type) {
             final isSelected = selectedType == type;
             return GestureDetector(
               onTap: () => onChanged(type),

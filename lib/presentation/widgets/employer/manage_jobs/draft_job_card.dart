@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+
+import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class DraftJobCard extends StatelessWidget {
-  final String jobTitle;
-  final String lastSaved;
-  final String missingInfo;
+  final EmployerJobModel job;
+  final VoidCallback onResume;
+  final VoidCallback onDelete;
 
   const DraftJobCard({
     super.key,
-    required this.jobTitle,
-    this.lastSaved = 'Last saved 7h ago',
-    this.missingInfo = 'Missing: Salary range, Office location',
+    required this.job,
+    required this.onResume,
+    required this.onDelete,
   });
 
   @override
@@ -47,7 +49,7 @@ class DraftJobCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                lastSaved,
+                job.updatedLabel,
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
@@ -57,11 +59,11 @@ class DraftJobCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            jobTitle,
+            job.title.isEmpty ? 'Untitled Job' : job.title,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           Text(
-            missingInfo,
+            job.missingInfoSummary,
             style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13,
@@ -72,7 +74,7 @@ class DraftJobCard extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: onResume,
                   icon: const Icon(Icons.play_arrow, size: 18),
                   label: const Text('Resume'),
                   style: ElevatedButton.styleFrom(
@@ -83,7 +85,7 @@ class DraftJobCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               IconButton(
-                onPressed: () {},
+                onPressed: onDelete,
                 icon: const Icon(Icons.delete_outline, color: AppColors.error),
               ),
             ],

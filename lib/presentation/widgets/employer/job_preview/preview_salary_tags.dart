@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/models/employer_job_model.dart';
 
 class PreviewSalaryTags extends StatelessWidget {
-  const PreviewSalaryTags({super.key});
+  final EmployerJobModel job;
+
+  const PreviewSalaryTags({super.key, required this.job});
 
   @override
   Widget build(BuildContext context) {
@@ -11,25 +15,28 @@ class PreviewSalaryTags extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         children: [
-          const Text(
-            '\$120,000 - \$160,000 / year',
-            style: TextStyle(
+          Text(
+            job.salaryLabel,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 16),
-
-          // Tags
           Wrap(
             spacing: 8,
             runSpacing: 8,
             alignment: WrapAlignment.center,
             children: [
-              _buildTag('Full-time', Icons.work_outline),
-              _buildTag('Remote', Icons.home_outlined),
-              _buildTag('Senior Level', Icons.star_outline),
+              if (job.employmentType.isNotEmpty)
+                _buildTag(job.employmentType, Icons.work_outline),
+              if (job.category.isNotEmpty)
+                _buildTag(job.category, Icons.category_outlined),
+              _buildTag(job.positionsLabel, Icons.people_outline),
+              if (job.deadline != null)
+                _buildTag(job.deadlineLabel, Icons.event_outlined),
             ],
           ),
         ],
