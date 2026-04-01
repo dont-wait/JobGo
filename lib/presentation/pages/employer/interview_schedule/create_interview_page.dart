@@ -88,6 +88,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/data/repositories/employer_job_repository.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:provider/provider.dart';
@@ -130,136 +131,91 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
     super.dispose();
   }
 
-  // Future<void> _loadData() async 
-  // {
-  //   try {
-  //     final supabase = Supabase.instance.client;
-  //     final repo = EmployerJobRepository();
-  //     final authUser = supabase.auth.currentUser;
-  //     final userRow = await supabase
-  //         .from('users')
-  //         .select('u_id') 
-  //         .or('auth_uid.eq.${authUser!.id},u_email.eq.${authUser.email}')
-  //         .maybeSingle();
-  //     final uId = userRow!['u_id'] as int;
+//   Future<void> _loadData() async {
+//   try {
+//     final supabase = Supabase.instance.client;
+//     final authUser = supabase.auth.currentUser;
+//      print('🔍 authUser: ${authUser?.email}');
 
-  //     final employerRow = await supabase
-  //         .from('employers')
-  //         .select('e_id')
-  //         .eq('u_id', uId)
-  //         .maybeSingle();
+//     // Lấy u_id
+//     final userRow = await supabase
+//         .from('users')
+//         .select('u_id')
+//         .or('auth_uid.eq.${authUser!.id},u_email.eq.${authUser.email}')
+//         .maybeSingle();
+//     print('🔍 userRow: $userRow');
+//     final uId = userRow!['u_id'] as int;
 
-  //     final eId = employerRow!['e_id'] as int;
-  //     final jobsData = await supabase
-  //         .from('jobs')
-  //         .select('j_id, j_title')
-  //         .eq('e_id', eId)
-  //         .order('j_id', ascending: true);
+//     // Lấy e_id
+//     final employerRow = await supabase
+//         .from('employers')
+//         .select('e_id')
+//         .eq('u_id', uId)
+//         .maybeSingle();
+//     print('🔍 employerRow: $employerRow');
+//     final eId = employerRow!['e_id'] as int;
 
-  //     setState(() {
-  //       _jobs = (jobsData as List)
-  //           .map((j) => {
-  //                 'id': j['j_id'] as int,
-  //                 'title': j['j_title'] as String,
-  //               })
-  //           .toList();
-  //     });
+//     // Load jobs của employer này thôi
+//     final jobsData = await supabase
+//         .from('jobs')
+//         .select('j_id, j_title')
+//         .eq('e_id', eId)
+//         .order('j_id', ascending: true);
+//       print('🔍 jobsData: $jobsData');
+//     // Load candidates
+//     final candidatesData = await supabase
+//         .from('candidates')
+//         .select('c_id, c_full_name')
+//         .not('c_full_name', 'is', null);
+//     print('🔍 candidatesData: $candidatesData');
 
-  //     // Load jobs của employer
-  //     final jobs = await repo.fetchMyJobs();
-  //     final activeJobs = jobs.where((j) => j.isActive).toList();
-      
-  //      print("Jobs tổng: ${jobs.length}, Active: ${activeJobs.length}");
-  //     //  Load candidates từ bảng candidates
-  //     final candidatesData = await supabase
-  //         .from('candidates')
-  //         .select('c_id, c_full_name')
-  //         .not('c_full_name', 'is', null);
-
-  //     if (!mounted) return;
-  //     setState(() {
-  //       _jobs = jobs
-  //           .map((j) => {'id': j.id, 'title': j.title})
-  //           .toList();
-  //       print("Mapped jobs: $_jobs"); // Debug log
-  //       _candidates = (candidatesData as List)
-  //           .map((c) => {
-  //                 'id': c['c_id'] as int,
-  //                 'name': c['c_full_name'] as String,
-  //               })
-  //           .toList();
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     if (!mounted) return;
-  //     setState(() => _isLoading = false);
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Lỗi tải dữ liệu: $e')),
-  //     );
-  //   }
-  // }
+//     if (!mounted) return;
+//     setState(() {
+//       _jobs = (jobsData as List)
+//           .map((j) => {
+//                 'id': j['j_id'] as int,
+//                 'title': j['j_title'] as String,
+//               })
+//           .toList();
+//       _candidates = (candidatesData as List)
+//           .map((c) => {
+//                 'id': c['c_id'] as int,
+//                 'name': c['c_full_name'] as String,
+//               })
+//           .toList();
+//       _isLoading = false;
+//     });
+//   } catch (e) {
+//     if (!mounted) return;
+//     setState(() => _isLoading = false);
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Lỗi tải dữ liệu: $e')),
+//     );
+//   }
+// }
   Future<void> _loadData() async {
-  try {
-    final supabase = Supabase.instance.client;
-    final authUser = supabase.auth.currentUser;
-     print('🔍 authUser: ${authUser?.email}');
+      try {
+        final jobRepo = EmployerJobRepository();
+        final candidateRepo = CandidateRepository();
 
-    // Lấy u_id
-    final userRow = await supabase
-        .from('users')
-        .select('u_id')
-        .or('auth_uid.eq.${authUser!.id},u_email.eq.${authUser.email}')
-        .maybeSingle();
-    print('🔍 userRow: $userRow');
-    final uId = userRow!['u_id'] as int;
+        final jobs = await jobRepo.fetchMyJobs();
+        final candidates = await candidateRepo.fetchCandidates();
 
-    // Lấy e_id
-    final employerRow = await supabase
-        .from('employers')
-        .select('e_id')
-        .eq('u_id', uId)
-        .maybeSingle();
-    print('🔍 employerRow: $employerRow');
-    final eId = employerRow!['e_id'] as int;
+        if (!mounted) return;
+        setState(() {
+          _jobs = jobs.map((j) => {'id': j.id, 'title': j.title}).toList();
+          _candidates = candidates.map((c) => {'id': c.cId, 'name': c.fullName}).toList();
+          _isLoading = false;
+        });
+      } catch (e) {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi tải dữ liệu: $e')),
+        );
+      }
+    }
 
-    // Load jobs của employer này thôi
-    final jobsData = await supabase
-        .from('jobs')
-        .select('j_id, j_title')
-        .eq('e_id', eId)
-        .order('j_id', ascending: true);
-      print('🔍 jobsData: $jobsData');
-    // Load candidates
-    final candidatesData = await supabase
-        .from('candidates')
-        .select('c_id, c_full_name')
-        .not('c_full_name', 'is', null);
-    print('🔍 candidatesData: $candidatesData');
-
-    if (!mounted) return;
-    setState(() {
-      _jobs = (jobsData as List)
-          .map((j) => {
-                'id': j['j_id'] as int,
-                'title': j['j_title'] as String,
-              })
-          .toList();
-      _candidates = (candidatesData as List)
-          .map((c) => {
-                'id': c['c_id'] as int,
-                'name': c['c_full_name'] as String,
-              })
-          .toList();
-      _isLoading = false;
-    });
-  } catch (e) {
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Lỗi tải dữ liệu: $e')),
-    );
-  }
-}
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
