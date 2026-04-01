@@ -11,6 +11,7 @@ import 'package:jobgo/presentation/pages/candidate/applications/applications_pag
 import 'package:jobgo/presentation/pages/candidate/messages/messages_page.dart';
 import 'package:jobgo/presentation/pages/candidate/notifications/notifications_page.dart';
 import 'package:jobgo/presentation/pages/candidate/profile/profile_page.dart';
+import 'package:jobgo/presentation/pages/candidate/interview_schedule/candidate_interview_page.dart';
 
 // ── Employer pages ──
 import 'package:jobgo/presentation/pages/employer/dashboard/dashboard_page.dart';
@@ -113,6 +114,7 @@ class _AppShellState extends State<AppShell> {
           MessagesPage(), // 3
           NotificationsPage(), // 4 — Notification (thay Profile)
           ProfilePage(), // 5 — Profile ẩn
+          CandidateInterviewPage(), // 6 — Interview ẩn
         ];
     }
   }

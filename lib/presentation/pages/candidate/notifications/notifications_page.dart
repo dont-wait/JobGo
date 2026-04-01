@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/presentation/pages/candidate/interview_schedule/candidate_interview_page.dart';
+
+
 
 /// Candidate Notifications page — hiển thị danh sách thông báo.
 class NotificationsPage extends StatefulWidget {
@@ -18,7 +21,7 @@ class _NotificationsPageState extends State<NotificationsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -73,6 +76,7 @@ class _NotificationsPageState extends State<NotificationsPage>
           tabs: const [
             Tab(text: 'All'),
             Tab(text: 'Jobs'),
+            Tab(text: 'Interviews'),
             Tab(text: 'Messages'),
           ],
         ),
@@ -84,6 +88,10 @@ class _NotificationsPageState extends State<NotificationsPage>
           _buildNotificationList(
             _allNotifications.where((n) => n.type == _NType.job).toList(),
           ),
+          _buildNotificationList(
+            _allNotifications.where((n) => n.type == _NType.interviewSchedule).toList(),
+          ),
+
           _buildNotificationList(
             _allNotifications.where((n) => n.type == _NType.message).toList(),
           ),
@@ -171,8 +179,16 @@ class _NotificationsPageState extends State<NotificationsPage>
                   shape: BoxShape.circle,
                 ),
               ),
+        // Sửa onTap trong _buildNotificationTile
         onTap: () {
-          // TODO: Navigate to detail
+          if (item.type == _NType.interviewSchedule) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CandidateInterviewPage(),
+              ),
+            );
+          }
         },
       ),
     );
@@ -181,7 +197,7 @@ class _NotificationsPageState extends State<NotificationsPage>
 
 // ── Mock data ──
 
-enum _NType { job, message, system }
+enum _NType { job, message, system, interviewSchedule  }
 
 class _NotificationItem {
   final String title;
@@ -226,7 +242,7 @@ final List<_NotificationItem> _allNotifications = [
     icon: Icons.calendar_today_outlined,
     iconBg: Color(0xFFF3E5F5),
     iconColor: Color(0xFF8B5CF6),
-    type: _NType.job,
+    type: _NType.interviewSchedule,
   ),
   const _NotificationItem(
     title: 'Congratulations! You were shortlisted for Flutter Developer',

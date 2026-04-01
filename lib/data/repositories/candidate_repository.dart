@@ -7,6 +7,48 @@ import '../models/candidate_supabase_model.dart';
 class CandidateRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
 
+  Future<int?> getCandidateIdByAuthUser() async {
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) return null;
+
+    final userRow = await _supabase
+        .from('users')
+        .select('u_id')
+        .or('auth_uid.eq.${authUser.id},u_email.eq.${authUser.email}')
+        .maybeSingle();
+
+    if (userRow == null) return null;
+    final uId = userRow['u_id'] as int;
+
+    final candidateRow = await _supabase
+        .from('candidates')
+        .select('c_id')
+        .eq('u_id', uId)
+        .maybeSingle();
+
+    return candidateRow?['c_id'] as int?;
+  }
+
+   Future<List<Map<String, dynamic>>> loadCandidateSchedules(int cId) async {
+    final data = await _supabase
+        .from('interview_schedule')
+        .select('''
+          i_id,
+          i_interview_date,
+          i_interview_type,
+          i_location,
+          i_contact_person,
+          i_note,
+          i_status,
+          candidates (c_full_name),
+          jobs (j_title)
+        ''')
+        .eq('c_id', cId)
+        .order('i_interview_date');
+
+    return (data as List).map((e) => Map<String, dynamic>.from(e)).toList();
+  }
+
   Future<List<CandidateSupabaseModel>> fetchCandidates() async {
     try {
       final response = await _supabase
@@ -78,6 +120,27 @@ class CandidateRepository {
       dev.log('Error fetching current candidate: $e');
       return null;
     }
+  }
+
+  Future<void> sendInterviewNotification({
+    required int candidateId,
+    required String jobTitle,
+  }) async {
+    final candidateRow = await _supabase
+        .from('candidates')
+        .select('u_id')
+        .eq('c_id', candidateId)
+        .maybeSingle();
+
+    if (candidateRow == null) return;
+    final uId = candidateRow['u_id'] as int;
+
+    await _supabase.from('notifications').insert({
+      'n_type': 'interview',
+      'n_content': 'Bạn có lịch phỏng vấn mới cho vị trí $jobTitle',
+      'n_status': 'unread',
+      'u_id': uId,
+    });
   }
 
   int? _toInt(dynamic value) {

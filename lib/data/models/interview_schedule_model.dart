@@ -7,6 +7,7 @@ class InterviewScheduleModel {
   final String location;
   final String contactPerson;
   final String note;
+  final String status;
 
   InterviewScheduleModel({
     required this.id,
@@ -17,6 +18,7 @@ class InterviewScheduleModel {
     required this.location,
     required this.contactPerson,
     required this.note,
+    this.status = 'pending',
   });
 
   factory InterviewScheduleModel.fromMap(Map<String, dynamic> map) {
@@ -29,6 +31,7 @@ class InterviewScheduleModel {
       location: map['i_location'] ?? '',
       contactPerson: map['i_contact_person'] ?? '',
       note: map['i_note'] ?? '',
+      status: map['i_status'] ?? 'pending',
     );
   }
 }
