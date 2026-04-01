@@ -47,6 +47,7 @@ class EmployerJobRepository {
         .eq('e_id', employerId)
         .order('j_update_at', ascending: false);
 
+
     final rows = response as List<dynamic>;
     final jobs = rows
         .map(
