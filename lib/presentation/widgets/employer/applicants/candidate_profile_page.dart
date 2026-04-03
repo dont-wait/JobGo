@@ -123,7 +123,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
           ),
           Text(
-            candidate.displayExperience,
+            candidate.displayHeadline,
             style: const TextStyle(
               fontSize: 16,
               color: AppColors.primary,
@@ -393,7 +393,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         const SizedBox(height: 12),
         _buildSectionCard(
           child: Text(
-            widget.candidate.displayExperience,
+            widget.candidate.displaySummary,
             style: const TextStyle(height: 1.6, color: AppColors.textSecondary),
           ),
         ),

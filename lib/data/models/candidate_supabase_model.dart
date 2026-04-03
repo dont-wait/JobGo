@@ -122,6 +122,24 @@ class CandidateSupabaseModel {
   String get displayExperience =>
       _cleanValue(experience, fallback: 'Open to opportunities');
 
+  String get displayTitle => _cleanValue(title, fallback: displayExperience);
+
+  String get displaySummary =>
+      _cleanValue(summary, fallback: displayExperience);
+
+  String get displayHeadline {
+    final roleTitle = _cleanValue(title, fallback: '');
+    if (roleTitle.isNotEmpty) return roleTitle;
+
+    final experienceText = _cleanValue(experience, fallback: '');
+    if (experienceText.isNotEmpty) return experienceText;
+
+    final summaryText = _cleanValue(summary, fallback: '');
+    if (summaryText.isNotEmpty) return summaryText;
+
+    return 'Open to opportunities';
+  }
+
   String get displayLocation =>
       _cleanValue(address, fallback: 'Location not set');
 
@@ -137,7 +155,9 @@ class CandidateSupabaseModel {
   List<String> get skillList => _splitSkillList(skill);
 
   String get roleLabel {
-    final searchBlob = '${experience ?? ''} ${skill ?? ''}'.toLowerCase();
+    final searchBlob =
+        '${title ?? ''} ${summary ?? ''} ${experience ?? ''} ${skill ?? ''}'
+            .toLowerCase();
     if (searchBlob.contains('design') ||
         searchBlob.contains('figma') ||
         searchBlob.contains('ui/ux') ||
@@ -174,7 +194,9 @@ class CandidateSupabaseModel {
   }
 
   String get seniorityLabel {
-    final searchBlob = '${experience ?? ''} ${skill ?? ''}'.toLowerCase();
+    final searchBlob =
+        '${title ?? ''} ${summary ?? ''} ${experience ?? ''} ${skill ?? ''}'
+            .toLowerCase();
     if (searchBlob.contains('intern')) {
       return 'Intern';
     }
@@ -207,6 +229,8 @@ class CandidateSupabaseModel {
 
   String get searchableText => [
     displayName,
+    displayTitle,
+    displaySummary,
     displayExperience,
     displayLocation,
     displayEducation,
