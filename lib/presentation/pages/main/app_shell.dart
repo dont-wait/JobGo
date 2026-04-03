@@ -25,7 +25,7 @@ import 'package:jobgo/presentation/pages/admin/dashboard/admin_dashboard_page.da
 import 'package:jobgo/presentation/pages/admin/search/admin_search_page.dart';
 import 'package:jobgo/presentation/pages/admin/users/user_management_page.dart';
 import 'package:jobgo/presentation/pages/admin/moderation/job_moderation_page.dart';
-import 'package:jobgo/presentation/pages/admin/notifications/admin_notification_page.dart';
+import 'package:jobgo/presentation/pages/admin/support/admin_support_issue_page.dart';
 import 'package:jobgo/presentation/pages/admin/profile/admin_profile_page.dart';
 
 /// Shell chính của ứng dụng — hiển thị bottom nav + pages theo role.
@@ -102,7 +102,7 @@ class _AppShellState extends State<AppShell> {
           AdminSearchPage(), // 1
           UserManagementPage(), // 2
           JobModerationPage(), // 3
-          AdminNotificationPage(), // 4 — Notification (thay Profile)
+          AdminSupportIssuePage(), // 4 — Support issues
           AdminProfilePage(), // 5 — Profile ẩn
         ];
       case UserRole.candidate:
@@ -135,7 +135,7 @@ class _AppShellState extends State<AppShell> {
           Icons.search,
           Icons.people_outline_rounded,
           Icons.work_outline_rounded,
-          Icons.notifications_outlined,
+          Icons.support_agent,
         ];
       case UserRole.candidate:
         return const [

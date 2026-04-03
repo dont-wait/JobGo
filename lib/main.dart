@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jobgo/presentation/providers/admin_provider.dart';
 import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
@@ -36,12 +37,24 @@ UserRole parseUserRole(String? roleStr) {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+
+  try {
+    await dotenv.load(fileName: '.env', isOptional: true);
+  } catch (e) {
+    print('Warning: .env could not be loaded, using fallback Supabase config: $e');
+  }
+
+    const fallbackSupabaseUrl = 'https://devgqjhlzkgexfwvxoej.supabase.co';
+    const fallbackSupabaseAnonKey =
+      'sb_publishable_hN1DwR9pENr-KwRfhh9PlA_6JQ_AkgQ';
 
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: dotenv.env['SUPABASE_URL'] ?? fallbackSupabaseUrl,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? fallbackSupabaseAnonKey,
   );
+
+  final supabaseUrl = Supabase.instance.client.rest.url.toString();
+  debugPrint('Supabase runtime URL: $supabaseUrl');
 
   final appLinks = AppLinks();
   appLinks.uriLinkStream.listen((uri) {
@@ -62,6 +75,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => InterviewProvider()),
         ChangeNotifierProvider(create: (_) => ApplicationProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
       ],
       child: const MainApp(),
     ),

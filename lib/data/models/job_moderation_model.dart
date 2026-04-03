@@ -22,21 +22,36 @@ class JobModerationItem {
   });
 
   factory JobModerationItem.fromJson(Map<String, dynamic> json) {
+    DateTime parsePostedDate(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is DateTime) return value;
+      return DateTime.tryParse(value.toString()) ?? DateTime.now();
+    }
+
+    List<String> parseReasons(dynamic value) {
+      if (value is List) {
+        return value.map((item) => item.toString()).toList();
+      }
+      if (value is String && value.trim().isNotEmpty) {
+        return value
+            .split(',')
+            .map((item) => item.trim())
+            .where((item) => item.isNotEmpty)
+            .toList();
+      }
+      return const <String>[];
+    }
+
     return JobModerationItem(
-      id: json['id'] as String? ?? '',
-      title: json['title'] as String? ?? '',
-      company: json['company'] as String? ?? '',
-      location: json['location'] as String? ?? '',
-      salaryRange: json['salaryRange'] as String? ?? '',
-      postedDate: json['postedDate'] != null
-          ? DateTime.parse(json['postedDate'] as String)
-          : DateTime.now(),
-      status: json['status'] as String? ?? 'pending',
-      rejectionReasons: (json['rejectionReasons'] as List?)
-              ?.map((item) => item as String)
-              .toList() ??
-          [],
-      description: json['description'] as String?,
+      id: (json['id'] ?? '').toString(),
+      title: (json['title'] ?? '').toString(),
+      company: (json['company'] ?? '').toString(),
+      location: (json['location'] ?? '').toString(),
+      salaryRange: (json['salaryRange'] ?? '').toString(),
+      postedDate: parsePostedDate(json['postedDate']),
+      status: (json['status'] ?? 'pending').toString().toLowerCase(),
+      rejectionReasons: parseReasons(json['rejectionReasons']),
+      description: json['description']?.toString(),
     );
   }
 

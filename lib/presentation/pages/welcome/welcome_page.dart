@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../auth/register/register_role_page.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -145,7 +147,46 @@ class WelcomePage extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: () => _devLoginAsAdmin(context),
+          child: const Text(
+            '[DEV] Login as Admin',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  Future<void> _devLoginAsAdmin(BuildContext context) async {
+    final email = dotenv.env['ADMIN_EMAIL'] ?? 'admin@gamil.com';
+    final password = dotenv.env['ADMIN_PASSWORD'] ?? 'Pass@123';
+
+    try {
+      final response = await Supabase.instance.client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      if (response.user != null && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Admin login successful')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Admin login failed: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 }
