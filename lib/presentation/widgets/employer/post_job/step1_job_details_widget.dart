@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/core/constants/job_categories.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/employment_type_selector.dart';
 
 class Step1JobDetailsWidget extends StatelessWidget {
@@ -27,7 +28,7 @@ class Step1JobDetailsWidget extends StatelessWidget {
     final loc = AppLocalizations.of(context);
     final availableCategories = List<String>.from(categoryOptions);
     if (selectedCategory.isNotEmpty &&
-        selectedCategory != 'Select Category' &&
+        selectedCategory != JobCategories.defaultCategory &&
         !availableCategories.contains(selectedCategory)) {
       availableCategories.insert(1, selectedCategory);
     }

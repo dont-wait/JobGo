@@ -18,6 +18,9 @@ class UserDetailDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = user.name.trim().isEmpty ? 'Unknown User' : user.name;
+    final avatarInitial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -35,7 +38,7 @@ class UserDetailDialog extends StatelessWidget {
                   radius: 28,
                   backgroundColor: AppColors.primary.withOpacity(0.1),
                   child: Text(
-                    user.name[0].toUpperCase(),
+                    avatarInitial,
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -49,7 +52,7 @@ class UserDetailDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user.name,
+                        displayName,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

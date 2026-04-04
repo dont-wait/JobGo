@@ -14,6 +14,9 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = user.name.trim().isEmpty ? 'Unknown User' : user.name;
+    final avatarInitial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -38,7 +41,7 @@ class UserCard extends StatelessWidget {
                   radius: 24,
                   backgroundColor: AppColors.primary.withOpacity(0.1),
                   child: Text(
-                    user.name[0].toUpperCase(),
+                    avatarInitial,
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -76,7 +79,7 @@ class UserCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          user.name,
+                          displayName,
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -89,7 +92,7 @@ class UserCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    user.email,
+                    user.email.trim().isEmpty ? 'Email not available' : user.email,
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,

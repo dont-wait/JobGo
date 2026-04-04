@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/constants/job_categories.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/data/repositories/employer_job_repository.dart';
-import 'package:jobgo/data/repositories/job_category_repository.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/job_post_preview_page.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/job_step_progress.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
@@ -24,7 +24,6 @@ class PostJobPage extends StatefulWidget {
 
 class _PostJobPageState extends State<PostJobPage> {
   final EmployerJobRepository _repository = EmployerJobRepository();
-  final JobCategoryRepository _categoryRepository = JobCategoryRepository();
 
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
@@ -37,10 +36,10 @@ class _PostJobPageState extends State<PostJobPage> {
   );
   final TextEditingController deadlineController = TextEditingController();
 
-  List<String> _categoryOptions = ['Select Category'];
+  List<String> _categoryOptions = JobCategories.categoriesWithDefault;
 
   int currentStep = 1;
-  String selectedCategory = 'Select Category';
+  String selectedCategory = JobCategories.defaultCategory;
   String selectedEmploymentType = 'Full-time';
   List<String> selectedBenefits = [];
   List<String> selectedSkills = [];
@@ -66,38 +65,6 @@ class _PostJobPageState extends State<PostJobPage> {
       controller.addListener(_handleTextChanged);
     }
     _seedFromInitialJob();
-    _loadCategories();
-  }
-
-  Future<void> _loadCategories() async {
-    try {
-      final categories = await _categoryRepository.fetchJobCategories();
-      if (!mounted) return;
-
-      setState(() {
-        _categoryOptions = _buildCategoryOptions(categories);
-      });
-    } catch (_) {
-      if (!mounted) return;
-
-      setState(() {
-        _categoryOptions = ['Select Category'];
-      });
-    }
-  }
-
-  List<String> _buildCategoryOptions(List<String> categories) {
-    final options = <String>['Select Category'];
-
-    for (final category in categories) {
-      final trimmed = category.trim();
-      if (trimmed.isEmpty || trimmed == 'Select Category') continue;
-      if (!options.contains(trimmed)) {
-        options.add(trimmed);
-      }
-    }
-
-    return options;
   }
 
   void _seedFromInitialJob() {
@@ -150,7 +117,7 @@ class _PostJobPageState extends State<PostJobPage> {
       requirementsText: requirementsController.text.trim(),
       location: locationController.text.trim(),
       employmentType: selectedEmploymentType,
-      category: selectedCategory == 'Select Category' ? '' : selectedCategory,
+      category: selectedCategory == JobCategories.defaultCategory ? '' : selectedCategory,
       salaryMin: double.tryParse(minSalaryController.text.trim()),
       salaryMax: double.tryParse(maxSalaryController.text.trim()),
       salaryValue: _deriveSalaryValue(),
@@ -194,8 +161,8 @@ class _PostJobPageState extends State<PostJobPage> {
     if (jobTitleController.text.trim().isEmpty) {
       return loc.jobTitleRequired;
     }
-    if (selectedCategory == 'Select Category') {
-      return loc.pleaseChooseCategory;
+    if (selectedCategory == JobCategories.defaultCategory) {
+      return 'Please choose a category';
     }
     if (locationController.text.trim().isEmpty) {
       return loc.locationRequired;

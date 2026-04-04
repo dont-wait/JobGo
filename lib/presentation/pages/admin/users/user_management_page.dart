@@ -6,6 +6,8 @@ import 'package:jobgo/presentation/widgets/admin/users/user_type_tabs.dart';
 import 'package:jobgo/presentation/widgets/admin/users/user_card.dart';
 import 'package:jobgo/presentation/widgets/admin/users/user_detail_dialog.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/presentation/providers/admin_provider.dart';
+import 'package:provider/provider.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -15,290 +17,304 @@ class UserManagementPage extends StatefulWidget {
 }
 
 class _UserManagementPageState extends State<UserManagementPage> {
-  String selectedTab = 'Candidates';
-  String searchQuery = '';
-  List<AdminUserModel> users = [];
-  bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadUsers();
-  }
-
-  void _loadUsers() {
-    // Mock data - replace with actual API call
-    setState(() {
-      users = [
-        AdminUserModel(
-          id: '1',
-          name: 'Alex Rivera',
-          email: 'alex.rivera@icloud.com',
-          role: 'candidate',
-          status: 'active',
-          title: 'Frontend Developer',
-          createdAt: DateTime.now().subtract(const Duration(days: 10)),
-          lastActive: DateTime.now().subtract(const Duration(hours: 2)),
-        ),
-        AdminUserModel(
-          id: '2',
-          name: 'Sarah Chen',
-          email: 'sarah.chen@example.com',
-          role: 'candidate',
-          status: 'blocked',
-          title: 'Senior Developer',
-          createdAt: DateTime.now().subtract(const Duration(days: 30)),
-          lastActive: DateTime.now().subtract(const Duration(days: 5)),
-        ),
-        AdminUserModel(
-          id: '3',
-          name: 'Jordan Smith',
-          email: 'jordan.smith@acn.io',
-          role: 'candidate',
-          status: 'active',
-          title: 'UX/UI Designer',
-          createdAt: DateTime.now().subtract(const Duration(days: 5)),
-          lastActive: DateTime.now().subtract(const Duration(minutes: 30)),
-        ),
-        AdminUserModel(
-          id: '4',
-          name: 'TechSolutions Inc',
-          email: 'hr@techsolutions.com',
-          role: 'employer',
-          status: 'active',
-          company: 'TechSolutions Inc',
-          createdAt: DateTime.now().subtract(const Duration(days: 60)),
-          lastActive: DateTime.now().subtract(const Duration(hours: 1)),
-        ),
-        AdminUserModel(
-          id: '5',
-          name: 'Digital Innovations',
-          email: 'jobs@digitalinnovations.com',
-          role: 'employer',
-          status: 'active',
-          company: 'Digital Innovations',
-          createdAt: DateTime.now().subtract(const Duration(days: 45)),
-          lastActive: DateTime.now().subtract(const Duration(days: 2)),
-        ),
-      ];
-      isLoading = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final adminProvider = context.read<AdminProvider>();
+      final roleFilter = adminProvider.selectedUserFilter == 'Candidates'
+          ? 'candidate'
+          : adminProvider.selectedUserFilter == 'Employers'
+          ? 'employer'
+          : null;
+      adminProvider.loadUsers(roleFilter: roleFilter);
     });
   }
 
-  List<AdminUserModel> get filteredUsers {
-    var filtered = users.where((user) {
-      if (selectedTab == 'Candidates') return user.role == 'candidate';
-      if (selectedTab == 'Employers') return user.role == 'employer';
-      return true;
-    }).toList();
-
-    if (searchQuery.isNotEmpty) {
-      filtered = filtered.where((user) {
-        return user.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().contains(searchQuery.toLowerCase());
-      }).toList();
-    }
-
-    return filtered;
-  }
-
-  void _showUserDetail(AdminUserModel user) {
+  void _showUserDetail(AdminUserModel user, AdminProvider adminProvider) {
     showDialog(
       context: context,
       builder: (context) => UserDetailDialog(
         user: user,
-        onBlock: () => _handleBlockUser(user),
-        onUnblock: () => _handleUnblockUser(user),
-        onDelete: () => _handleDeleteUser(user),
+        onBlock: () => _handleBlockUser(user, adminProvider),
+        onUnblock: () => _handleUnblockUser(user, adminProvider),
+        onDelete: () => _handleDeleteUser(user, adminProvider),
       ),
     );
   }
 
-  void _handleBlockUser(AdminUserModel user) {
-    setState(() {
-      final index = users.indexWhere((u) => u.id == user.id);
-      if (index != -1) {
-        users[index] = user.copyWith(status: 'blocked');
+  void _handleBlockUser(
+    AdminUserModel user,
+    AdminProvider adminProvider,
+  ) async {
+    try {
+      Navigator.of(context).pop();
+      final blocked = await adminProvider.blockUser(user.id, 'Blocked by admin');
+
+      if (blocked) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${user.name} has been blocked'),
+            backgroundColor: AppColors.warning,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Block failed: missing users.u_status column or update permission denied'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
-    });
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${user.name} has been blocked'),
-        backgroundColor: AppColors.warning,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error blocking user: $e'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
-  void _handleUnblockUser(AdminUserModel user) {
-    setState(() {
-      final index = users.indexWhere((u) => u.id == user.id);
-      if (index != -1) {
-        users[index] = user.copyWith(status: 'active');
+  void _handleUnblockUser(
+    AdminUserModel user,
+    AdminProvider adminProvider,
+  ) async {
+    try {
+      Navigator.of(context).pop();
+      final unblocked = await adminProvider.unblockUser(user.id);
+
+      if (unblocked) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${user.name} has been unblocked'),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unblock failed: missing users.u_status column or update permission denied'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
-    });
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${user.name} has been unblocked'),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error unblocking user: $e'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
-  void _handleDeleteUser(AdminUserModel user) {
-    setState(() {
-      users.removeWhere((u) => u.id == user.id);
-    });
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${user.name} has been deleted'),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+  void _handleDeleteUser(
+    AdminUserModel user,
+    AdminProvider adminProvider,
+  ) async {
+    try {
+      Navigator.of(context).pop();
+      final deleted = await adminProvider.deleteUser(user.id);
+
+      if (deleted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${user.name} has been deleted'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Delete failed: user record was not found'),
+            backgroundColor: AppColors.warning,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting user: $e'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return Consumer<AdminProvider>(
+      builder: (context, adminProvider, child) => Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'User Management',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          const ProfileAvatar(role: UserRole.admin),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Search Bar
-          Container(
-            color: AppColors.white,
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        searchQuery = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search users, emails, or roles...',
-                      hintStyle: TextStyle(
-                        color: AppColors.textHint,
-                        fontSize: 14,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        color: AppColors.textSecondary,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.lightBackground,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {},
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.lightBackground,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ],
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          title: const Text(
+            'User Management',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
             ),
           ),
+          actions: [
+            const ProfileAvatar(role: UserRole.admin),
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: Column(
+          children: [
+            // Search Bar
+            Container(
+              color: AppColors.white,
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      onChanged: (value) {
+                        adminProvider.setUserSearchQuery(value);
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search users, emails, or roles...',
+                        hintStyle: TextStyle(
+                          color: AppColors.textHint,
+                          fontSize: 14,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.textSecondary,
+                        ),
+                        filled: true,
+                        fillColor: AppColors.lightBackground,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () {},
+                    style: IconButton.styleFrom(
+                      backgroundColor: AppColors.lightBackground,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-          // Tabs
-          UserTypeTabs(
-            selectedTab: selectedTab,
-            onTabChanged: (tab) {
-              setState(() {
-                selectedTab = tab;
-              });
-            },
-          ),
+            // Tabs
+            UserTypeTabs(
+              selectedTab: adminProvider.selectedUserFilter,
+              onTabChanged: (tab) {
+                adminProvider.setUserFilter(tab);
+                final roleFilter = tab == 'Candidates'
+                    ? 'candidate'
+                    : 'employer';
+                adminProvider.loadUsers(roleFilter: roleFilter);
+              },
+            ),
 
-          // User List
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : filteredUsers.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.people_outline,
-                              size: 64,
-                              color: AppColors.textHint,
+            // User List
+            Expanded(
+              child: adminProvider.isLoadingUsers
+                  ? const Center(child: CircularProgressIndicator())
+                  : adminProvider.users.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.people_outline,
+                            size: 64,
+                            color: AppColors.textHint,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            adminProvider.userLoadError != null
+                                ? 'Failed to load users'
+                                : adminProvider.userSearchQuery.isEmpty
+                                ? 'No ${adminProvider.selectedUserFilter.toLowerCase()} found'
+                                : 'No results for "${adminProvider.userSearchQuery}"',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.textSecondary,
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              searchQuery.isEmpty
-                                  ? 'No ${selectedTab.toLowerCase()} found'
-                                  : 'No results for "$searchQuery"',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.textSecondary,
+                          ),
+                          if (adminProvider.userLoadError != null) ...[
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              child: Text(
+                                adminProvider.userLoadError!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textHint,
+                                ),
                               ),
                             ),
+                            const SizedBox(height: 12),
+                            OutlinedButton(
+                              onPressed: () {
+                                final roleFilter =
+                                    adminProvider.selectedUserFilter ==
+                                        'Candidates'
+                                    ? 'candidate'
+                                    : 'employer';
+                                adminProvider.loadUsers(roleFilter: roleFilter);
+                              },
+                              child: const Text('Retry'),
+                            ),
                           ],
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: filteredUsers.length,
-                        itemBuilder: (context, index) {
-                          final user = filteredUsers[index];
-                          return UserCard(
-                            user: user,
-                            onTap: () => _showUserDetail(user),
-                          );
-                        },
+                        ],
                       ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Load more users...'),
-              behavior: SnackBarBehavior.floating,
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: adminProvider.users.length,
+                      itemBuilder: (context, index) {
+                        final user = adminProvider.users[index];
+                        return UserCard(
+                          user: user,
+                          onTap: () => _showUserDetail(user, adminProvider),
+                        );
+                      },
+                    ),
             ),
-          );
-        },
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: AppColors.white),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            adminProvider.loadMoreUsers();
+          },
+          backgroundColor: AppColors.primary,
+          child: const Icon(Icons.add, color: AppColors.white),
+        ),
       ),
     );
   }
