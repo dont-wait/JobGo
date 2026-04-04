@@ -209,9 +209,7 @@ class EmployerJobModel {
       'j_salary_max': salaryMax,
       'j_salary_negotiable': salaryNegotiable,
       'j_positions': positions,
-      'j_deadline': deadline == null
-          ? null
-          : deadline!.toIso8601String().split('T').first,
+        'j_deadline': deadline?.toIso8601String().split('T').first,
       'j_moderation_status': moderationStatus.trim().isEmpty
           ? 'draft'
           : moderationStatus.trim(),
@@ -240,9 +238,7 @@ class EmployerJobModel {
       'j_salary_max': salaryMax,
       'j_salary_negotiable': salaryNegotiable,
       'j_positions': positions,
-      'j_deadline': deadline == null
-          ? null
-          : deadline!.toIso8601String().split('T').first,
+        'j_deadline': deadline?.toIso8601String().split('T').first,
       'j_moderation_status': moderationStatus.trim().isEmpty
           ? 'draft'
           : moderationStatus.trim(),

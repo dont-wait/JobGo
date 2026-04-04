@@ -39,6 +39,8 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         _isLoading = true;
         _errorMessage = null;
       });
+    } else if (mounted) {
+      setState(() => _errorMessage = null);
     }
 
     try {
@@ -50,12 +52,20 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _jobs = [];
-        _errorMessage = e is StateError
-            ? e.message
-            : 'Không tải được tin tuyển dụng.';
-      });
+      final message = e is StateError
+          ? e.message
+          : 'Không tải được tin tuyển dụng.';
+
+      if (_jobs.isEmpty || !refresh) {
+        setState(() {
+          _jobs = [];
+          _errorMessage = message;
+        });
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
     } finally {
       if (!mounted) return;
       setState(() {
@@ -97,6 +107,26 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
 
   Future<void> _reopenJob(EmployerJobModel job) async {
     if (job.id == null) return;
+
+    final shouldReopen = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reopen job?'),
+        content: Text('Reopen ${job.title.isEmpty ? 'this job' : job.title}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Reopen'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldReopen != true) return;
 
     try {
       await _repository.reopenJob(job.id!);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
+import 'package:jobgo/presentation/pages/employer/messages/employer_messages_page.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
 
@@ -19,7 +20,9 @@ class TalentSearchWidget extends StatelessWidget {
   final ValueChanged<String> onExperienceChanged;
   final ValueChanged<String> onLocationChanged;
   final VoidCallback onRetry;
+  final VoidCallback onClearFilters;
   final ValueChanged<CandidateSupabaseModel> onCandidateTap;
+  final String? errorMessage;
 
   const TalentSearchWidget({
     super.key,
@@ -36,7 +39,9 @@ class TalentSearchWidget extends StatelessWidget {
     required this.onExperienceChanged,
     required this.onLocationChanged,
     required this.onRetry,
+    required this.onClearFilters,
     required this.onCandidateTap,
+    this.errorMessage,
   });
 
   @override
@@ -226,11 +231,77 @@ class TalentSearchWidget extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    if (errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.cloud_off_outlined,
+                size: 64,
+                color: AppColors.textHint,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                errorMessage!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (candidates.isEmpty) {
-      return const Center(
-        child: Text(
-          'No candidates found matching your criteria.',
-          style: TextStyle(color: AppColors.textSecondary),
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.search_off_outlined,
+                size: 64,
+                color: AppColors.textHint,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'No candidates found matching your criteria.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: onClearFilters,
+                    icon: const Icon(Icons.tune),
+                    label: const Text('Reset filters'),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -243,7 +314,11 @@ class TalentSearchWidget extends StatelessWidget {
         return CandidateCardWidget(
           candidate: candidate,
           onViewProfile: () => onCandidateTap(candidate),
-          onMessage: () {},
+          onMessage: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const EmployerMessagesPage()),
+            );
+          },
         );
       },
     );
