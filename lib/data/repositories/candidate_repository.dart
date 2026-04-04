@@ -8,24 +8,19 @@ class CandidateRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   Future<List<CandidateSupabaseModel>> fetchCandidates() async {
-    try {
-      final response = await _supabase
-          .from('candidates')
-          .select('*, users(u_email, u_role, u_name, u_phone)')
-          .order('c_updated_at', ascending: false);
+    final response = await _supabase
+        .from('candidates')
+        .select('*, users(u_email, u_role, u_name, u_phone)')
+        .order('c_updated_at', ascending: false);
 
-      final rows = response as List<dynamic>;
-      return rows
-          .map(
-            (row) => CandidateSupabaseModel.fromJson(
-              Map<String, dynamic>.from(row as Map),
-            ),
-          )
-          .toList();
-    } catch (e) {
-      dev.log('Error fetching candidates: $e');
-      return [];
-    }
+    final rows = response as List<dynamic>;
+    return rows
+        .map(
+          (row) => CandidateSupabaseModel.fromJson(
+            Map<String, dynamic>.from(row as Map),
+          ),
+        )
+        .toList();
   }
 
   Future<CandidateSupabaseModel?> fetchCandidateById(int candidateId) async {

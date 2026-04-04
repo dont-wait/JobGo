@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
+import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
 
 class CandidateProfilePage extends StatefulWidget {
   final CandidateSupabaseModel candidate;
@@ -34,6 +35,8 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final hasApplication = widget.application != null;
+
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -72,6 +75,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         builder: (context, constraints) {
           return SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
+            padding: EdgeInsets.only(bottom: hasApplication ? 132 : 0),
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Column(
@@ -90,6 +94,12 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           );
         },
       ),
+      bottomNavigationBar: hasApplication
+          ? SafeArea(
+              top: false,
+              child: _buildApplicantActionBar(),
+            )
+          : null,
     );
   }
 
@@ -224,26 +234,69 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
             ),
           ],
 
-          const SizedBox(height: 24),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              _buildActionButton('Reject', AppColors.error, Icons.close, () {}),
-              _buildActionButton(
-                'Shortlist',
-                AppColors.white,
-                null,
-                () {},
-                borderColor: AppColors.primary,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplicantActionBar() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        border: Border(top: BorderSide(color: AppColors.border)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Text(
+              'Application actions',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textSecondary,
               ),
-              _buildActionButton(
-                'Schedule',
-                AppColors.primary,
-                null,
-                () {},
-                textColor: Colors.white,
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  'Reject',
+                  AppColors.error,
+                  Icons.close,
+                  _confirmRejectCandidate,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  'Shortlist',
+                  AppColors.white,
+                  null,
+                  _shortlistCandidate,
+                  borderColor: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  'Schedule',
+                  AppColors.primary,
+                  null,
+                  _openInterviewSchedule,
+                  textColor: Colors.white,
+                ),
               ),
             ],
           ),
@@ -275,6 +328,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               Icon(icon, color: resolvedTextColor, size: 18),
@@ -700,41 +754,11 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     );
   }
 
-  Widget _buildExperienceItem(
-    String title,
-    String company,
-    String description,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Icon(Icons.circle, size: 10, color: AppColors.primary),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-              Text(
-                company,
-                style: const TextStyle(color: AppColors.textSecondary),
-              ),
-              if (description.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(description, style: const TextStyle(height: 1.5)),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSkillChip(String skill) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
@@ -745,5 +769,51 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         ),
       ),
     );
+  }
+
+  Future<void> _shortlistCandidate() async {
+    _showSnackBar('Candidate shortlisted.');
+  }
+
+  Future<void> _confirmRejectCandidate() async {
+    final shouldReject = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reject candidate?'),
+        content: const Text(
+          'This will mark the candidate as rejected for the current job.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Reject',
+              style: TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldReject == true) {
+      _showSnackBar('Candidate rejected.');
+    }
+  }
+
+  Future<void> _openInterviewSchedule() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const InterviewSchedulePage()),
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

@@ -122,7 +122,15 @@ class CandidateSupabaseModel {
   String get displayExperience =>
       _cleanValue(experience, fallback: 'Open to opportunities');
 
-  String get displayTitle => _cleanValue(title, fallback: displayExperience);
+  String get displayTitle {
+    final titleText = _cleanValue(title, fallback: '');
+    if (titleText.isNotEmpty) return titleText;
+
+    final summaryText = _cleanValue(summary, fallback: '');
+    if (summaryText.isNotEmpty) return summaryText;
+
+    return 'Open to opportunities';
+  }
 
   String get cleanSummary => _cleanValue(summary, fallback: '');
 
@@ -131,16 +139,7 @@ class CandidateSupabaseModel {
   String get displaySummary => cleanSummary;
 
   String get displayHeadline {
-    final roleTitle = _cleanValue(title, fallback: '');
-    if (roleTitle.isNotEmpty) return roleTitle;
-
-    final experienceText = _cleanValue(experience, fallback: '');
-    if (experienceText.isNotEmpty) return experienceText;
-
-    final summaryText = _cleanValue(summary, fallback: '');
-    if (summaryText.isNotEmpty) return summaryText;
-
-    return 'Open to opportunities';
+    return displayTitle;
   }
 
   String get displayLocation =>

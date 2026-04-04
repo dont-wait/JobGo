@@ -16,6 +16,7 @@ class _TalentPageState extends State<TalentPage> {
   List<CandidateSupabaseModel> _allCandidates = [];
   List<CandidateSupabaseModel> _displayedCandidates = [];
   bool _isLoading = true;
+  String? _errorMessage;
   String _searchQuery = '';
   String _selectedRole = 'All Roles';
   String _selectedExperience = 'All';
@@ -27,18 +28,51 @@ class _TalentPageState extends State<TalentPage> {
     _loadCandidates();
   }
 
-  Future<void> _loadCandidates() async {
+  Future<void> _loadCandidates({bool refresh = false}) async {
     setState(() {
       _isLoading = true;
+      if (!refresh) {
+        _errorMessage = null;
+      }
     });
 
-    final candidates = await _repository.fetchCandidates();
+    try {
+      final candidates = await _repository.fetchCandidates();
 
-    if (!mounted) return;
+      if (!mounted) return;
 
+      setState(() {
+        _allCandidates = candidates;
+        _errorMessage = null;
+      });
+      _applyFilters();
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        if (_allCandidates.isEmpty) {
+          _errorMessage = 'Không tải được danh sách ứng viên.';
+          _displayedCandidates = [];
+        }
+      });
+
+      if (_allCandidates.isNotEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Refresh thất bại: $e')));
+      }
+    } finally {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _resetFilters() {
     setState(() {
-      _allCandidates = candidates;
-      _isLoading = false;
+      _searchQuery = '';
+      _selectedRole = 'All Roles';
+      _selectedExperience = 'All';
+      _selectedLocation = 'All';
     });
     _applyFilters();
   }
@@ -147,6 +181,7 @@ class _TalentPageState extends State<TalentPage> {
     return TalentSearchWidget(
       candidates: _displayedCandidates,
       isLoading: _isLoading,
+      errorMessage: _errorMessage,
       selectedRole: _selectedRole,
       selectedExperience: _selectedExperience,
       selectedLocation: _selectedLocation,
@@ -157,7 +192,8 @@ class _TalentPageState extends State<TalentPage> {
       onRoleChanged: _onRoleChanged,
       onExperienceChanged: _onExperienceChanged,
       onLocationChanged: _onLocationChanged,
-      onRetry: _loadCandidates,
+      onRetry: () => _loadCandidates(refresh: true),
+      onClearFilters: _resetFilters,
       onCandidateTap: _openCandidateProfile,
     );
   }
