@@ -6,6 +6,8 @@ import 'package:jobgo/presentation/widgets/admin/moderation/moderation_tabs.dart
 import 'package:jobgo/presentation/widgets/admin/moderation/job_moderation_card.dart';
 import 'package:jobgo/presentation/widgets/admin/moderation/rejection_dialog.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/presentation/providers/admin_provider.dart';
+import 'package:provider/provider.dart';
 
 class JobModerationPage extends StatefulWidget {
   const JobModerationPage({super.key});
@@ -15,202 +17,236 @@ class JobModerationPage extends StatefulWidget {
 }
 
 class _JobModerationPageState extends State<JobModerationPage> {
-  String selectedTab = 'Pending';
-  List<JobModerationItem> jobs = [];
-  bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadJobs();
-  }
-
-  void _loadJobs() {
-    // Mock data - replace with actual API call
-    setState(() {
-      jobs = [
-        JobModerationItem(
-          id: '1',
-          title: 'Product Designer',
-          company: 'TechSolutions Inc',
-          location: 'San Francisco',
-          salaryRange: '\$80k - \$100k',
-          postedDate: DateTime.now().subtract(const Duration(hours: 4)),
-          status: 'pending',
-        ),
-        JobModerationItem(
-          id: '2',
-          title: 'Growth Lead',
-          company: 'Growify Co',
-          location: 'Remote',
-          salaryRange: '\$120k - \$150k',
-          postedDate: DateTime.now().subtract(const Duration(days: 2)),
-          status: 'pending',
-        ),
-        JobModerationItem(
-          id: '3',
-          title: 'Data Analyst',
-          company: 'Magnify',
-          location: 'New York',
-          salaryRange: '\$90k - \$110k',
-          postedDate: DateTime.now().subtract(const Duration(days: 5)),
-          status: 'pending',
-        ),
-        JobModerationItem(
-          id: '4',
-          title: 'Senior Product Designer',
-          company: 'TechCorp',
-          location: 'Remote',
-          salaryRange: '\$140k - \$180k',
-          postedDate: DateTime.now().subtract(const Duration(days: 1)),
-          status: 'approved',
-        ),
-        JobModerationItem(
-          id: '5',
-          title: 'Backend Engineer',
-          company: 'StartupXYZ',
-          location: 'Austin',
-          salaryRange: '\$80k - \$120k',
-          postedDate: DateTime.now().subtract(const Duration(days: 3)),
-          status: 'rejected',
-          rejectionReasons: ['Incomplete Description', 'Violates TOS / Spam'],
-        ),
-      ];
-      isLoading = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AdminProvider>().loadPendingJobs();
     });
   }
 
-  List<JobModerationItem> get filteredJobs {
-    return jobs.where((job) {
-      if (selectedTab == 'Pending') return job.status == 'pending';
-      if (selectedTab == 'Approved') return job.status == 'approved';
-      if (selectedTab == 'Rejected') return job.status == 'rejected';
-      return true;
-    }).toList();
-  }
-
-  void _showRejectionDialog(JobModerationItem job) {
+  void _showRejectionDialog(
+    JobModerationItem job,
+    AdminProvider adminProvider,
+  ) {
     showDialog(
       context: context,
       builder: (context) => RejectionDialog(
         onSubmit: (reasons) {
-          _handleRejection(job, reasons);
+          _handleRejection(job, reasons, adminProvider);
         },
       ),
     );
   }
 
-  void _handleApproval(JobModerationItem job) {
-    setState(() {
-      final index = jobs.indexWhere((j) => j.id == job.id);
-      if (index != -1) {
-        jobs[index] = job.copyWith(status: 'approved');
-      }
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Job "${job.title}" has been approved'),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  void _handleRejection(JobModerationItem job, List<String> reasons) {
-    setState(() {
-      final index = jobs.indexWhere((j) => j.id == job.id);
-      if (index != -1) {
-        jobs[index] = job.copyWith(
-          status: 'rejected',
-          rejectionReasons: reasons,
+  void _handleApproval(
+    JobModerationItem job,
+    AdminProvider adminProvider,
+  ) async {
+    try {
+      final success = await adminProvider.approveJob(job.id);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Job "${job.title}" has been approved'),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Approve failed: unable to update job status'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Job "${job.title}" has been rejected'),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error approving job: $e'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _handleRejection(
+    JobModerationItem job,
+    List<String> reasons,
+    AdminProvider adminProvider,
+  ) async {
+    try {
+      Navigator.of(context).pop();
+      final success = await adminProvider.rejectJob(job.id, reasons, null);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Job "${job.title}" has been rejected'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Reject failed: unable to update job status'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error rejecting job: $e'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _handleDeleteJob(
+    JobModerationItem job,
+    AdminProvider adminProvider,
+  ) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete job post?'),
+        content: Text('This will permanently remove "${job.title}".'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
+
+    if (shouldDelete != true) return;
+
+    try {
+      final deleted = await adminProvider.deleteJob(job.id);
+      if (deleted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Job "${job.title}" has been deleted'),
+            backgroundColor: AppColors.warning,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Delete failed: job record was not found'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting job: $e'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return Consumer<AdminProvider>(
+      builder: (context, adminProvider, child) => Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'Job Moderation',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          title: const Text(
+            'Job Moderation',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+          actions: [
+            const ProfileAvatar(role: UserRole.admin),
+            const SizedBox(width: 8),
+          ],
         ),
-        actions: [
-          const ProfileAvatar(role: UserRole.admin),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Tabs
-          ModerationTabs(
-            selectedTab: selectedTab,
-            onTabChanged: (tab) {
-              setState(() {
-                selectedTab = tab;
-              });
-            },
-            pendingCount: jobs.where((j) => j.status == 'pending').length,
-          ),
+        body: Column(
+          children: [
+            // Tabs
+            ModerationTabs(
+              selectedTab: adminProvider.selectedJobFilter,
+              onTabChanged: (tab) {
+                adminProvider.setJobFilter(tab);
+                if (tab == 'Pending') {
+                  adminProvider.loadPendingJobs();
+                } else {
+                  adminProvider.loadModeratedJobs(status: tab.toLowerCase());
+                }
+              },
+              pendingCount: adminProvider.jobs
+                  .where((j) => j.status == 'pending')
+                  .length,
+            ),
 
-          // Job List
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : filteredJobs.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.inbox,
-                              size: 64,
-                              color: AppColors.textHint,
+            // Job List
+            Expanded(
+              child: adminProvider.isLoadingJobs
+                  ? const Center(child: CircularProgressIndicator())
+                  : adminProvider.jobs.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.inbox,
+                            size: 64,
+                            color: AppColors.textHint,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No ${adminProvider.selectedJobFilter.toLowerCase()} jobs',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.textSecondary,
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No ${selectedTab.toLowerCase()} jobs',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: filteredJobs.length,
-                        itemBuilder: (context, index) {
-                          final job = filteredJobs[index];
-                          return JobModerationCard(
-                            job: job,
-                            onApprove: () => _handleApproval(job),
-                            onReject: () => _showRejectionDialog(job),
-                          );
-                        },
+                          ),
+                        ],
                       ),
-          ),
-        ],
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: adminProvider.jobs.length,
+                      itemBuilder: (context, index) {
+                        final job = adminProvider.jobs[index];
+                        return JobModerationCard(
+                          job: job,
+                          onApprove: () => _handleApproval(job, adminProvider),
+                          onReject: () =>
+                              _showRejectionDialog(job, adminProvider),
+                          onDelete: () => _handleDeleteJob(job, adminProvider),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

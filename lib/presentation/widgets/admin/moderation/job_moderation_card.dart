@@ -6,12 +6,14 @@ class JobModerationCard extends StatelessWidget {
   final JobModerationItem job;
   final VoidCallback? onApprove;
   final VoidCallback? onReject;
+  final VoidCallback? onDelete;
 
   const JobModerationCard({
     super.key,
     required this.job,
     this.onApprove,
     this.onReject,
+    this.onDelete,
   });
 
   @override
@@ -73,7 +75,10 @@ class JobModerationCard extends StatelessWidget {
               ),
               if (job.status == 'pending')
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.warning.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -90,7 +95,7 @@ class JobModerationCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          
+
           Row(
             children: [
               Icon(
@@ -122,10 +127,7 @@ class JobModerationCard extends StatelessWidget {
               const Spacer(),
               Text(
                 job.timeAgo,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textHint,
-                ),
+                style: const TextStyle(fontSize: 11, color: AppColors.textHint),
               ),
             ],
           ),
@@ -137,7 +139,10 @@ class JobModerationCard extends StatelessWidget {
               runSpacing: 6,
               children: job.rejectionReasons.map((reason) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.error.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -154,7 +159,8 @@ class JobModerationCard extends StatelessWidget {
             ),
           ],
 
-          if (job.status == 'pending' && (onApprove != null || onReject != null)) ...[
+          if (job.status == 'pending' &&
+              (onApprove != null || onReject != null)) ...[
             const SizedBox(height: 12),
             const Divider(height: 1),
             const SizedBox(height: 12),
@@ -195,6 +201,20 @@ class JobModerationCard extends StatelessWidget {
                     ),
                   ),
               ],
+            ),
+          ],
+          if (job.status != 'pending' && onDelete != null) ...[
+            const SizedBox(height: 12),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: onDelete,
+                icon: const Icon(Icons.delete_outline, size: 18),
+                label: const Text('Delete Post'),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+              ),
             ),
           ],
         ],

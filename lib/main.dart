@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jobgo/presentation/providers/admin_provider.dart';
 import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
@@ -36,12 +37,26 @@ UserRole parseUserRole(String? roleStr) {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+
+  await dotenv.load(fileName: '.env');
+
+  final supabaseUrl = dotenv.env['SUPABASE_URL']?.trim();
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']?.trim();
+
+  if (supabaseUrl == null ||
+      supabaseUrl.isEmpty ||
+      supabaseAnonKey == null ||
+      supabaseAnonKey.isEmpty) {
+    throw StateError('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
+  }
 
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
+
+  final runtimeSupabaseUrl = Supabase.instance.client.rest.url.toString();
+  debugPrint('Supabase runtime URL: $runtimeSupabaseUrl');
 
   final appLinks = AppLinks();
   appLinks.uriLinkStream.listen((uri) {
@@ -62,6 +77,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => InterviewProvider()),
         ChangeNotifierProvider(create: (_) => ApplicationProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
       ],
       child: const MainApp(),
     ),
