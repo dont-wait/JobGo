@@ -6,12 +6,15 @@ class ApplicationProvider extends ChangeNotifier {
   final _repository = JobApplicationRepository();
 
   List<JobApplicantModel> _applications = [];
+  final Set<int> _appliedJobIds = {};
   bool _isLoading = false;
   String? _error;
 
   List<JobApplicantModel> get applications => _applications;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+  bool isApplied(int jobId) => _appliedJobIds.contains(jobId);
 
   Future<void> fetchMyApplications(int candidateId) async {
     _isLoading = true;
@@ -20,6 +23,10 @@ class ApplicationProvider extends ChangeNotifier {
 
     try {
       _applications = await _repository.fetchCandidateApplications(candidateId);
+      _appliedJobIds.clear();
+      for (var app in _applications) {
+        _appliedJobIds.add(app.jobId);
+      }
     } catch (e) {
       _error = 'Lỗi: $e';
     } finally {
@@ -47,6 +54,7 @@ class ApplicationProvider extends ChangeNotifier {
       );
 
       if (success) {
+        _appliedJobIds.add(jobId);
         // Refresh local history if needed
         await fetchMyApplications(candidateId);
       }
@@ -62,8 +70,16 @@ class ApplicationProvider extends ChangeNotifier {
 
   Future<bool> withdraw(int applicationId, int candidateId) async {
     try {
+      // Find the jobId to remove from cache before deleting the application record
+      final appToRemove = _applications.firstWhere(
+        (a) => a.applicationId == applicationId,
+        orElse: () => throw Exception('Application not found'),
+      );
+      final jobId = appToRemove.jobId;
+
       final success = await _repository.withdrawApplication(applicationId);
       if (success) {
+        _appliedJobIds.remove(jobId);
         _applications.removeWhere((app) => app.applicationId == applicationId);
         notifyListeners();
       }
@@ -75,11 +91,15 @@ class ApplicationProvider extends ChangeNotifier {
   }
 
   Future<bool> hasApplied(int jobId, int candidateId) async {
-    return await _repository.checkHasApplied(jobId, candidateId);
+    if (_appliedJobIds.contains(jobId)) return true;
+    final applied = await _repository.checkHasApplied(jobId, candidateId);
+    if (applied) _appliedJobIds.add(jobId);
+    return applied;
   }
 
   void clearApplications() {
     _applications = [];
+    _appliedJobIds.clear();
     _isLoading = false;
     _error = null;
     notifyListeners();

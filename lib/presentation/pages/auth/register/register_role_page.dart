@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
+import '../../../../core/localization/app_localizations.dart';
 import 'register_info_page.dart';
 import '../../../widgets/common/role_card.dart';
+import '../../../widgets/common/language_selector_button.dart';
 
 class RegisterRolePage extends StatefulWidget {
   const RegisterRolePage({super.key});
@@ -16,22 +18,26 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          const LanguageSelectorButton(isCompact: true),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'STEP 1 OF 3',
+            Text(
+              loc.stepOfThree,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 letterSpacing: 1.2,
                 color: AppColors.textSecondary,
@@ -39,10 +45,10 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
             ),
             const SizedBox(height: 16),
 
-            const Text(
-              'Choose your role',
+            Text(
+              loc.chooseYourRole,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -51,10 +57,10 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
 
             const SizedBox(height: 8),
 
-            const Text(
-              'Select how you want to use the platform',
+            Text(
+              loc.selectHowToUse,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.textSecondary,
               ),
             ),
@@ -64,9 +70,8 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
             // CANDIDATE
             RoleCard(
               imagePath: 'assets/images/role_candidate1.jpg',
-              title: 'I am a Candidate',
-              description:
-                  'I’m looking for new career opportunities and want to showcase my talent.',
+              title: loc.iAmCandidate,
+              description: loc.candidateDescription,
               isSelected: selectedRole == UserRole.candidate,
               onTap: () {
                 setState(() {
@@ -78,9 +83,8 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
             // EMPLOYER
             RoleCard(
               imagePath: 'assets/images/role_employee.jpg',
-              title: 'I am an Employer',
-              description:
-                  'I want to post jobs, manage applications, and find talent.',
+              title: loc.iAmEmployer,
+              description: loc.employerDescription,
               isSelected: selectedRole == UserRole.employer,
               onTap: () {
                 setState(() {
@@ -104,20 +108,20 @@ class _RegisterRolePageState extends State<RegisterRolePage> {
                         ),
                       );
                     },
-              child: const Text('Continue'),
+              child: Text(loc.next),
             ),
             const SizedBox(height: 16),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Already have an account? ',
-                  style: TextStyle(color: AppColors.textSecondary),
+                Text(
+                  '${loc.alreadyHaveAccount} ',
+                  style: const TextStyle(color: AppColors.textSecondary),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Sign In'),
+                  child: Text(loc.signIn),
                 ),
               ],
             ),

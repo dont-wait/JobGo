@@ -6,9 +6,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../presentation/pages/settings/settings_page.dart';
 import '../../../../data/models/candidate_supabase_model.dart';
 import '../../../../presentation/providers/profile_provider.dart';
+import '../../../../presentation/widgets/common/language_selector_button.dart';
 import '../../../widgets/candidate/profile_page/skills_section.dart';
 import '../../../widgets/candidate/profile_page/profile_header.dart';
 import '../../../widgets/candidate/profile_page/profile_tabs.dart';
@@ -56,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => provider.loadProfile(),
-                    child: const Text('Thử lại'),
+                    child: Text(AppLocalizations.of(context).tryAgain),
                   ),
                 ],
               ),
@@ -67,9 +69,10 @@ class _ProfilePageState extends State<ProfilePage> {
         //  Hiển thị profile
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Profile'),
+            title: Text(AppLocalizations.of(context).profile),
             automaticallyImplyLeading: false,
             actions: [
+              const LanguageSelectorButton(isCompact: true),
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
@@ -97,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   onChanged: (index) => setState(() => _currentTab = index),
                 ),
                 const SizedBox(height: 24),
-                _buildTabContent(provider.candidate),
+                _buildTabContent(context, provider.candidate),
                 const SizedBox(height: 16),
               ],
             ),
@@ -107,10 +110,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildTabContent(candidate) {
+  Widget _buildTabContent(
+    BuildContext context,
+    CandidateSupabaseModel? candidate,
+  ) {
     switch (_currentTab) {
       case 0:
-        return _buildInfoTab(candidate);
+        return _buildInfoTab(context, candidate);
       case 1:
         return ExperienceSection(experience: candidate?.experience);
       case 2:
@@ -123,6 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _replaceResume(String oldUrl) async {
+    final loc = AppLocalizations.of(context);
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -156,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Replaced successfully with: $fileName'),
+          content: Text('${loc.replacedSuccess}: $fileName'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -164,11 +171,12 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Replace failed: $e')));
+      ).showSnackBar(SnackBar(content: Text('${loc.replaceFailed}: $e')));
     }
   }
 
   void _viewResume(String url) {
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -191,9 +199,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Resume Preview',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                loc.resumePreview,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
@@ -207,7 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Close'),
+                      child: Text(loc.close),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -223,15 +234,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         } else {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Could not open the CV URL'),
-                              ),
+                              SnackBar(content: Text(loc.couldNotOpenUrl)),
                             );
                           }
                         }
                         if (mounted) Navigator.pop(context);
                       },
-                      child: const Text('Open'),
+                      child: Text(loc.open),
                     ),
                   ),
                 ],
@@ -243,16 +252,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildInfoTab(CandidateSupabaseModel? candidate) {
+  Widget _buildInfoTab(
+    BuildContext context,
+    CandidateSupabaseModel? candidate,
+  ) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Resume & Documents',
-              style: TextStyle(
+            Text(
+              loc.resumeDocuments,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -260,7 +273,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             if (candidate?.resumes != null)
               Text(
-                '${candidate!.resumes!.length} FILES',
+                '${candidate!.resumes!.length} ${loc.filesCount}',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -277,7 +290,7 @@ class _ProfilePageState extends State<ProfilePage> {
             return ResumeCard(
               title: url.split('/').last,
               subtitle:
-                  'Uploaded ${candidate.createdAt != null ? candidate.createdAt!.toString().substring(0, 10) : "Recently"}',
+                  '${loc.uploadedLabel} ${candidate.createdAt != null ? candidate.createdAt!.toString().substring(0, 10) : "..."}',
               isDefault: index == 0,
               onTap: () => _viewResume(url),
               onDelete: () => context.read<ProfileProvider>().removeResume(url),
@@ -291,7 +304,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
             padding: const EdgeInsets.only(top: 8, bottom: 8),
             child: Text(
-              'Vị trí mong muốn: ${candidate.title}',
+              '${loc.desiredPosition}: ${candidate.title}',
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),

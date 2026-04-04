@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
@@ -30,11 +31,10 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   void _goToStep2() {
     final profile = context.read<ProfileProvider>().candidate;
     if (profile == null || (profile.resumes ?? []).isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng thêm CV vào hồ sơ trước khi ứng tuyển'),
-        ),
-      );
+      final loc = AppLocalizations.of(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.mustAddCVBeforeApplying)));
       return;
     }
     setState(() => _currentStep = 1);
@@ -63,14 +63,16 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
     if (success) {
       setState(() => _currentStep = 2);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ứng tuyển thất bại, vui lòng thử lại')),
-      );
+      final loc = AppLocalizations.of(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.applicationFailed)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     if (_currentStep == 2) {
       return PopScope(
         canPop: false,
@@ -84,7 +86,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
             arguments: {'role': UserRole.candidate, 'initialIndex': 0},
           );
         },
-        child: _buildSuccessScreen(),
+        child: _buildSuccessScreen(loc),
       );
     }
 
@@ -100,9 +102,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
               ? null
               : (_currentStep == 1 ? _goBack : () => Navigator.pop(context)),
         ),
-        title: const Text(
-          'Apply for Job',
-          style: TextStyle(
+        title: Text(
+          loc.applyForJob,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -113,9 +115,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
           if (!_isSubmitting)
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
+              child: Text(
+                loc.cancelButton,
+                style: const TextStyle(
                   color: AppColors.primary,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -128,7 +130,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
         children: [
           _buildStepIndicator(),
           Expanded(child: _currentStep == 0 ? _buildStep1() : _buildStep2()),
-          if (_currentStep == 0) _buildNextButton(),
+          if (_currentStep == 0) _buildNextButton(loc),
         ],
       ),
     );
@@ -136,6 +138,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
 
   // ── Step Indicator ──
   Widget _buildStepIndicator() {
+    final loc = AppLocalizations.of(context);
     return Column(
       children: [
         LinearProgressIndicator(
@@ -150,7 +153,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _currentStep == 0 ? 'STEP 1 OF 2' : 'Step 2 of 2',
+                _currentStep == 0 ? loc.step1Of2 : loc.step2Of2,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -161,7 +164,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                 ),
               ),
               Text(
-                _currentStep == 0 ? 'Resume Selection' : 'FINAL REVIEW',
+                _currentStep == 0 ? loc.resumeSelection : loc.finalReview,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
@@ -184,6 +187,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   Widget _buildStep1() {
     return Consumer<ProfileProvider>(
       builder: (context, profileProvider, child) {
+        final loc = AppLocalizations.of(context);
         final profile = profileProvider.candidate;
         final resumes = profile?.resumes ?? [];
 
@@ -200,15 +204,18 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                     color: AppColors.border,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'No CV found in your profile',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(
+                    loc.noCVFound,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Please upload a CV to your profile before applying.',
+                  Text(
+                    loc.pleaseUploadCVBeforeApplying,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: const TextStyle(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
@@ -216,7 +223,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                       // Navigate to profile edit or close and tell user
                       Navigator.pop(context);
                     },
-                    child: const Text('Go to Profile'),
+                    child: Text(loc.goToProfile),
                   ),
                 ],
               ),
@@ -229,18 +236,21 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Select CV',
-                style: TextStyle(
+              Text(
+                loc.selectCV,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "Choose the resume you'd like to use for this application.",
-                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              Text(
+                loc.chooseResumeForApplication,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 24),
               ...resumes.asMap().entries.map((entry) {
@@ -305,9 +315,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
-                                  'Ready to apply',
-                                  style: TextStyle(
+                                Text(
+                                  loc.readyToApplyStatus,
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: AppColors.textSecondary,
                                   ),
@@ -357,6 +367,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   // STEP 2: Final Review
   // ─────────────────────────────
   Widget _buildStep2() {
+    final loc = AppLocalizations.of(context);
     final profile = context.read<ProfileProvider>().candidate;
     final resumes = profile?.resumes ?? [];
     final selectedCvUrl = resumes.isNotEmpty ? resumes[_selectedCvIndex] : '';
@@ -433,19 +444,19 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
           const SizedBox(height: 20),
 
           // Cover Letter
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Cover Letter',
-                style: TextStyle(
+                loc.coverLetter,
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
               Text(
-                'Optional',
+                loc.optionalLabel,
                 style: TextStyle(fontSize: 12, color: AppColors.textHint),
               ),
             ],
@@ -460,16 +471,15 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
               controller: _coverLetterController,
               maxLines: 6,
               maxLength: 500,
-              decoration: const InputDecoration(
-                hintText:
-                    "Introduce yourself to the hiring manager. Highlight your relevant skills and why you're a great fit for this role...",
-                hintStyle: TextStyle(
+              decoration: InputDecoration(
+                hintText: loc.coverLetterPlaceholder,
+                hintStyle: const TextStyle(
                   color: AppColors.textHint,
                   fontSize: 13,
                   height: 1.5,
                 ),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.all(14),
+                contentPadding: const EdgeInsets.all(14),
                 counterText: "", // Hide default counter
               ),
             ),
@@ -496,9 +506,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
           const SizedBox(height: 20),
 
           // Review Selected CV
-          const Text(
-            'Review Selected CV',
-            style: TextStyle(
+          Text(
+            loc.reviewSelectedCvTitle,
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -542,9 +552,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 3),
-                      const Text(
-                        'Attached to application',
-                        style: TextStyle(
+                      Text(
+                        loc.attachedToApplicationStatus,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -567,13 +577,17 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
           if (!_isSubmitting)
             GestureDetector(
               onTap: _goBack,
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.edit_outlined, size: 16, color: AppColors.primary),
-                  SizedBox(width: 6),
+                  const Icon(
+                    Icons.edit_outlined,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: 6),
                   Text(
-                    'Change CV',
-                    style: TextStyle(
+                    loc.changeCvButton,
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: AppColors.primary,
@@ -602,7 +616,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                     )
                   : const Icon(Icons.arrow_forward_rounded, size: 20),
               label: Text(
-                _isSubmitting ? 'Submitting...' : 'Submit Application',
+                _isSubmitting
+                    ? loc.submittingButton
+                    : loc.submitApplicationButton,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -626,13 +642,16 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
 
           Center(
             child: RichText(
-              text: const TextSpan(
-                text: 'By submitting, you agree to our ',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              text: TextSpan(
+                text: loc.termsAgreement,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
                 children: [
                   TextSpan(
-                    text: 'Terms of Service',
-                    style: TextStyle(
+                    text: loc.termsOfService,
+                    style: const TextStyle(
                       color: AppColors.primary,
                       decoration: TextDecoration.underline,
                     ),
@@ -649,7 +668,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   // ─────────────────────────────
   // STEP 3: Success Screen
   // ─────────────────────────────
-  Widget _buildSuccessScreen() {
+  Widget _buildSuccessScreen(AppLocalizations loc) {
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -753,10 +772,10 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
 
               const SizedBox(height: 36),
 
-              const Text(
-                'Application Sent\nSuccessfully!',
+              Text(
+                loc.applicationSentSuccess,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   color: AppColors.primary,
@@ -775,7 +794,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                     height: 1.5,
                   ),
                   children: [
-                    const TextSpan(text: 'Your application for '),
+                    TextSpan(text: loc.applicationReceivedMessage),
                     TextSpan(
                       text: widget.job.title,
                       style: const TextStyle(
@@ -783,7 +802,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const TextSpan(text: ' at '),
+                    TextSpan(text: loc.atLabel),
                     TextSpan(
                       text: widget.job.company,
                       style: const TextStyle(
@@ -791,7 +810,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const TextSpan(text: ' has been received.'),
+                    TextSpan(text: loc.hasBeenReceived),
                   ],
                 ),
               ),
@@ -816,9 +835,12 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                     );
                   },
                   icon: const Icon(Icons.arrow_forward_rounded, size: 20),
-                  label: const Text(
-                    'View Application Status',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  label: Text(
+                    loc.viewApplicationStatusButton,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE8630A),
@@ -849,9 +871,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    'Back to Home',
-                    style: TextStyle(
+                  child: Text(
+                    loc.backToHomeButton,
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
@@ -869,7 +891,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   }
 
   // ── Nút Next cố định ở dưới Step 1 ──
-  Widget _buildNextButton() {
+  Widget _buildNextButton(AppLocalizations loc) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
       decoration: BoxDecoration(
@@ -901,7 +923,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            child: const Text('Next'),
+            child: Text(loc.nextButton),
           ),
         ),
       ),

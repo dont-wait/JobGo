@@ -6,6 +6,7 @@ import 'package:jobgo/data/repositories/employer_job_repository.dart';
 import 'package:jobgo/data/repositories/job_category_repository.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/job_post_preview_page.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/job_step_progress.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step1_job_details_widget.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step2_description_widget.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/step3_perks_salary_widget.dart';
@@ -189,29 +190,32 @@ class _PostJobPageState extends State<PostJobPage> {
   }
 
   String? _validateStep1() {
+    final loc = AppLocalizations.of(context);
     if (jobTitleController.text.trim().isEmpty) {
-      return 'Job title is required';
+      return loc.jobTitleRequired;
     }
     if (selectedCategory == 'Select Category') {
-      return 'Please choose a category';
+      return loc.pleaseChooseCategory;
     }
     if (locationController.text.trim().isEmpty) {
-      return 'Location is required';
+      return loc.locationRequired;
     }
     return null;
   }
 
   String? _validateStep2() {
+    final loc = AppLocalizations.of(context);
     if (descriptionController.text.trim().isEmpty) {
-      return 'Job description is required';
+      return loc.descriptionRequired;
     }
     if (requirementsController.text.trim().isEmpty) {
-      return 'Job requirements are required';
+      return loc.requirementsRequired;
     }
     return null;
   }
 
   String? _validatePublish() {
+    final loc = AppLocalizations.of(context);
     final step1Error = _validateStep1();
     if (step1Error != null) return step1Error;
 
@@ -224,18 +228,18 @@ class _PostJobPageState extends State<PostJobPage> {
 
     final positions = int.tryParse(positionsController.text.trim()) ?? 0;
     if (positions <= 0) {
-      return 'Open positions must be greater than 0';
+      return loc.positionsGreaterThanZero;
     }
 
     if (selectedDeadline == null) {
-      return 'Please choose an application deadline';
+      return loc.chooseDeadline;
     }
 
     if (!salaryNegotiable) {
       final minSalary = double.tryParse(minSalaryController.text.trim());
       final maxSalary = double.tryParse(maxSalaryController.text.trim());
       if (minSalary == null && maxSalary == null) {
-        return 'Please add a salary range or mark the salary as negotiable';
+        return loc.addSalaryRange;
       }
     }
 
@@ -244,7 +248,7 @@ class _PostJobPageState extends State<PostJobPage> {
 
   String? _validateDraftSave() {
     if (jobTitleController.text.trim().isEmpty) {
-      return 'Job title is required to save a draft';
+      return AppLocalizations.of(context).jobTitleDraftRequired;
     }
     return null;
   }
@@ -287,6 +291,7 @@ class _PostJobPageState extends State<PostJobPage> {
   Future<bool> _submitJob(bool publish, {required bool popAfterSuccess}) async {
     if (_isSaving) return false;
 
+    final loc = AppLocalizations.of(context);
     if (publish) {
       final validationError = _validatePublish();
       if (validationError != null) {
@@ -303,10 +308,8 @@ class _PostJobPageState extends State<PostJobPage> {
 
       _showSnackBar(
         publish
-            ? (widget.isEditing
-                  ? 'Job updated successfully!'
-                  : 'Job posted successfully!')
-            : 'Draft saved successfully!',
+            ? (widget.isEditing ? loc.jobUpdatedSuccess : loc.jobPostedSuccess)
+            : loc.draftSavedSuccess,
         backgroundColor: AppColors.success,
       );
 
@@ -360,7 +363,9 @@ class _PostJobPageState extends State<PostJobPage> {
           onPressed: _isSaving ? null : () => Navigator.pop(context),
         ),
         title: Text(
-          widget.isEditing ? 'Edit Job' : 'Post a New Job',
+          widget.isEditing
+              ? AppLocalizations.of(context).editJob
+              : AppLocalizations.of(context).postANewJob,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -370,9 +375,9 @@ class _PostJobPageState extends State<PostJobPage> {
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveDraftDirectly,
-            child: const Text(
-              'Save Draft',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context).saveDraft,
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
@@ -472,7 +477,7 @@ class _PostJobPageState extends State<PostJobPage> {
                     borderRadius: BorderRadius.circular(28),
                   ),
                 ),
-                child: const Text('Back'),
+                child: Text(AppLocalizations.of(context).back),
               ),
             ),
           if (currentStep > 1) const SizedBox(width: 12),
@@ -489,7 +494,9 @@ class _PostJobPageState extends State<PostJobPage> {
                 ),
               ),
               child: Text(
-                currentStep == 3 ? 'Preview Job' : 'Next Step',
+                currentStep == 3
+                    ? AppLocalizations.of(context).previewJob
+                    : AppLocalizations.of(context).nextStep,
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),

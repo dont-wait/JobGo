@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/interview_schedule_model.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 
@@ -15,17 +16,18 @@ class _CandidateInterviewPageState extends State<CandidateInterviewPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-      context.read<InterviewProvider>().loadCandidateSchedules()
+    Future.microtask(
+      () => context.read<InterviewProvider>().loadCandidateSchedules(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text('Lịch phỏng vấn'),
+        title: Text(loc.interviewScheduleTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false,
@@ -37,15 +39,19 @@ class _CandidateInterviewPageState extends State<CandidateInterviewPage> {
           }
 
           if (provider.candidateSchedules.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.event_busy, size: 60, color: AppColors.textHint),
-                  SizedBox(height: 12),
+                  const Icon(
+                    Icons.event_busy,
+                    size: 60,
+                    color: AppColors.textHint,
+                  ),
+                  const SizedBox(height: 12),
                   Text(
-                    'Chưa có lịch phỏng vấn',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    loc.noInterviewsMessage,
+                    style: const TextStyle(color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -57,7 +63,7 @@ class _CandidateInterviewPageState extends State<CandidateInterviewPage> {
             itemCount: provider.candidateSchedules.length,
             itemBuilder: (context, index) {
               final schedule = provider.candidateSchedules[index];
-              return _CandidateInterviewCard(schedule: schedule);
+              return _CandidateInterviewCard(schedule: schedule, loc: loc);
             },
           );
         },
@@ -68,24 +74,33 @@ class _CandidateInterviewPageState extends State<CandidateInterviewPage> {
 
 class _CandidateInterviewCard extends StatelessWidget {
   final InterviewScheduleModel schedule;
+  final AppLocalizations loc;
 
-  const _CandidateInterviewCard({required this.schedule});
+  const _CandidateInterviewCard({required this.schedule, required this.loc});
 
   Color get _statusColor {
     switch (schedule.status) {
-      case 'accepted': return Colors.green;
-      case 'rejected': return Colors.red;
-      case 'reschedule': return Colors.orange;
-      default: return Colors.grey;
+      case 'accepted':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'reschedule':
+        return Colors.orange;
+      default:
+        return Colors.grey;
     }
   }
 
   String get _statusText {
     switch (schedule.status) {
-      case 'accepted': return 'Đã xác nhận';
-      case 'rejected': return 'Đã từ chối';
-      case 'reschedule': return 'Yêu cầu đổi lịch';
-      default: return 'Chờ phản hồi';
+      case 'accepted':
+        return loc.statusAccepted;
+      case 'rejected':
+        return loc.statusRejected;
+      case 'reschedule':
+        return loc.statusReschedule;
+      default:
+        return loc.statusPending;
     }
   }
 
@@ -124,7 +139,10 @@ class _CandidateInterviewCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -148,7 +166,8 @@ class _CandidateInterviewCard extends StatelessWidget {
             _buildRow(
               icon: Icons.calendar_today_rounded,
               iconColor: AppColors.primary,
-              text: "${schedule.date.day}/${schedule.date.month}/${schedule.date.year} "
+              text:
+                  "${schedule.date.day}/${schedule.date.month}/${schedule.date.year} "
                   "${schedule.date.hour}:${schedule.date.minute.toString().padLeft(2, '0')}",
             ),
             const SizedBox(height: 8),
@@ -165,7 +184,9 @@ class _CandidateInterviewCard extends StatelessWidget {
             _buildRow(
               icon: Icons.location_on_rounded,
               iconColor: Colors.redAccent,
-              text: schedule.location.isNotEmpty ? schedule.location : 'No location',
+              text: schedule.location.isNotEmpty
+                  ? schedule.location
+                  : loc.noLocationText,
             ),
             const SizedBox(height: 8),
 
@@ -173,7 +194,8 @@ class _CandidateInterviewCard extends StatelessWidget {
             _buildRow(
               icon: Icons.person_outline,
               iconColor: Colors.blueAccent,
-              text: 'Liên hệ: ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : "N/A"}',
+              text:
+                  '${loc.contactLabel} ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : loc.notAvailable}',
             ),
 
             if (schedule.note.isNotEmpty) ...[
@@ -196,7 +218,10 @@ class _CandidateInterviewCard extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () => _respond(context, 'rejected'),
                       icon: const Icon(Icons.close, color: Colors.red),
-                      label: const Text('Từ chối', style: TextStyle(color: Colors.red)),
+                      label: Text(
+                        loc.declineButton,
+                        style: const TextStyle(color: Colors.red),
+                      ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
                       ),
@@ -207,7 +232,10 @@ class _CandidateInterviewCard extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: () => _respond(context, 'reschedule'),
                       icon: const Icon(Icons.schedule, color: Colors.orange),
-                      label: const Text('Đổi lịch', style: TextStyle(color: Colors.orange)),
+                      label: Text(
+                        loc.rescheduleButton,
+                        style: const TextStyle(color: Colors.orange),
+                      ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.orange),
                       ),
@@ -218,7 +246,7 @@ class _CandidateInterviewCard extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => _respond(context, 'accepted'),
                       icon: const Icon(Icons.check),
-                      label: const Text('Đồng ý'),
+                      label: Text(loc.acceptButton),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -243,23 +271,25 @@ class _CandidateInterviewCard extends StatelessWidget {
 
       if (context.mounted) {
         final msg = status == 'accepted'
-            ? 'Đã xác nhận lịch phỏng vấn!'
+            ? loc.scheduleConfirmedMessage
             : status == 'rejected'
-                ? 'Đã từ chối lịch phỏng vấn'
-                : 'Đã yêu cầu đổi lịch';
+            ? loc.scheduleDeclinedMessage
+            : loc.rescheduleRequestedMessage;
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(msg),
-            backgroundColor: status == 'accepted' ? Colors.green : Colors.orange,
+            backgroundColor: status == 'accepted'
+                ? Colors.green
+                : Colors.orange,
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
       }
     }
   }
@@ -277,7 +307,10 @@ class _CandidateInterviewCard extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
           ),
         ),
       ],

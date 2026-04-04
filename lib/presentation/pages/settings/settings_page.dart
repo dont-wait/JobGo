@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/routes/edit_profile_route.dart';
 import 'package:jobgo/presentation/pages/auth/forgotpassword/forgotpassword_layout.dart';
+import 'package:jobgo/presentation/widgets/common/language_selector_button.dart';
 
 class SettingsPage extends StatefulWidget {
   /// Role của user đang đăng nhập — dùng để điều hướng đúng trang edit profile.
@@ -19,6 +21,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -28,9 +31,9 @@ class _SettingsPageState extends State<SettingsPage> {
           icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(
+        title: Text(
+          loc.settings,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 20,
@@ -47,17 +50,17 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 24),
 
             // ACCOUNT
-            _buildSectionLabel('ACCOUNT'),
+            _buildSectionLabel(loc.account),
             const SizedBox(height: 8),
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.person_outline,
-                label: 'Edit Profile',
+                label: loc.editProfile,
                 onTap: () => navigateToEditProfile(context, widget.role),
               ),
               _buildMenuItem(
                 icon: Icons.lock_outline,
-                label: 'Change Password',
+                label: loc.changePassword,
                 showDivider: false,
                 onTap: () => Navigator.push(
                   context,
@@ -69,13 +72,26 @@ class _SettingsPageState extends State<SettingsPage> {
             ]),
             const SizedBox(height: 20),
 
+            // LANGUAGE
+            _buildSectionLabel(loc.language),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const LanguageSelectorButton(isCompact: false),
+            ),
+            const SizedBox(height: 20),
+
             // NOTIFICATIONS
-            _buildSectionLabel('NOTIFICATIONS'),
+            _buildSectionLabel(loc.notifications.toUpperCase()),
             const SizedBox(height: 8),
             _buildMenuGroup([
               _buildToggleItem(
                 icon: Icons.notifications_active_outlined,
-                label: 'Push Notifications',
+                label: loc.pushNotifications,
                 value: _pushNotifications,
                 onChanged: (v) => setState(() => _pushNotifications = v),
               ),
@@ -83,17 +99,17 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 20),
 
             // PRIVACY
-            _buildSectionLabel('PRIVACY'),
+            _buildSectionLabel(loc.privacy),
             const SizedBox(height: 8),
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.shield_outlined,
-                label: 'Privacy Policy',
+                label: loc.privacyPolicy,
                 onTap: () {},
               ),
               _buildMenuItem(
                 icon: Icons.description_outlined,
-                label: 'Terms of Service',
+                label: loc.termsOfService,
                 onTap: () {},
                 showDivider: false,
               ),
@@ -101,17 +117,17 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 20),
 
             // SUPPORT
-            _buildSectionLabel('SUPPORT'),
+            _buildSectionLabel(loc.support),
             const SizedBox(height: 8),
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.help_outline,
-                label: 'Help Center',
+                label: loc.helpCenter,
                 onTap: () {},
               ),
               _buildMenuItem(
                 icon: Icons.mail_outline,
-                label: 'Contact Us',
+                label: loc.contactUs,
                 onTap: () {},
                 showDivider: false,
               ),
@@ -122,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
             _buildMenuGroup([
               _buildMenuItem(
                 icon: Icons.logout,
-                label: 'Logout',
+                label: loc.logout,
                 iconColor: AppColors.error,
                 labelColor: AppColors.error,
                 showChevron: false,
@@ -180,10 +196,7 @@ class _SettingsPageState extends State<SettingsPage> {
               SizedBox(height: 2),
               Text(
                 'Senior Product Designer',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
             ],
           ),

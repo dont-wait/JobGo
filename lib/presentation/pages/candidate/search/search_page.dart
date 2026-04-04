@@ -3,10 +3,12 @@ import 'package:provider/provider.dart';
 
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/pages/candidate/search/job_filter_bottom_sheet.dart';
 import 'package:jobgo/presentation/providers/job_search_controller.dart';
 import 'package:jobgo/presentation/widgets/candidate/search/search_job_card.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/presentation/widgets/common/language_selector_button.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -19,12 +21,12 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   late final JobSearchProvider _searchProvider;
 
-  final List<String> _filters = const [
-    'Remote',
-    'Full-time',
+  List<String> _getFilters(AppLocalizations loc) => [
+    loc.remote,
+    loc.fullTime,
     r'$120k+',
-    'Experience',
-    'Part-time',
+    loc.experienceLevel,
+    loc.partTime,
   ];
 
   @override
@@ -96,6 +98,7 @@ class _SearchPageState extends State<SearchPage> {
       child: Consumer<JobSearchProvider>(
         builder: (context, provider, _) {
           final jobs = provider.filteredJobs;
+          final loc = AppLocalizations.of(context);
 
           return Scaffold(
             backgroundColor: AppColors.white,
@@ -117,19 +120,19 @@ class _SearchPageState extends State<SearchPage> {
                             child: TextField(
                               controller: _searchController,
                               onChanged: provider.setSearchQuery,
-                              decoration: const InputDecoration(
-                                hintText: 'Search job title or keyword',
-                                hintStyle: TextStyle(
+                              decoration: InputDecoration(
+                                hintText: loc.searchJobTitle,
+                                hintStyle: const TextStyle(
                                   color: AppColors.textHint,
                                   fontSize: 14,
                                 ),
-                                prefixIcon: Icon(
+                                prefixIcon: const Icon(
                                   Icons.search_rounded,
                                   color: AppColors.textHint,
                                   size: 22,
                                 ),
                                 border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
+                                contentPadding: const EdgeInsets.symmetric(
                                   vertical: 14,
                                 ),
                               ),
@@ -168,9 +171,12 @@ class _SearchPageState extends State<SearchPage> {
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       scrollDirection: Axis.horizontal,
-                      itemCount: _filters.length,
+                      itemCount: _getFilters(loc).length,
                       itemBuilder: (context, index) {
-                        return _buildQuickFilterChip(_filters[index], provider);
+                        return _buildQuickFilterChip(
+                          _getFilters(loc)[index],
+                          provider,
+                        );
                       },
                     ),
                   ),
@@ -181,24 +187,24 @@ class _SearchPageState extends State<SearchPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${jobs.length} jobs found',
+                          '${jobs.length} ${loc.jobsFound}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        const Row(
+                        Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.sort_rounded,
                               size: 18,
                               color: AppColors.textSecondary,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
-                              'Most Relevant',
-                              style: TextStyle(
+                              loc.mostRelevant,
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textSecondary,
                               ),
@@ -234,8 +240,7 @@ class _SearchPageState extends State<SearchPage> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    provider.errorMessage ??
-                                        'No jobs match your filters.',
+                                    provider.errorMessage ?? loc.noJobsMatch,
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       fontSize: 15,
@@ -250,7 +255,7 @@ class _SearchPageState extends State<SearchPage> {
                                         _searchController.clear();
                                         provider.resetAllFilters();
                                       },
-                                      child: const Text('Clear filters'),
+                                      child: Text(loc.clearFilters),
                                     ),
                                   ),
                                 ],

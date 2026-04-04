@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
@@ -39,6 +40,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -47,9 +49,9 @@ class _ApplicationsPageState extends State<ApplicationsPage>
         scrolledUnderElevation: 0.5,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text(
-          'Application History',
-          style: TextStyle(
+        title: Text(
+          loc.applicationHistoryTitle,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -57,7 +59,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
-          child: _buildTabBar(),
+          child: _buildTabBar(loc),
         ),
       ),
       body: Consumer<ProfileProvider>(
@@ -71,10 +73,10 @@ class _ApplicationsPageState extends State<ApplicationsPage>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Could not load profile'),
+                  Text(loc.couldNotLoadProfileMessage),
                   TextButton(
                     onPressed: () => profileProvider.loadProfile(),
-                    child: const Text('Retry'),
+                    child: Text(loc.retryButton),
                   ),
                 ],
               ),
@@ -121,9 +123,9 @@ class _ApplicationsPageState extends State<ApplicationsPage>
               return TabBarView(
                 controller: _tabController,
                 children: [
-                  _ApplicationList(applications: appliedApps),
-                  _ApplicationList(applications: interviewApps),
-                  _ApplicationList(applications: acceptedApps),
+                  _ApplicationList(applications: appliedApps, loc: loc),
+                  _ApplicationList(applications: interviewApps, loc: loc),
+                  _ApplicationList(applications: acceptedApps, loc: loc),
                 ],
               );
             },
@@ -133,7 +135,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(AppLocalizations loc) {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -151,22 +153,21 @@ class _ApplicationsPageState extends State<ApplicationsPage>
         indicatorColor: AppColors.primary,
         indicatorWeight: 3,
         indicatorSize: TabBarIndicatorSize.label,
-        tabs: const [
-          Tab(text: 'Applied'),
-          Tab(text: 'Interviews'),
-          Tab(text: 'Accepted'),
+        tabs: [
+          Tab(text: loc.appliedTabLabel),
+          Tab(text: loc.interviewsTabLabel),
+          Tab(text: loc.acceptedTabLabel),
         ],
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────
-// Application List (per tab)
-// ─────────────────────────────────────────────
 class _ApplicationList extends StatelessWidget {
   final List<JobApplicantModel> applications;
-  const _ApplicationList({required this.applications});
+  final AppLocalizations loc;
+
+  const _ApplicationList({required this.applications, required this.loc});
 
   @override
   Widget build(BuildContext context) {
@@ -181,18 +182,18 @@ class _ApplicationList extends StatelessWidget {
               color: AppColors.textHint.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'No applications found',
-              style: TextStyle(
+            Text(
+              loc.noApplicationsFoundMessage,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Your applications for this category will appear here',
-              style: TextStyle(fontSize: 13, color: AppColors.textHint),
+            Text(
+              loc.noApplicationsFoundDescription,
+              style: const TextStyle(fontSize: 13, color: AppColors.textHint),
             ),
           ],
         ),
@@ -205,19 +206,18 @@ class _ApplicationList extends StatelessWidget {
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _ApplicationCard(application: applications[index]),
+          child: _ApplicationCard(application: applications[index], loc: loc),
         );
       },
     );
   }
 }
 
-// ─────────────────────────────────────────────
-// Single Application Card
-// ─────────────────────────────────────────────
 class _ApplicationCard extends StatelessWidget {
   final JobApplicantModel application;
-  const _ApplicationCard({required this.application});
+  final AppLocalizations loc;
+
+  const _ApplicationCard({required this.application, required this.loc});
 
   @override
   Widget build(BuildContext context) {
@@ -305,7 +305,7 @@ class _ApplicationCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Applied on ${_formatDate(application.appliedAt ?? DateTime.now())}',
+                      '${loc.appliedOnLabel} ${_formatDate(application.appliedAt ?? DateTime.now())}',
                       style: const TextStyle(
                         fontSize: 11,
                         color: AppColors.textHint,
@@ -314,7 +314,7 @@ class _ApplicationCard extends StatelessWidget {
                   ],
                 ),
                 if (application.status == ApplicationStatus.pending)
-                  _WithdrawButton(application: application),
+                  _WithdrawButton(application: application, loc: loc),
               ],
             ),
           ],
@@ -390,7 +390,9 @@ class _ApplicationCard extends StatelessWidget {
 
 class _WithdrawButton extends StatefulWidget {
   final JobApplicantModel application;
-  const _WithdrawButton({required this.application});
+  final AppLocalizations loc;
+
+  const _WithdrawButton({required this.application, required this.loc});
 
   @override
   State<_WithdrawButton> createState() => _WithdrawButtonState();
@@ -399,20 +401,23 @@ class _WithdrawButton extends StatefulWidget {
 class _WithdrawButtonState extends State<_WithdrawButton> {
   bool _isWithdrawing = false;
 
-  Future<void> _handleWithdraw() async {
+  Future<void> _handleWithdraw(AppLocalizations loc) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Rút hồ sơ?'),
-        content: const Text('Bạn có chắc chắn muốn rút hồ sơ ứng tuyển này?'),
+        title: Text(loc.withdrawConfirmTitle),
+        content: Text(loc.withdrawConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Rút hồ sơ', style: TextStyle(color: Colors.red)),
+            child: Text(
+              loc.withdrawButton,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -434,13 +439,13 @@ class _WithdrawButtonState extends State<_WithdrawButton> {
     if (mounted) {
       setState(() => _isWithdrawing = false);
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã rút hồ sơ thành công')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(loc.withdrawSuccessMessage)));
       } else {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Rút hồ sơ thất bại')));
+        ).showSnackBar(SnackBar(content: Text(loc.withdrawFailureMessage)));
       }
     }
   }
@@ -454,10 +459,10 @@ class _WithdrawButtonState extends State<_WithdrawButton> {
             child: CircularProgressIndicator(strokeWidth: 2),
           )
         : GestureDetector(
-            onTap: _handleWithdraw,
-            child: const Text(
-              'Withdraw',
-              style: TextStyle(
+            onTap: () => _handleWithdraw(widget.loc),
+            child: Text(
+              widget.loc.withdrawButton,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: Colors.red,

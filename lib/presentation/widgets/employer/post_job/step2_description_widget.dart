@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/skill_chip_selector.dart';
 
 class Step2DescriptionWidget extends StatelessWidget {
@@ -20,30 +21,31 @@ class Step2DescriptionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Job Description',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          AppLocalizations.of(context).jobDescription,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         TextField(
           controller: descriptionController,
           maxLines: 6,
-          decoration: const InputDecoration(
-            hintText: 'Describe the role, responsibilities...',
+          decoration: InputDecoration(
+            hintText: '${AppLocalizations.of(context).description}...',
           ),
         ),
         const SizedBox(height: 24),
 
-        const Text(
-          'Requirements & Skills',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          AppLocalizations.of(context).jobRequirements,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         TextField(
           controller: requirementsController,
           maxLines: 4,
-          decoration: const InputDecoration(
-            hintText: 'E.g. 5+ years experience with Figma...',
+          decoration: InputDecoration(
+            hintText:
+                '${AppLocalizations.of(context).example} 5+ years experience...',
           ),
         ),
         const SizedBox(height: 16),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import '../auth/register/register_role_page.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
@@ -7,6 +8,7 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -19,10 +21,10 @@ class WelcomePage extends StatelessWidget {
               _buildLogo(),
               const SizedBox(height: 40),
               // Welcome text
-              _buildWelcomeText(),
+              _buildWelcomeText(loc),
               const Spacer(flex: 3),
               // Buttons
-              _buildButtons(context),
+              _buildButtons(context, loc),
               const SizedBox(height: 40),
             ],
           ),
@@ -60,22 +62,22 @@ class WelcomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeText() {
-    return const Column(
+  Widget _buildWelcomeText(AppLocalizations loc) {
+    return Column(
       children: [
         Text(
-          'Find Your Dream Job',
-          style: TextStyle(
+          loc.welcomeTitle,
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Text(
-          'Explore thousands of job opportunities\nand start your career journey today',
+          loc.welcomeDescription,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             color: Colors.grey,
             height: 1.5,
@@ -85,7 +87,7 @@ class WelcomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildButtons(BuildContext context) {
+  Widget _buildButtons(BuildContext context, AppLocalizations loc) {
     return Column(
       children: [
         // Login Button
@@ -105,9 +107,9 @@ class WelcomePage extends StatelessWidget {
               ),
               elevation: 0,
             ),
-            child: const Text(
-              'Login',
-              style: TextStyle(
+            child: Text(
+              loc.login,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -136,9 +138,9 @@ class WelcomePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(28),
               ),
             ),
-            child: const Text(
-              'Sign Up',
-              style: TextStyle(
+            child: Text(
+              loc.signUp,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
+import '../../../../core/localization/app_localizations.dart';
 import 'package:jobgo/main.dart'; //  để dùng isInRegisterFlow
 
 class RegisterVerifyEmailPage extends StatefulWidget {
@@ -28,6 +29,7 @@ class _RegisterVerifyEmailPageState extends State<RegisterVerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       body: SafeArea(
@@ -36,26 +38,26 @@ class _RegisterVerifyEmailPageState extends State<RegisterVerifyEmailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // HEADER - giữ nguyên giao diện gốc
+              // HEADER
               Row(
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios_new),
                     onPressed: () {
-                      isInRegisterFlow = false; // tắt flag khi back
+                      isInRegisterFlow = false;
                       Navigator.pop(context);
                     },
                   ),
                   const Spacer(),
-                  const Text("STEP 3 OF 3",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1)),
+                  Text(loc.stepOfThreeMsg.replaceAll('STEP 3 OF 3', loc.stepOfThreeMsg),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 1)),
                   const Spacer(flex: 2),
                 ],
               ),
 
               const SizedBox(height: 40),
 
-              // ICON - giữ nguyên giao diện gốc
+              // ICON
               Container(
                 width: 120,
                 height: 120,
@@ -72,17 +74,17 @@ class _RegisterVerifyEmailPageState extends State<RegisterVerifyEmailPage> {
 
               const SizedBox(height: 32),
 
-              // TITLE
-              const Text("OTP Verification",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              // TITLE - keep as is, not in localization yet
+              Text(loc.otpVerification,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
 
               const SizedBox(height: 12),
 
               // SUBTITLE
               Text(
-                "We sent a confirmation link to\n${widget.email}\n\nClick the link in your email to activate your account.",
+                "${loc.emailVerificationMessage}\n${widget.email}\n\n${loc.clickLinkMessage}",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.6),
+                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.6),
               ),
 
               const SizedBox(height: 32),
@@ -99,27 +101,27 @@ class _RegisterVerifyEmailPageState extends State<RegisterVerifyEmailPage> {
                   onPressed: _isChecking ? null : _checkVerified,
                   child: _isChecking
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("I've confirmed my email",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(loc.confirmedEmail,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
 
               const Spacer(),
 
-              // RESEND - giữ nguyên giao diện gốc
+              // RESEND
               Column(
                 children: [
-                  Text("Didn't receive the email?",
-                    style: TextStyle(color: AppColors.textSecondary)),
+                  Text(loc.didNotReceiveEmail,
+                    style: const TextStyle(color: AppColors.textSecondary)),
                   const SizedBox(height: 6),
                   GestureDetector(
                     onTap: _resendEmail,
-                    child: const Text("Resend email",
-                      style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                    child: Text(loc.resendEmail,
+                      style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                   ),
                   const SizedBox(height: 12),
-                  Text("Request new code in 00:45",
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  Text("${loc.requestNewCode} 00:45",
+                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                 ],
               ),
 
@@ -154,21 +156,23 @@ class _RegisterVerifyEmailPageState extends State<RegisterVerifyEmailPage> {
       }
 
       if (currentUser?.emailConfirmedAt != null) {
-        isInRegisterFlow = false; // tắt flag
+        isInRegisterFlow = false;
         Navigator.pushNamedAndRemoveUntil(
           context,
-          '/main',  // vào AppShell
+          '/main',
           (route) => false,
           arguments: widget.role,
         );
       } else {
+        final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email chưa được xác nhận, vui lòng click link trong email')),
+          SnackBar(content: Text('${loc.error}: ${loc.verificationFailed}')),
         );
       }
     } catch (e) {
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email chưa được xác nhận, vui lòng click link trong email')),
+        SnackBar(content: Text('${loc.error}: $e')),
       );
     } finally {
       setState(() => _isChecking = false);
@@ -181,12 +185,14 @@ class _RegisterVerifyEmailPageState extends State<RegisterVerifyEmailPage> {
         type: OtpType.signup,
         email: widget.email,
       );
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email xác nhận đã được gửi lại')),
+        SnackBar(content: Text('${loc.success}: Email sent')),
       );
     } catch (e) {
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gửi lại thất bại: $e')),
+        SnackBar(content: Text('${loc.error}: $e')),
       );
     }
   }

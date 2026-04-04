@@ -2,9 +2,44 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../../core/utils/encryption_helper.dart';
 
 class AuthRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
+
+  /// Lưu mật khẩu (mã hóa) khi đăng ký
+  Future<void> saveEncryptedPassword(String userId, String password) async {
+    try {
+      final encryptedPassword = EncryptionHelper.encrypt(password);
+      await _supabase.from('users').update({
+        'u_password': encryptedPassword,
+      }).eq('auth_uid', userId);
+    } catch (e) {
+      throw 'Failed to save encrypted password: $e';
+    }
+  }
+
+  /// Xác thực mật khẩu (giải mã và so sánh)
+  Future<bool> verifyPassword(String userId, String inputPassword) async {
+    try {
+      final userData = await _supabase
+          .from('users')
+          .select('u_password')
+          .eq('auth_uid', userId)
+          .maybeSingle();
+
+      if (userData == null || userData['u_password'] == null) {
+        return false;
+      }
+
+      final encryptedPassword = userData['u_password'] as String;
+      final decryptedPassword = EncryptionHelper.decrypt(encryptedPassword);
+      
+      return decryptedPassword == inputPassword;
+    } catch (e) {
+      throw 'Failed to verify password: $e';
+    }
+  }
 
   /// Sign in with Google
   Future<AuthResponse> signInWithGoogle() async {

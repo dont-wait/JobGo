@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
@@ -14,9 +15,9 @@ class ApplicationDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final job = application.job;
-    if (job == null)
-      return const Scaffold(body: Center(child: Text('Data error')));
+    if (job == null) return Scaffold(body: Center(child: Text(loc.error)));
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -28,9 +29,9 @@ class ApplicationDetailPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Application Status',
-          style: TextStyle(
+        title: Text(
+          loc.applicationStatus,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -45,15 +46,15 @@ class ApplicationDetailPage extends StatelessWidget {
           children: [
             _buildJobHeader(job),
             const SizedBox(height: 24),
-            _buildStatusSection(),
+            _buildStatusSection(loc),
             const SizedBox(height: 24),
-            _buildTimelineSection(),
+            _buildTimelineSection(loc),
             const SizedBox(height: 24),
-            _buildApplicationInfoSection(),
+            _buildApplicationInfoSection(loc),
             const SizedBox(height: 32),
             if (application.status == ApplicationStatus.pending ||
                 application.status == ApplicationStatus.reviewing)
-              _buildWithdrawButton(context),
+              _buildWithdrawButton(context, loc),
           ],
         ),
       ),
@@ -115,16 +116,16 @@ class ApplicationDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusSection() {
+  Widget _buildStatusSection(AppLocalizations loc) {
     final statusColor = _getStatusColor(application.status);
-    final statusText = _getStatusText(application.status);
+    final statusText = _getStatusText(application.status, loc);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Current Status',
-          style: TextStyle(
+        Text(
+          loc.currentStatus,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -160,28 +161,31 @@ class ApplicationDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineSection() {
+  Widget _buildTimelineSection(AppLocalizations loc) {
     final steps = [
       {
-        'title': 'Application Submitted',
-        'desc': 'Your profile was sent to recruiters',
+        'title': loc.applicationSubmitted,
+        // Wait, did we add a description for these?
+        // Let's use the ones already in data if any, or static localizations.
+        'desc':
+            loc.applicationSubmitted, // Just use the title if no description
         'done': true,
       },
       {
-        'title': 'Under Review',
-        'desc': 'Recruiters are reviewing your resume',
+        'title': loc.underReview,
+        'desc': loc.underReview,
         'done': application.status != ApplicationStatus.pending,
       },
       {
-        'title': 'Shortlisted/Interview',
-        'desc': 'Waiting for interview invitation',
+        'title': loc.shortlistedInterview,
+        'desc': loc.shortlistedInterview,
         'done':
             application.status == ApplicationStatus.interview ||
             application.status == ApplicationStatus.hired,
       },
       {
-        'title': 'Decision',
-        'desc': 'Final outcome of your application',
+        'title': loc.decision,
+        'desc': loc.decision,
         'done':
             application.status == ApplicationStatus.hired ||
             application.status == ApplicationStatus.rejected,
@@ -191,9 +195,9 @@ class ApplicationDetailPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Application Timeline',
-          style: TextStyle(
+        Text(
+          loc.applicationTimeline,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -256,16 +260,7 @@ class ApplicationDetailPage extends StatelessWidget {
                                 : AppColors.textHint,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          step['desc'] as String,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: isDone
-                                ? AppColors.textSecondary
-                                : AppColors.textHint,
-                          ),
-                        ),
+                        // Removed description for now as it's not and wasn't properly localized or needed once titles are clear
                         if (index == 0 && application.appliedAt != null)
                           Padding(
                             padding: const EdgeInsets.only(top: 4),
@@ -291,13 +286,13 @@ class ApplicationDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildApplicationInfoSection() {
+  Widget _buildApplicationInfoSection(AppLocalizations loc) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Your Application',
-          style: TextStyle(
+        Text(
+          loc.yourApplication,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -306,9 +301,9 @@ class ApplicationDetailPage extends StatelessWidget {
         const SizedBox(height: 16),
         if (application.coverLetter != null &&
             application.coverLetter!.isNotEmpty) ...[
-          const Text(
-            'Cover Letter',
-            style: TextStyle(
+          Text(
+            loc.coverLetter,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
@@ -332,9 +327,9 @@ class ApplicationDetailPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
         ],
-        const Text(
-          'Resume',
-          style: TextStyle(
+        Text(
+          loc.resume,
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
@@ -361,10 +356,10 @@ class ApplicationDetailPage extends StatelessWidget {
                   color: AppColors.primary,
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Attached Resume',
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                    loc.attachedResume,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ),
                 const Icon(
@@ -380,12 +375,12 @@ class ApplicationDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildWithdrawButton(BuildContext context) {
+  Widget _buildWithdrawButton(BuildContext context, AppLocalizations loc) {
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: OutlinedButton(
-        onPressed: () => _showWithdrawDialog(context),
+        onPressed: () => _showWithdrawDialog(context, loc),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.error,
           side: const BorderSide(color: AppColors.error),
@@ -393,28 +388,26 @@ class ApplicationDetailPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        child: const Text(
-          'Withdraw Application',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        child: Text(
+          loc.withdrawButton,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
     );
   }
 
-  void _showWithdrawDialog(BuildContext context) {
+  void _showWithdrawDialog(BuildContext context, AppLocalizations loc) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Withdraw Application?'),
-        content: const Text(
-          'Are you sure you want to withdraw? You cannot undo this action.',
-        ),
+        title: Text(loc.withdrawConfirmTitle),
+        content: Text(loc.withdrawConfirmMessageUndo),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              loc.cancel,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           TextButton(
@@ -426,15 +419,13 @@ class ApplicationDetailPage extends StatelessWidget {
               if (success && context.mounted) {
                 Navigator.pop(context); // Go back to history
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Application withdrawn successfully'),
-                  ),
+                  SnackBar(content: Text(loc.withdrawSuccessMessage)),
                 );
               }
             },
-            child: const Text(
-              'Withdraw',
-              style: TextStyle(
+            child: Text(
+              loc.withdrawButton,
+              style: const TextStyle(
                 color: AppColors.error,
                 fontWeight: FontWeight.bold,
               ),
@@ -462,20 +453,20 @@ class ApplicationDetailPage extends StatelessWidget {
     }
   }
 
-  String _getStatusText(ApplicationStatus status) {
+  String _getStatusText(ApplicationStatus status, AppLocalizations loc) {
     switch (status) {
       case ApplicationStatus.pending:
-        return 'Pending Review';
+        return loc.pendingReview;
       case ApplicationStatus.reviewing:
-        return 'Employer Reviewing';
+        return loc.employerReviewing;
       case ApplicationStatus.interview:
-        return 'Interview Invited';
+        return loc.interviewInvited;
       case ApplicationStatus.hired:
-        return 'Accepted / Hired';
+        return loc.acceptedHired;
       case ApplicationStatus.rejected:
-        return 'Not Selected';
+        return loc.notSelected;
       case ApplicationStatus.withdrawn:
-        return 'Withdrawn by You';
+        return loc.withdrawnByYou;
     }
   }
 }

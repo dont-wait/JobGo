@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
+import '../../../widgets/common/language_selector_button.dart';
 import 'register_verify_email_page.dart';
 import 'package:jobgo/main.dart'; // để dùng isInRegisterFlow
 import '../../../../data/repositories/auth_repository.dart';
@@ -37,12 +39,16 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          const LanguageSelectorButton(isCompact: true),
+        ],
       ),
       body: Stack(
         children: [
@@ -57,58 +63,58 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
                   const SizedBox(height: 32),
                   AuthTextField(
                     controller: nameController,
-                    hintText: 'Full Name',
+                    hintText: loc.fullName,
                     icon: Icons.person_outline,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty)
-                        return 'Full name is required';
+                        return loc.fullNameRequired;
                       if (value.trim().length < 2)
-                        return 'Full name must be at least 2 characters';
+                        return loc.fullNameLength;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   AuthTextField(
                     controller: emailController,
-                    hintText: 'Email Address',
+                    hintText: loc.emailAddressHint,
                     icon: Icons.email_outlined,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty)
-                        return 'Email is required';
+                        return loc.emailRequired;
                       final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
                       if (!emailRegex.hasMatch(value.trim()))
-                        return 'Invalid email format';
+                        return loc.invalidEmailFormat;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   AuthTextField(
                     controller: passwordController,
-                    hintText: 'Password',
+                    hintText: loc.passwordHint,
                     icon: Icons.lock_outline,
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.length < 6)
-                        return 'Password must be at least 6 characters';
+                        return loc.passwordTooShort;
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
                   AuthTextField(
                     controller: confirmPasswordController,
-                    hintText: 'Confirm Password',
+                    hintText: loc.confirmPassword,
                     icon: Icons.lock_outline,
                     obscureText: true,
                     validator: (value) {
                       if (value != passwordController.text)
-                        return 'Passwords do not match';
+                        return loc.passwordsDoNotMatch;
                       return null;
                     },
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: _onContinue,
-                    child: const Text('Continue'),
+                    child: Text(loc.next),
                   ),
                   const SizedBox(height: 24),
                   SocialLoginRow(
@@ -131,9 +137,10 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
       await _authRepository.signInWithGoogle();
     } catch (e) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Google Sign-In Error: $e")));
+      ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -145,9 +152,10 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
       await _authRepository.signInWithFacebook();
     } catch (e) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Facebook Login Error: $e")));
+      ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -251,11 +259,12 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
   }
 
   Widget _buildHeader() {
+    final loc = AppLocalizations.of(context);
     return Column(
       children: [
         Text(
-          'STEP 2 OF 3',
-          style: TextStyle(
+          loc.stepOfThree.replaceAll('BƯỚC 1 TRONG 3', 'BƯỚC 2 TRONG 3'),
+          style: const TextStyle(
             fontSize: 12,
             letterSpacing: 1.2,
             color: AppColors.textSecondary,
@@ -263,8 +272,8 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Account Details (${widget.role.name})',
-          style: TextStyle(
+          '${loc.account} (${widget.role.name})',
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -273,7 +282,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
         const SizedBox(height: 8),
         Text(
           'Set up your login credentials',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
       ],
     );

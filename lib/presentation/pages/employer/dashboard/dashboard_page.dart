@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/widgets/employer/dashboard/profile_header.dart';
 import 'package:jobgo/presentation/widgets/employer/dashboard/overview_card.dart';
 import 'package:jobgo/presentation/widgets/employer/dashboard/views_statistics.dart';
@@ -55,6 +56,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       body: SafeArea(
@@ -65,7 +67,7 @@ class _DashboardPageState extends State<DashboardPage> {
               // Profile Header
               const DashboardProfileHeader(),
               const SizedBox(height: 20),
-              
+
               // Overview Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -75,9 +77,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Overview',
-                          style: TextStyle(
+                        Text(
+                          loc.overview,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -92,9 +94,9 @@ class _DashboardPageState extends State<DashboardPage> {
                             color: AppColors.lightBackground,
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text(
-                            'Last 30 days',
-                            style: TextStyle(
+                          child: Text(
+                            loc.last30Days,
+                            style: const TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                               color: AppColors.textSecondary,
@@ -111,9 +113,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
                         if (isNarrow) {
                           return Column(
-                            children: const [
+                            children: [
                               OverviewCard(
-                                title: 'Active Jobs',
+                                title: loc.activeJobs,
                                 value: '12',
                                 percentage: '+7%',
                                 icon: Icons.work_outline,
@@ -122,7 +124,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               SizedBox(height: 12),
                               OverviewCard(
-                                title: 'Applicants',
+                                title: loc.applicants,
                                 value: '48',
                                 percentage: '+9%',
                                 icon: Icons.people_outline,
@@ -131,7 +133,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                               SizedBox(height: 12),
                               OverviewCard(
-                                title: 'Interviews',
+                                title: loc.interviewsCount,
                                 value: '5',
                                 percentage: '+2%',
                                 icon: Icons.calendar_today_outlined,
@@ -143,10 +145,10 @@ class _DashboardPageState extends State<DashboardPage> {
                         }
 
                         return Row(
-                          children: const [
+                          children: [
                             Expanded(
                               child: OverviewCard(
-                                title: 'Active Jobs',
+                                title: loc.activeJobs,
                                 value: '12',
                                 percentage: '+7%',
                                 icon: Icons.work_outline,
@@ -157,7 +159,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             SizedBox(width: 12),
                             Expanded(
                               child: OverviewCard(
-                                title: 'Applicants',
+                                title: loc.applicants,
                                 value: '48',
                                 percentage: '+9%',
                                 icon: Icons.people_outline,
@@ -168,7 +170,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             SizedBox(width: 12),
                             Expanded(
                               child: OverviewCard(
-                                title: 'Interviews',
+                                title: loc.interviewsCount,
                                 value: '5',
                                 percentage: '+2%',
                                 icon: Icons.calendar_today_outlined,
@@ -203,9 +205,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Recent Activities',
-                          style: TextStyle(
+                        Text(
+                          loc.recentActivities,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
@@ -215,9 +217,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           onTap: () {
                             // TODO: View all activities
                           },
-                          child: const Text(
-                            'View all',
-                            style: TextStyle(
+                          child: Text(
+                            loc.viewAll,
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: AppColors.primary,
