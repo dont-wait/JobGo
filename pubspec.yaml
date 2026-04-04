@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   # Supabase SDK cho Flutter
   supabase_flutter: ^2.0.0
   # Social Login
@@ -24,6 +26,7 @@ dependencies:
   image_picker: ^1.2.1
   url_launcher: ^6.3.2
   intl: ^0.20.2
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:
