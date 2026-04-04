@@ -72,4 +72,10 @@ class EmployerProvider extends ChangeNotifier {
     notifyListeners();
     return false;
   }
+
+  void clearEmployer() {
+    _employer = null;
+    _isLoading = false;
+    notifyListeners();
+  }
 }

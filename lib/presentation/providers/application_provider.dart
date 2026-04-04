@@ -77,4 +77,11 @@ class ApplicationProvider extends ChangeNotifier {
   Future<bool> hasApplied(int jobId, int candidateId) async {
     return await _repository.checkHasApplied(jobId, candidateId);
   }
+
+  void clearApplications() {
+    _applications = [];
+    _isLoading = false;
+    _error = null;
+    notifyListeners();
+  }
 }
