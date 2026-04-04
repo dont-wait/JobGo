@@ -38,23 +38,25 @@ UserRole parseUserRole(String? roleStr) {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    await dotenv.load(fileName: '.env', isOptional: true);
-  } catch (e) {
-    print('Warning: .env could not be loaded, using fallback Supabase config: $e');
+  await dotenv.load(fileName: '.env');
+
+  final supabaseUrl = dotenv.env['SUPABASE_URL']?.trim();
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']?.trim();
+
+  if (supabaseUrl == null ||
+      supabaseUrl.isEmpty ||
+      supabaseAnonKey == null ||
+      supabaseAnonKey.isEmpty) {
+    throw StateError('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env');
   }
 
-    const fallbackSupabaseUrl = 'https://devgqjhlzkgexfwvxoej.supabase.co';
-    const fallbackSupabaseAnonKey =
-      'sb_publishable_hN1DwR9pENr-KwRfhh9PlA_6JQ_AkgQ';
-
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? fallbackSupabaseUrl,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? fallbackSupabaseAnonKey,
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
-  final supabaseUrl = Supabase.instance.client.rest.url.toString();
-  debugPrint('Supabase runtime URL: $supabaseUrl');
+  final runtimeSupabaseUrl = Supabase.instance.client.rest.url.toString();
+  debugPrint('Supabase runtime URL: $runtimeSupabaseUrl');
 
   final appLinks = AppLinks();
   appLinks.uriLinkStream.listen((uri) {

@@ -21,7 +21,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AdminProvider>().loadUsersDebug();
+      final adminProvider = context.read<AdminProvider>();
+      final roleFilter = adminProvider.selectedUserFilter == 'Candidates'
+          ? 'candidate'
+          : adminProvider.selectedUserFilter == 'Employers'
+          ? 'employer'
+          : null;
+      adminProvider.loadUsers(roleFilter: roleFilter);
     });
   }
 
