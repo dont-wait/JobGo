@@ -19,6 +19,7 @@ class CandidateCardWidget extends StatelessWidget {
     final skills = candidate.skillList.isEmpty
         ? const ['No skills listed']
         : candidate.skillList.take(4).toList();
+    final hasSummary = candidate.hasSummary;
 
     return Material(
       color: Colors.transparent,
@@ -61,7 +62,7 @@ class CandidateCardWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          candidate.displayExperience,
+                          candidate.displayHeadline,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -70,6 +71,18 @@ class CandidateCardWidget extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                        if (hasSummary) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            candidate.cleanSummary,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 4),
                         Text(
                           '${candidate.displayLocation} • ${candidate.salaryLabel}',
