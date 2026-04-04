@@ -11,6 +11,9 @@ dependencies:
     sdk: flutter
   # Supabase SDK cho Flutter
   supabase_flutter: ^2.0.0
+  # Social Login
+  google_sign_in: ^6.2.1
+  flutter_facebook_auth: ^6.1.0
   # Bloc để quản lý state
   flutter_bloc: ^9.1.1
   cupertino_icons: ^1.0.8

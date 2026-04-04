@@ -96,6 +96,11 @@ class _MainAppState extends State<MainApp> {
                 final context = navigatorKey.currentContext;
                 if (context == null) return;
 
+                // Refresh providers on sign in
+                context.read<BookmarkProvider>().loadInitialBookmarks();
+                context.read<ProfileProvider>().loadProfile();
+                context.read<EmployerProvider>().loadProfile();
+
                 // ── Tự động nhận diện Role khi Login ──
                 try {
                   final userId = data.session?.user.id;
@@ -125,6 +130,13 @@ class _MainAppState extends State<MainApp> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 final context = navigatorKey.currentContext;
                 if (context == null) return;
+
+                // Clear providers on sign out
+                context.read<BookmarkProvider>().clearBookmarks();
+                context.read<ProfileProvider>().clearProfile();
+                context.read<EmployerProvider>().clearEmployer();
+                context.read<ApplicationProvider>().clearApplications();
+                context.read<InterviewProvider>().clearSchedules();
 
                 navigatorKey.currentState?.pushNamedAndRemoveUntil(
                   '/login',

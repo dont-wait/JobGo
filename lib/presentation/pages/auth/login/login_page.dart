@@ -4,7 +4,7 @@ import '../../../../core/enums/user_role.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import '../../../../data/repositories/auth_repository.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,7 +17,9 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final _authRepository = AuthRepository();
   bool rememberMe = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -42,139 +44,149 @@ class _LoginPageState extends State<LoginPage> {
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppColors.textPrimary,
-          ),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.maybePop(context),
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 8),
-                const Text(
-                  'Welcome Back',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Sign in to continue your job search',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 32),
-                AuthTextField(
-                  controller: emailController,
-                  hintText: 'Email Address',
-                  icon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Email is required';
-                    }
-                    final email = value.trim();
-                    final emailRegex =
-                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                    if (!emailRegex.hasMatch(email)) {
-                      return 'Invalid email format';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                AuthTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  icon: Icons.lock_outline,
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password is required';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                Row(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Checkbox(
-                      value: rememberMe,
-                      onChanged: (value) {
-                        setState(() {
-                          rememberMe = value ?? true;
-                        });
-                      },
-                    ),
+                    const SizedBox(height: 8),
                     const Text(
-                      'Remember me',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/forgot-password');
-                      },
-                      child: const Text('Forgot password?'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _onSignIn,
-                  child: const Text('Sign In'),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    const Expanded(child: Divider(color: AppColors.divider)),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        'OR',
-                        style: TextStyle(color: AppColors.textSecondary),
+                      'Welcome Back',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    const Expanded(child: Divider(color: AppColors.divider)),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const SocialLoginRow(),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                    const SizedBox(height: 8),
                     const Text(
-                      'Don\'t have an account? ',
+                      'Sign in to continue your job search',
+                      textAlign: TextAlign.center,
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/register');
+                    const SizedBox(height: 32),
+                    AuthTextField(
+                      controller: emailController,
+                      hintText: 'Email Address',
+                      icon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email is required';
+                        }
+                        final email = value.trim();
+                        final emailRegex = RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        );
+                        if (!emailRegex.hasMatch(email)) {
+                          return 'Invalid email format';
+                        }
+                        return null;
                       },
-                      child: const Text('Sign Up'),
+                    ),
+                    const SizedBox(height: 16),
+                    AuthTextField(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      icon: Icons.lock_outline,
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              rememberMe = value ?? true;
+                            });
+                          },
+                        ),
+                        const Text(
+                          'Remember me',
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/forgot-password');
+                          },
+                          child: const Text('Forgot password?'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _onSignIn,
+                      child: const Text('Sign In'),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(color: AppColors.divider),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text(
+                            'OR',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Divider(color: AppColors.divider),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    SocialLoginRow(
+                      onGoogleTap: _onGoogleSignIn,
+                      onFacebookTap: _onFacebookSignIn,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Don\'t have an account? ',
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/register');
+                          },
+                          child: const Text('Sign Up'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+            if (_isLoading) const Center(child: CircularProgressIndicator()),
+          ],
         ),
       ),
     );
   }
 
-void _onSignIn() async {
+  void _onSignIn() async {
     if (_formKey.currentState!.validate()) {
       try {
         final email = emailController.text.trim();
@@ -182,10 +194,8 @@ void _onSignIn() async {
 
         // Thử đăng nhập qua Supabase Auth trước
         try {
-          final authResponse = await Supabase.instance.client.auth.signInWithPassword(
-            email: email,
-            password: password,
-          );
+          final authResponse = await Supabase.instance.client.auth
+              .signInWithPassword(email: email, password: password);
 
           if (authResponse.user != null) {
             // Auth login thành công
@@ -211,12 +221,11 @@ void _onSignIn() async {
             const SnackBar(content: Text("Sai thông tin đăng nhập")),
           );
         }
-
       } catch (e) {
         print('Error: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Lỗi: $e")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
       }
     }
   }
@@ -237,28 +246,54 @@ void _onSignIn() async {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Lỗi: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
+    }
+  }
+
+  void _onGoogleSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      await _authRepository.signInWithGoogle();
+      // Auth state listener in main.dart handles navigation
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Google Sign-In Error: $e")));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _onFacebookSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      await _authRepository.signInWithFacebook();
+      // Auth state listener in main.dart handles navigation
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Facebook Login Error: $e")));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   void _navigateToHome(String roleString) {
-  UserRole role;
+    UserRole role;
 
-  if (roleString == 'employer') {
-    role = UserRole.employer;
-  } else if (roleString == 'admin') {
-    role = UserRole.admin;
-  } else {
-    role = UserRole.candidate;
+    if (roleString == 'employer') {
+      role = UserRole.employer;
+    } else if (roleString == 'admin') {
+      role = UserRole.admin;
+    } else {
+      role = UserRole.candidate;
+    }
+
+    // Luôn vào /main để AppShell xử lý bottom nav
+    Navigator.pushReplacementNamed(context, '/main', arguments: role);
   }
-
-  // Luôn vào /main để AppShell xử lý bottom nav
-  Navigator.pushReplacementNamed(
-    context,
-    '/main',
-    arguments: role,
-  );
-}
 }

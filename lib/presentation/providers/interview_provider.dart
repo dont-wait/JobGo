@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:jobgo/data/models/interview_schedule_model.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
@@ -75,24 +74,24 @@ class InterviewProvider extends ChangeNotifier {
       cId: cId,
       jId: jId,
     );
-  //   // 2. Lấy job title
-  // final jobRow = await supabase
-  //     .from('jobs')
-  //     .select('j_title')
-  //     .eq('j_id', jId)
-  //     .maybeSingle();
+    //   // 2. Lấy job title
+    // final jobRow = await supabase
+    //     .from('jobs')
+    //     .select('j_title')
+    //     .eq('j_id', jId)
+    //     .maybeSingle();
 
-  // final jobTitle = jobRow?['j_title'] ?? 'một vị trí';
+    // final jobTitle = jobRow?['j_title'] ?? 'một vị trí';
 
-  // // 3. Gọi NotificationRepository để gửi thông báo
-  // await NotificationRepository().sendInterviewNotification(
-  //   candidateId: cId,
-  //   jobTitle: jobTitle,
-  // );
+    // // 3. Gọi NotificationRepository để gửi thông báo
+    // await NotificationRepository().sendInterviewNotification(
+    //   candidateId: cId,
+    //   jobTitle: jobTitle,
+    // );
 
-  // // 4. Reload schedules
-  // await loadSchedules();
-  // 2. Lấy job title qua repo
+    // // 4. Reload schedules
+    // await loadSchedules();
+    // 2. Lấy job title qua repo
     final jobTitle = await _interviewRepo.getJobTitle(jId);
 
     // 3. Gọi NotificationRepository để gửi thông báo
@@ -106,10 +105,7 @@ class InterviewProvider extends ChangeNotifier {
   }
 
   Future<void> deleteSchedule(int id) async {
-    await supabase
-        .from('interview_schedule')
-        .delete()
-        .eq('i_id', id);
+    await supabase.from('interview_schedule').delete().eq('i_id', id);
   }
 
   // Future<void> loadCandidateSchedules() async {
@@ -174,7 +170,9 @@ class InterviewProvider extends ChangeNotifier {
       if (cId == null) return;
 
       final data = await _candidateRepo.loadCandidateSchedules(cId);
-      candidateSchedules = data.map((e) => InterviewScheduleModel.fromMap(e)).toList();
+      candidateSchedules = data
+          .map((e) => InterviewScheduleModel.fromMap(e))
+          .toList();
     } catch (e) {
       print('Error loading candidate schedules: $e');
     } finally {
@@ -213,5 +211,11 @@ class InterviewProvider extends ChangeNotifier {
       rethrow;
     }
   }
-  
+
+  void clearSchedules() {
+    schedules = [];
+    candidateSchedules = [];
+    isLoading = false;
+    notifyListeners();
+  }
 }
