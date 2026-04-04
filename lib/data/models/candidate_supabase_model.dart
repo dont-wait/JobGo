@@ -124,8 +124,11 @@ class CandidateSupabaseModel {
 
   String get displayTitle => _cleanValue(title, fallback: displayExperience);
 
-  String get displaySummary =>
-      _cleanValue(summary, fallback: displayExperience);
+  String get cleanSummary => _cleanValue(summary, fallback: '');
+
+  bool get hasSummary => cleanSummary.isNotEmpty;
+
+  String get displaySummary => cleanSummary;
 
   String get displayHeadline {
     final roleTitle = _cleanValue(title, fallback: '');

@@ -19,8 +19,7 @@ class CandidateCardWidget extends StatelessWidget {
     final skills = candidate.skillList.isEmpty
         ? const ['No skills listed']
         : candidate.skillList.take(4).toList();
-    final headline = candidate.displayHeadline;
-    final hasSummary = (candidate.summary?.trim().isNotEmpty ?? false);
+    final hasSummary = candidate.hasSummary;
 
     return Material(
       color: Colors.transparent,
@@ -63,7 +62,7 @@ class CandidateCardWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          headline,
+                          candidate.displayHeadline,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -75,7 +74,7 @@ class CandidateCardWidget extends StatelessWidget {
                         if (hasSummary) ...[
                           const SizedBox(height: 4),
                           Text(
-                            candidate.displaySummary,
+                            candidate.cleanSummary,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(

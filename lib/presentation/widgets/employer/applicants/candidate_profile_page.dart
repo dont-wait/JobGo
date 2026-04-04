@@ -392,10 +392,18 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         ),
         const SizedBox(height: 12),
         _buildSectionCard(
-          child: Text(
-            widget.candidate.displaySummary,
-            style: const TextStyle(height: 1.6, color: AppColors.textSecondary),
-          ),
+          child: widget.candidate.hasSummary
+              ? Text(
+                  widget.candidate.cleanSummary,
+                  style: const TextStyle(
+                    height: 1.6,
+                    color: AppColors.textSecondary,
+                  ),
+                )
+              : const Text(
+                  'No profile summary provided.',
+                  style: TextStyle(height: 1.6, color: AppColors.textSecondary),
+                ),
         ),
         const SizedBox(height: 20),
         const Text(
