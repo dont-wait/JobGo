@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/constants/job_categories.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/employment_type_selector.dart';
 
@@ -24,6 +25,7 @@ class Step1JobDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final availableCategories = List<String>.from(categoryOptions);
     if (selectedCategory.isNotEmpty &&
         selectedCategory != JobCategories.defaultCategory &&
@@ -34,25 +36,30 @@ class Step1JobDetailsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Job Title', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text(loc.jobTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         TextField(
           controller: jobTitleController,
-          decoration: const InputDecoration(
-            hintText: 'e.g. Senior Flutter Developer',
+          decoration: InputDecoration(
+            hintText: '${loc.example}: Senior Flutter Developer',
           ),
         ),
         const SizedBox(height: 20),
 
-        const Text(
-          'Job Category',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          loc.selectCategory,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: selectedCategory,
           items: availableCategories
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .map(
+                (e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(e == 'Select Category' ? loc.selectCategory : e),
+                ),
+              )
               .toList(),
           onChanged: (v) {
             if (v != null) {
@@ -69,7 +76,7 @@ class Step1JobDetailsWidget extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        const Text('Location', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text(loc.location, style: const TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         TextField(
           controller: locationController,

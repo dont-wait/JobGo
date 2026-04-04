@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/providers/job_search_controller.dart';
 
 class JobFilterBottomSheet extends StatefulWidget {
@@ -98,6 +99,7 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
@@ -125,9 +127,9 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Filters',
-                      style: TextStyle(
+                    Text(
+                      loc.filters,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -135,8 +137,8 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                     GestureDetector(
                       onTap: _clearAll,
                       child: Text(
-                        'Clear All',
-                        style: TextStyle(
+                        loc.clearAll,
+                        style: const TextStyle(
                           color: AppColors.primary,
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -152,38 +154,38 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Job Type',
-                      style: TextStyle(
+                    Text(
+                      loc.employmentType,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 12),
                     _buildJobTypeCheckbox(
-                      'Full-time',
+                      loc.fullTime,
                       fullTime,
                       (val) => setState(() => fullTime = val ?? false),
                     ),
                     _buildJobTypeCheckbox(
-                      'Part-time',
+                      loc.partTime,
                       partTime,
                       (val) => setState(() => partTime = val ?? false),
                     ),
                     _buildJobTypeCheckbox(
-                      'Remote',
+                      loc.remote,
                       remote,
                       (val) => setState(() => remote = val ?? false),
                     ),
                     _buildJobTypeCheckbox(
-                      'Contract',
+                      loc.contract,
                       contract,
                       (val) => setState(() => contract = val ?? false),
                     ),
                     const SizedBox(height: 28),
-                    const Text(
-                      'Salary Range',
-                      style: TextStyle(
+                    Text(
+                      loc.salaryRange,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -219,9 +221,9 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                       children: [Text('\$0'), Text('\$10,000+')],
                     ),
                     const SizedBox(height: 28),
-                    const Text(
-                      'Experience Level',
-                      style: TextStyle(
+                    Text(
+                      loc.experienceLevel,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -230,46 +232,54 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: ['Entry', 'Mid', 'Senior', 'Lead'].map((level) {
-                        final isSelected = selectedExperiences.contains(level);
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (isSelected) {
-                                selectedExperiences.remove(level);
-                              } else {
-                                selectedExperiences.add(level);
-                              }
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.lightBackground,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Text(
+                      children:
+                          [
+                            loc.entryLevel,
+                            loc.midLevel,
+                            loc.seniorLevel,
+                            loc.leadLevel,
+                          ].map((level) {
+                            final isSelected = selectedExperiences.contains(
                               level,
-                              style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.textPrimary,
-                                fontWeight: FontWeight.w500,
+                            );
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (isSelected) {
+                                    selectedExperiences.remove(level);
+                                  } else {
+                                    selectedExperiences.add(level);
+                                  }
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.lightBackground,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Text(
+                                  level,
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? Colors.white
+                                        : AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
                     ),
                     const SizedBox(height: 28),
-                    const Text(
-                      'Location',
-                      style: TextStyle(
+                    Text(
+                      loc.location,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -286,14 +296,14 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                       ),
                       child: TextField(
                         controller: locationController,
-                        decoration: const InputDecoration(
-                          icon: Icon(
+                        decoration: InputDecoration(
+                          icon: const Icon(
                             Icons.location_on_outlined,
                             color: AppColors.textHint,
                           ),
                           border: InputBorder.none,
-                          hintText: 'Enter city, state or country',
-                          hintStyle: TextStyle(color: AppColors.textHint),
+                          hintText: loc.enterLocationHint,
+                          hintStyle: const TextStyle(color: AppColors.textHint),
                         ),
                       ),
                     ),
@@ -309,9 +319,9 @@ class _JobFilterBottomSheetState extends State<JobFilterBottomSheet> {
                           ),
                         ),
                         onPressed: _applyFilters,
-                        child: const Text(
-                          'Show Results',
-                          style: TextStyle(
+                        child: Text(
+                          loc.showResults,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

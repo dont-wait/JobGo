@@ -3,6 +3,9 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/presentation/providers/locale_provider.dart';
 import 'package:jobgo/presentation/providers/admin_provider.dart';
 import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
@@ -70,6 +73,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(
           create: (_) => BookmarkProvider()..loadInitialBookmarks(),
         ),
@@ -175,36 +179,52 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: 'JobGo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      // Giữ scrollBehavior từ file gốc
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
-      ),
-      home: const AuthWrapper(),
-      onGenerateRoute: (settings) {
-        if (settings.name == '/main') {
-          UserRole role = UserRole.candidate;
-          if (settings.arguments is UserRole) {
-            role = settings.arguments as UserRole;
-          } else if (settings.arguments is Map<String, dynamic>) {
-            final args = settings.arguments as Map<String, dynamic>;
-            role = (args['role'] as UserRole?) ?? UserRole.candidate;
-          }
-          return MaterialPageRoute(
-            settings: settings,
-            builder: (_) => AppShell(role: role),
-          );
-        }
-        return null;
-      },
-      routes: {
-        '/login': (context) => const LoginPage(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/register': (context) => const RegisterRolePage(),
+    return Consumer<LocaleProvider>(
+      builder: (context, localeProvider, _) {
+        return MaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'JobGo',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          // Giữ scrollBehavior từ file gốc
+          scrollBehavior: const MaterialScrollBehavior().copyWith(
+            dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
+          ),
+          // Tích hợp localization
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('vi'),
+          ],
+          locale: localeProvider.locale,
+          home: const AuthWrapper(),
+          onGenerateRoute: (settings) {
+            if (settings.name == '/main') {
+              UserRole role = UserRole.candidate;
+              if (settings.arguments is UserRole) {
+                role = settings.arguments as UserRole;
+              } else if (settings.arguments is Map<String, dynamic>) {
+                final args = settings.arguments as Map<String, dynamic>;
+                role = (args['role'] as UserRole?) ?? UserRole.candidate;
+              }
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (_) => AppShell(role: role),
+              );
+            }
+            return null;
+          },
+          routes: {
+            '/login': (context) => const LoginPage(),
+            '/forgot-password': (context) => const ForgotPasswordScreen(),
+            '/register': (context) => const RegisterRolePage(),
+          },
+        );
       },
     );
   }

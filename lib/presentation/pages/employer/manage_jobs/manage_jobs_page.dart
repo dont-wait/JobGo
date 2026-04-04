@@ -11,6 +11,7 @@ import 'package:jobgo/presentation/widgets/employer/manage_jobs/job_status_tab_b
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/post_new_job_banner.dart';
 import 'package:jobgo/presentation/widgets/employer/manage_jobs/published_job_card.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/post_job_page.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class ManageJobsPage extends StatefulWidget {
   const ManageJobsPage({super.key});
@@ -108,19 +109,20 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
   Future<void> _reopenJob(EmployerJobModel job) async {
     if (job.id == null) return;
 
+    final loc = AppLocalizations.of(context);
     final shouldReopen = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reopen job?'),
-        content: Text('Reopen ${job.title.isEmpty ? 'this job' : job.title}?'),
+        title: Text(loc.reopenJobTitle),
+        content: Text(loc.reopenJobConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reopen'),
+            child: Text(loc.ok),
           ),
         ],
       ),
@@ -131,9 +133,9 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
     try {
       await _repository.reopenJob(job.id!);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Job reopened successfully.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.jobReopenedSuccess)));
       await _loadJobs(refresh: true);
     } catch (e) {
       if (!mounted) return;
@@ -146,21 +148,22 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
   Future<void> _deleteJob(EmployerJobModel job) async {
     if (job.id == null) return;
 
+    final loc = AppLocalizations.of(context);
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete job?'),
-        content: Text('Delete ${job.title.isEmpty ? 'this job' : job.title}?'),
+        title: Text(loc.deleteJobTitle),
+        content: Text(loc.deleteJobConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: AppColors.error),
+            child: Text(
+              loc.delete,
+              style: const TextStyle(color: AppColors.error),
             ),
           ),
         ],
@@ -174,7 +177,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Job deleted.')));
+      ).showSnackBar(SnackBar(content: Text(loc.jobDeleted)));
       await _loadJobs(refresh: true);
     } catch (e) {
       if (!mounted) return;
@@ -223,7 +226,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
           ElevatedButton(
             onPressed: _openCreateJob,
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.orange),
-            child: const Text('Post New Job'),
+            child: Text(AppLocalizations.of(context).postNewJob),
           ),
         ],
       ),
@@ -260,7 +263,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => _loadJobs(refresh: true),
-                  child: const Text('Retry'),
+                  child: Text(AppLocalizations.of(context).retryButton),
                 ),
               ],
             ),
@@ -278,8 +281,8 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       if (_jobs.isEmpty) {
         widgets.add(
           _emptyState(
-            'No jobs yet',
-            'Create your first job post to start receiving applicants.',
+            AppLocalizations.of(context).noJobsYet,
+            AppLocalizations.of(context).createFirstJobPost,
           ),
         );
         widgets.add(const SizedBox(height: 20));
@@ -287,7 +290,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       }
 
       if (_draftJobs.isNotEmpty) {
-        widgets.add(_sectionHeader('Draft Jobs'));
+        widgets.add(_sectionHeader(AppLocalizations.of(context).draftJobs));
         for (final job in _draftJobs) {
           widgets.add(
             DraftJobCard(
@@ -301,15 +304,16 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       }
 
       if (_activeJobs.isNotEmpty) {
-        widgets.add(_sectionHeader('Active Jobs'));
+        widgets.add(_sectionHeader(AppLocalizations.of(context).activeJobs));
         for (final job in _activeJobs) {
           widgets.add(
             PublishedJobCard(
               job: job,
               onEdit: () => _openEditJob(job),
               onBoost: () {
+                final l = AppLocalizations.of(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Boost feature coming soon.')),
+                  SnackBar(content: Text(l.boostFeatureComingSoon)),
                 );
               },
             ),
@@ -319,7 +323,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       }
 
       if (_closedJobs.isNotEmpty) {
-        widgets.add(_sectionHeader('Closed Jobs'));
+        widgets.add(_sectionHeader(AppLocalizations.of(context).closedJobs));
         for (final job in _closedJobs) {
           widgets.add(
             ClosedJobCard(
@@ -347,8 +351,8 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
     if (filteredJobs.isEmpty) {
       widgets.add(
         _emptyState(
-          'No jobs in this tab yet',
-          'Try creating a new job post or switch to another tab.',
+          AppLocalizations.of(context).noJobsInTab,
+          AppLocalizations.of(context).tryCreatingNewJob,
         ),
       );
       widgets.add(const SizedBox(height: 20));
@@ -361,9 +365,10 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
           job: job,
           onEdit: () => _openEditJob(job),
           onBoost: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Boost feature coming soon.')),
-            );
+            final l = AppLocalizations.of(context);
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l.boostFeatureComingSoon)));
           },
         ),
         2 => ClosedJobCard(
@@ -393,9 +398,9 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         backgroundColor: AppColors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Manage Jobs',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context).manageJobs,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class MessagesPage extends StatelessWidget {
@@ -72,10 +72,13 @@ class MessagesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pinned =
-        _threads.where((thread) => thread.isPinned).toList(growable: false);
-    final others =
-        _threads.where((thread) => !thread.isPinned).toList(growable: false);
+    final loc = AppLocalizations.of(context);
+    final pinned = _threads
+        .where((thread) => thread.isPinned)
+        .toList(growable: false);
+    final others = _threads
+        .where((thread) => !thread.isPinned)
+        .toList(growable: false);
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
@@ -85,25 +88,26 @@ class MessagesPage extends StatelessWidget {
           SafeArea(
             child: CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(child: _buildHeader()),
-                SliverToBoxAdapter(child: _buildSearch()),
-                SliverToBoxAdapter(child: _buildFilters()),
+                SliverToBoxAdapter(child: _buildHeader(loc)),
+                SliverToBoxAdapter(child: _buildSearch(loc)),
+                SliverToBoxAdapter(child: _buildFilters(loc)),
                 SliverToBoxAdapter(
-                  child: _buildSectionHeader('Ghim', pinned.length),
+                  child: _buildSectionHeader(loc.pinnedLabel, pinned.length),
                 ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) =>
-                        _MessageTile(thread: pinned[index]),
+                        _MessageTile(thread: pinned[index], loc: loc),
                     childCount: pinned.length,
                   ),
                 ),
                 SliverToBoxAdapter(
-                  child: _buildSectionHeader('Tất cả', others.length),
+                  child: _buildSectionHeader(loc.allLabel, others.length),
                 ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) => _MessageTile(thread: others[index]),
+                    (context, index) =>
+                        _MessageTile(thread: others[index], loc: loc),
                     childCount: others.length,
                   ),
                 ),
@@ -142,32 +146,32 @@ class MessagesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations loc) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tin nhắn',
-                  style: TextStyle(
+                  loc.messagesTitle,
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Từ nhà tuyển dụng',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  loc.fromRecruiters,
+                  style: const TextStyle(color: AppColors.textSecondary),
                 ),
               ],
             ),
           ),
-          _CircleIconButton(icon: Icons.tune),
+          const _CircleIconButton(icon: Icons.tune),
           const SizedBox(width: 12),
           const ProfileAvatar(role: UserRole.candidate),
         ],
@@ -175,7 +179,7 @@ class MessagesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSearch() {
+  Widget _buildSearch(AppLocalizations loc) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 6, 20, 12),
       child: Container(
@@ -192,34 +196,34 @@ class MessagesPage extends StatelessWidget {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.search, color: AppColors.textHint),
-            SizedBox(width: 10),
+            const Icon(Icons.search, color: AppColors.textHint),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Tìm kiếm tin nhắn, công ty... ',
-                style: TextStyle(color: AppColors.textHint),
+                loc.searchMessagesHint,
+                style: const TextStyle(color: AppColors.textHint),
               ),
             ),
-            Icon(Icons.mic_none, color: AppColors.textHint),
+            const Icon(Icons.mic_none, color: AppColors.textHint),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFilters() {
+  Widget _buildFilters(AppLocalizations loc) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
       child: Wrap(
         spacing: 10,
         runSpacing: 10,
-        children: const [
-          _FilterChip(label: 'Chưa đọc', isActive: true),
-          _FilterChip(label: 'Tuyển gấp', isActive: false),
-          _FilterChip(label: 'Đã phỏng vấn', isActive: false),
-          _FilterChip(label: 'Đã lưu', isActive: false),
+        children: [
+          _FilterChip(label: loc.unreadFilter, isActive: true),
+          _FilterChip(label: loc.urgentFilter, isActive: false),
+          _FilterChip(label: loc.interviewedFilter, isActive: false),
+          _FilterChip(label: loc.savedFilter, isActive: false),
         ],
       ),
     );
@@ -261,9 +265,10 @@ class MessagesPage extends StatelessWidget {
 }
 
 class _MessageTile extends StatelessWidget {
-  const _MessageTile({required this.thread});
+  const _MessageTile({required this.thread, required this.loc});
 
   final _MessageThread thread;
+  final AppLocalizations loc;
 
   @override
   Widget build(BuildContext context) {
@@ -380,10 +385,13 @@ class _MessageTile extends StatelessWidget {
                     runSpacing: 8,
                     children: [
                       if (thread.isPinned)
-                        const _Tag(label: 'Ghim', color: Color(0xFFEFF6FF)),
-                      const _Tag(
-                        label: 'Phản hồi trong 24h',
-                        color: Color(0xFFEFFAF3),
+                        _Tag(
+                          label: loc.pinnedLabel,
+                          color: const Color(0xFFEFF6FF),
+                        ),
+                      _Tag(
+                        label: loc.respondsIn24h,
+                        color: const Color(0xFFEFFAF3),
                       ),
                     ],
                   ),
@@ -544,10 +552,7 @@ class _GlowCircle extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

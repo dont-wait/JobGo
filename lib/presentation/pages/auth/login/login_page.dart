@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
+import '../../../widgets/common/language_selector_button.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../data/repositories/auth_repository.dart';
 
@@ -30,14 +32,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
-        title: const Text(
-          'Login',
-          style: TextStyle(
+        title: Text(
+          loc.login,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
@@ -47,6 +51,12 @@ class _LoginPageState extends State<LoginPage> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.maybePop(context),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: LanguageSelectorButton(isCompact: true),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Stack(
@@ -59,37 +69,37 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 8),
-                    const Text(
-                      'Welcome Back',
+                    Text(
+                      loc.welcomeBack,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Sign in to continue your job search',
+                    Text(
+                      loc.signInToContinue,
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: const TextStyle(color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: 32),
                     AuthTextField(
                       controller: emailController,
-                      hintText: 'Email Address',
+                      hintText: loc.emailAddressHint,
                       icon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Email is required';
+                          return loc.emailRequired;
                         }
                         final email = value.trim();
                         final emailRegex = RegExp(
                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                         );
                         if (!emailRegex.hasMatch(email)) {
-                          return 'Invalid email format';
+                          return loc.invalidEmailFormat;
                         }
                         return null;
                       },
@@ -97,12 +107,12 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     AuthTextField(
                       controller: passwordController,
-                      hintText: 'Password',
+                      hintText: loc.passwordHint,
                       icon: Icons.lock_outline,
                       obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Password is required';
+                          return loc.passwordRequired;
                         }
                         return null;
                       },
@@ -118,23 +128,23 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                         ),
-                        const Text(
-                          'Remember me',
-                          style: TextStyle(color: AppColors.textSecondary),
+                        Text(
+                          loc.rememberMe,
+                          style: const TextStyle(color: AppColors.textSecondary),
                         ),
                         const Spacer(),
                         TextButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/forgot-password');
                           },
-                          child: const Text('Forgot password?'),
+                          child: Text(loc.forgotPassword),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _onSignIn,
-                      child: const Text('Sign In'),
+                      child: Text(loc.signIn),
                     ),
                     const SizedBox(height: 24),
                     Row(
@@ -163,15 +173,15 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Don\'t have an account? ',
-                          style: TextStyle(color: AppColors.textSecondary),
+                        Text(
+                          '${loc.dontHaveAccount} ',
+                          style: const TextStyle(color: AppColors.textSecondary),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/register');
                           },
-                          child: const Text('Sign Up'),
+                          child: Text(loc.signUp),
                         ),
                       ],
                     ),
@@ -189,6 +199,7 @@ class _LoginPageState extends State<LoginPage> {
   void _onSignIn() async {
     if (_formKey.currentState!.validate()) {
       try {
+        final loc = AppLocalizations.of(context);
         final email = emailController.text.trim();
         final password = passwordController.text;
 
@@ -218,14 +229,15 @@ class _LoginPageState extends State<LoginPage> {
           _navigateToHome(userData['u_role'] as String);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Sai thông tin đăng nhập")),
+            SnackBar(content: Text(loc.invalidCredentials)),
           );
         }
       } catch (e) {
         print('Error: $e');
+        final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
+        ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
       }
     }
   }
@@ -241,14 +253,16 @@ class _LoginPageState extends State<LoginPage> {
       if (userData != null) {
         _navigateToHome(userData['u_role'] as String);
       } else {
+        final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Không tìm thấy thông tin người dùng")),
+          SnackBar(content: Text(loc.somethingWentWrong)),
         );
       }
     } catch (e) {
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
+      ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
     }
   }
 
@@ -259,9 +273,10 @@ class _LoginPageState extends State<LoginPage> {
       // Auth state listener in main.dart handles navigation
     } catch (e) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Google Sign-In Error: $e")));
+      ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -274,9 +289,10 @@ class _LoginPageState extends State<LoginPage> {
       // Auth state listener in main.dart handles navigation
     } catch (e) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Facebook Login Error: $e")));
+      ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 
 class ProfileTabs extends StatelessWidget {
@@ -11,16 +12,17 @@ class ProfileTabs extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const _tabs = ['Info', 'Experience', 'Skills', 'Favorites'];
-
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final tabs = [loc.info, loc.experience, loc.skills, loc.favorites];
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(
-        _tabs.length,
+        tabs.length,
         (index) => _TabItem(
-          title: _tabs[index],
+          title: tabs[index],
           isActive: currentIndex == index,
           onTap: () => onChanged(index),
         ),

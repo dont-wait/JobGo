@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/benefit_selector.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/job_summary_preview.dart';
@@ -36,9 +37,9 @@ class Step3PerksSalaryWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Salary Range',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          AppLocalizations.of(context).salaryRange,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         Row(
@@ -47,7 +48,9 @@ class Step3PerksSalaryWidget extends StatelessWidget {
               child: TextField(
                 controller: minSalaryController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Minimum (USD)'),
+                decoration: InputDecoration(
+                  labelText: '${AppLocalizations.of(context).minSalary} (USD)',
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -55,7 +58,9 @@ class Step3PerksSalaryWidget extends StatelessWidget {
               child: TextField(
                 controller: maxSalaryController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Maximum (USD)'),
+                decoration: InputDecoration(
+                  labelText: '${AppLocalizations.of(context).maxSalary} (USD)',
+                ),
               ),
             ),
           ],
@@ -66,11 +71,11 @@ class Step3PerksSalaryWidget extends StatelessWidget {
           contentPadding: EdgeInsets.zero,
           value: salaryNegotiable,
           onChanged: onSalaryNegotiableChanged,
-          title: const Text(
-            'Salary negotiable',
-            style: TextStyle(fontWeight: FontWeight.w600),
+          title: Text(
+            AppLocalizations.of(context).negotiable,
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
-          subtitle: const Text('Let candidates know salary can be discussed.'),
+          subtitle: Text(AppLocalizations.of(context).negotiableSubtitle),
         ),
         const SizedBox(height: 12),
 
@@ -80,7 +85,9 @@ class Step3PerksSalaryWidget extends StatelessWidget {
               child: TextField(
                 controller: positionsController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Open positions'),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).openPositions,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -89,9 +96,9 @@ class Step3PerksSalaryWidget extends StatelessWidget {
                 controller: deadlineController,
                 readOnly: true,
                 onTap: () => _pickDeadline(context),
-                decoration: const InputDecoration(
-                  labelText: 'Deadline',
-                  suffixIcon: Icon(Icons.calendar_month_outlined),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).applicationDeadline,
+                  suffixIcon: const Icon(Icons.calendar_month_outlined),
                 ),
               ),
             ),

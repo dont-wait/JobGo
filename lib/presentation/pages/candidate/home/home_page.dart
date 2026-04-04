@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/data/repositories/job_repository.dart';
 import 'package:jobgo/presentation/widgets/candidate/home/home_search_bar.dart';
@@ -117,15 +118,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'Home',
-          style: TextStyle(
+        title: Text(
+          loc.home,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -140,7 +142,7 @@ class _HomePageState extends State<HomePage> {
               Icons.dashboard_outlined,
               color: AppColors.textPrimary,
             ),
-            tooltip: 'Go to Dashboard',
+            tooltip: loc.dashboardTooltip,
           ),
           const ProfileAvatar(role: UserRole.candidate),
         ],
@@ -167,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                       // Recommended Jobs
                       if (_searchQuery.isEmpty &&
                           _recommendedJobs.isNotEmpty) ...[
-                        _buildSectionTitle('Recommended Jobs'),
+                        _buildSectionTitle(loc.recommendedJobsTitle),
                         const SizedBox(height: 16),
                         _buildRecommendedJobs(),
                         const SizedBox(height: 28),
@@ -175,8 +177,8 @@ class _HomePageState extends State<HomePage> {
                       // Recent Job Postings
                       _buildSectionTitle(
                         _searchQuery.isEmpty
-                            ? 'Recent Job Postings'
-                            : 'Search Results for "$_searchQuery"',
+                            ? loc.recentJobPostingsTitle
+                            : '${loc.searchResultsTitle} "$_searchQuery"',
                       ),
                       const SizedBox(height: 8),
                       _buildRecentJobs(),
@@ -224,12 +226,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildRecentJobs() {
     if (_recentJobs.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 40),
+      final loc = AppLocalizations.of(context);
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
         child: Center(
           child: Text(
-            'No jobs found',
-            style: TextStyle(color: AppColors.textSecondary),
+            loc.noJobsFoundMessage,
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
         ),
       );
@@ -265,7 +268,7 @@ class _HomePageState extends State<HomePage> {
               ? const CircularProgressIndicator()
               : TextButton(
                   onPressed: _loadMoreJobs,
-                  child: const Text('Load More'),
+                  child: Text(AppLocalizations.of(context).loadMoreButton),
                 ),
         ],
       ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_info_grid.dart';
@@ -38,10 +39,18 @@ class _JobDetailPageState extends State<JobDetailPage> {
     final profile = context.read<ProfileProvider>().candidate;
     if (profile == null) return;
 
+    final provider = context.read<ApplicationProvider>();
+
+    // Check cache first
+    if (provider.isApplied(int.parse(widget.job.id))) {
+      setState(() => _hasAlreadyApplied = true);
+      return;
+    }
+
     setState(() => _isLoadingStatus = true);
 
     try {
-      final applied = await context.read<ApplicationProvider>().hasApplied(
+      final applied = await provider.hasApplied(
         int.parse(widget.job.id),
         profile.cId,
       );
@@ -67,6 +76,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
@@ -77,9 +87,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Job Details',
-          style: TextStyle(
+        title: Text(
+          loc.jobDetails,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -169,8 +179,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
           // ── Apply Button với trạng thái applied check ──
           JobApplyButton(
             label: _hasAlreadyApplied
-                ? 'Applied'
-                : (widget.job.isOpen ? 'Apply Now' : 'Job Closed'),
+                ? loc.alreadyApplied
+                : (widget.job.isOpen ? loc.applyNow : loc.jobClosed),
             isEnabled: !_hasAlreadyApplied && widget.job.isOpen,
             isLoading: _isLoadingStatus,
             onPressed: () => navigateToApply(context, widget.job).then((_) {
@@ -280,7 +290,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
         ),
         const SizedBox(width: 6),
         Text(
-          '${widget.job.applicants ?? 0} applicant${(widget.job.applicants ?? 0) != 1 ? 's' : ''} so far',
+          '${widget.job.applicants ?? 0} ${AppLocalizations.of(context).applicantsSoFar}',
           style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
       ],
@@ -418,9 +428,9 @@ class _SavedPopupState extends State<_SavedPopup>
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Job Saved!',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context).jobSaved,
+                      style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -429,7 +439,7 @@ class _SavedPopupState extends State<_SavedPopup>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Added to your\nfavorite list',
+                      AppLocalizations.of(context).addedToFavorites,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: AppColors.textSecondary.withValues(alpha: 0.8),
