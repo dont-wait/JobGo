@@ -9,7 +9,13 @@ import 'package:provider/provider.dart';
 /// thì tự động switch sang tab Applications (index 2) trong AppShell.
 Future<void> navigateToApply(BuildContext context, JobModel job) async {
   final profileProvider = context.read<ProfileProvider>();
-  final candidate = profileProvider.candidate;
+  var candidate = profileProvider.candidate;
+
+  // If profile not loaded yet, try to load it (handles race condition)
+  if (candidate == null) {
+    await profileProvider.loadProfile();
+    candidate = profileProvider.candidate;
+  }
 
   if (candidate == null) {
     ScaffoldMessenger.of(context).showSnackBar(
