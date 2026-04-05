@@ -143,7 +143,8 @@ class JobSearchProvider extends ChangeNotifier {
       final jobsResponse = await _supabase
           .from('jobs')
           .select('*, employers(*)')
-          .or('j_status.eq.approved,j_moderation_status.eq.approved,j_status.eq.active')
+          .or('j_status.eq.active,j_moderation_status.eq.approved')
+          .neq('j_status', 'closed')
           .order('j_create_at', ascending: false)
           .limit(100);
 
