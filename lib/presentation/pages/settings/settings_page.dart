@@ -4,7 +4,11 @@ import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/routes/edit_profile_route.dart';
 import 'package:jobgo/presentation/pages/auth/forgotpassword/forgotpassword_layout.dart';
+import 'package:jobgo/presentation/providers/employer_provider.dart';
+import 'package:jobgo/presentation/providers/profile_provider.dart';
 import 'package:jobgo/presentation/widgets/common/language_selector_button.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SettingsPage extends StatefulWidget {
   /// Role của user đang đăng nhập — dùng để điều hướng đúng trang edit profile.
@@ -18,6 +22,32 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _pushNotifications = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      switch (widget.role) {
+        case UserRole.employer:
+          final employerProvider = context.read<EmployerProvider>();
+          if (employerProvider.employer == null &&
+              !employerProvider.isLoading) {
+            employerProvider.loadProfile();
+          }
+          break;
+        case UserRole.candidate:
+          final profileProvider = context.read<ProfileProvider>();
+          if (profileProvider.candidate == null && !profileProvider.isLoading) {
+            profileProvider.loadProfile();
+          }
+          break;
+        case UserRole.admin:
+          break;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,124 +72,355 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Profile card
-            _buildProfileCard(),
-            const SizedBox(height: 24),
+        child: Consumer2<EmployerProvider, ProfileProvider>(
+          builder: (context, employerProvider, profileProvider, child) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Profile card
+                _buildProfileCard(employerProvider, profileProvider),
+                const SizedBox(height: 24),
 
-            // ACCOUNT
-            _buildSectionLabel(loc.account),
-            const SizedBox(height: 8),
-            _buildMenuGroup([
-              _buildMenuItem(
-                icon: Icons.person_outline,
-                label: loc.editProfile,
-                onTap: () => navigateToEditProfile(context, widget.role),
-              ),
-              _buildMenuItem(
-                icon: Icons.lock_outline,
-                label: loc.changePassword,
-                showDivider: false,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ForgotPasswordScreen(),
+                // ACCOUNT
+                _buildSectionLabel(loc.account),
+                const SizedBox(height: 8),
+                _buildMenuGroup([
+                  _buildMenuItem(
+                    icon: Icons.person_outline,
+                    label: loc.editProfile,
+                    onTap: () => navigateToEditProfile(context, widget.role),
                   ),
+                  _buildMenuItem(
+                    icon: Icons.lock_outline,
+                    label: loc.changePassword,
+                    showDivider: false,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForgotPasswordScreen(),
+                      ),
+                    ),
+                  ),
+                ]),
+                const SizedBox(height: 20),
+
+                // LANGUAGE
+                _buildSectionLabel(loc.language),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const LanguageSelectorButton(isCompact: false),
                 ),
-              ),
-            ]),
-            const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-            // LANGUAGE
-            _buildSectionLabel(loc.language),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const LanguageSelectorButton(isCompact: false),
-            ),
-            const SizedBox(height: 20),
+                // NOTIFICATIONS
+                _buildSectionLabel(loc.notifications.toUpperCase()),
+                const SizedBox(height: 8),
+                _buildMenuGroup([
+                  _buildToggleItem(
+                    icon: Icons.notifications_active_outlined,
+                    label: loc.pushNotifications,
+                    value: _pushNotifications,
+                    onChanged: (v) => setState(() => _pushNotifications = v),
+                  ),
+                ]),
+                const SizedBox(height: 20),
 
-            // NOTIFICATIONS
-            _buildSectionLabel(loc.notifications.toUpperCase()),
-            const SizedBox(height: 8),
-            _buildMenuGroup([
-              _buildToggleItem(
-                icon: Icons.notifications_active_outlined,
-                label: loc.pushNotifications,
-                value: _pushNotifications,
-                onChanged: (v) => setState(() => _pushNotifications = v),
-              ),
-            ]),
-            const SizedBox(height: 20),
+                // PRIVACY
+                _buildSectionLabel(loc.privacy),
+                const SizedBox(height: 8),
+                _buildMenuGroup([
+                  _buildMenuItem(
+                    icon: Icons.shield_outlined,
+                    label: loc.privacyPolicy,
+                    onTap: () {},
+                  ),
+                  _buildMenuItem(
+                    icon: Icons.description_outlined,
+                    label: loc.termsOfService,
+                    onTap: () {},
+                    showDivider: false,
+                  ),
+                ]),
+                const SizedBox(height: 20),
 
-            // PRIVACY
-            _buildSectionLabel(loc.privacy),
-            const SizedBox(height: 8),
-            _buildMenuGroup([
-              _buildMenuItem(
-                icon: Icons.shield_outlined,
-                label: loc.privacyPolicy,
-                onTap: () {},
-              ),
-              _buildMenuItem(
-                icon: Icons.description_outlined,
-                label: loc.termsOfService,
-                onTap: () {},
-                showDivider: false,
-              ),
-            ]),
-            const SizedBox(height: 20),
+                // SUPPORT
+                _buildSectionLabel(loc.support),
+                const SizedBox(height: 8),
+                _buildMenuGroup([
+                  _buildMenuItem(
+                    icon: Icons.help_outline,
+                    label: loc.helpCenter,
+                    onTap: () {},
+                  ),
+                  _buildMenuItem(
+                    icon: Icons.mail_outline,
+                    label: loc.contactUs,
+                    onTap: () {},
+                    showDivider: false,
+                  ),
+                ]),
+                const SizedBox(height: 20),
 
-            // SUPPORT
-            _buildSectionLabel(loc.support),
-            const SizedBox(height: 8),
-            _buildMenuGroup([
-              _buildMenuItem(
-                icon: Icons.help_outline,
-                label: loc.helpCenter,
-                onTap: () {},
-              ),
-              _buildMenuItem(
-                icon: Icons.mail_outline,
-                label: loc.contactUs,
-                onTap: () {},
-                showDivider: false,
-              ),
-            ]),
-            const SizedBox(height: 20),
-
-            // LOGOUT
-            _buildMenuGroup([
-              _buildMenuItem(
-                icon: Icons.logout,
-                label: loc.logout,
-                iconColor: AppColors.error,
-                labelColor: AppColors.error,
-                showChevron: false,
-                showDivider: false,
-                onTap: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/login',
-                    (route) => false,
-                  );
-                },
-              ),
-            ]),
-            const SizedBox(height: 32),
-          ],
+                // LOGOUT
+                _buildMenuGroup([
+                  _buildMenuItem(
+                    icon: Icons.logout,
+                    label: loc.logout,
+                    iconColor: AppColors.error,
+                    labelColor: AppColors.error,
+                    showChevron: false,
+                    showDivider: false,
+                    onTap: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/login',
+                        (route) => false,
+                      );
+                    },
+                  ),
+                ]),
+                const SizedBox(height: 32),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildProfileCard() {
+  Widget _buildProfileCard(
+    EmployerProvider employerProvider,
+    ProfileProvider profileProvider,
+  ) {
+    switch (widget.role) {
+      case UserRole.employer:
+        return _buildEmployerProfileCard(employerProvider);
+      case UserRole.candidate:
+        return _buildCandidateProfileCard(profileProvider);
+      case UserRole.admin:
+        return _buildAdminProfileCard();
+    }
+  }
+
+  Widget _buildEmployerProfileCard(EmployerProvider provider) {
+    final employer = provider.employer;
+
+    if (provider.isLoading && employer == null) {
+      return _buildLoadingProfileCard('Loading employer profile...');
+    }
+
+    if (employer == null) {
+      return _buildUnavailableProfileCard(
+        title: 'Could not load employer profile',
+        subtitle: 'Please try again after reloading your profile.',
+        onRetry: () => provider.loadProfile(),
+      );
+    }
+
+    final displayName = _pickDisplayName(
+      employer.contactName,
+      employer.companyName,
+      fallback: 'Employer',
+    );
+    final subtitle = _joinNonEmpty([employer.companyName, employer.email]);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          _buildProfileAvatar(
+            initials: _initialsFromName(displayName),
+            backgroundColor: Color(
+              int.tryParse(employer.logoColor) ?? 0xFF1A3A4A,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                displayName,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: 2),
+              SizedBox(
+                width: 220,
+                child: Text(
+                  subtitle.isEmpty ? 'Employer account' : subtitle,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCandidateProfileCard(ProfileProvider provider) {
+    final candidate = provider.candidate;
+
+    if (provider.isLoading && candidate == null) {
+      return _buildLoadingProfileCard('Loading candidate profile...');
+    }
+
+    if (candidate == null) {
+      return _buildUnavailableProfileCard(
+        title: 'Could not load candidate profile',
+        subtitle: 'Please try again after reloading your profile.',
+        onRetry: () => provider.loadProfile(),
+      );
+    }
+
+    final displayName = candidate.displayName;
+    final subtitle = _joinNonEmpty([
+      candidate.displayHeadline,
+      candidate.displayEmail,
+    ]);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          _buildProfileAvatar(
+            initials: candidate.initials,
+            backgroundColor: AppColors.primary,
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                displayName,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              SizedBox(
+                width: 220,
+                child: Text(
+                  subtitle.isEmpty ? 'Candidate account' : subtitle,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdminProfileCard() {
+    final authUser = Supabase.instance.client.auth.currentUser;
+    final displayName = authUser?.email?.split('@').first ?? 'Administrator';
+    final subtitle = authUser?.email ?? 'Admin account';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          _buildProfileAvatar(
+            initials: _initialsFromName(displayName),
+            backgroundColor: AppColors.textSecondary,
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                displayName,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              SizedBox(
+                width: 220,
+                child: Text(
+                  subtitle,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingProfileCard(String message) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 52,
+            height: 52,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUnavailableProfileCard({
+    required String title,
+    required String subtitle,
+    required VoidCallback onRetry,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -176,33 +437,92 @@ class _SettingsPageState extends State<SettingsPage> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
-              Icons.person_outline,
+              Icons.person_off_outlined,
               color: AppColors.textSecondary,
               size: 28,
             ),
           ),
           const SizedBox(width: 16),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Alex Johnson',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                'Senior Product Designer',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(onPressed: onRetry, child: const Text('Retry')),
+              ],
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildProfileAvatar({
+    required String initials,
+    required Color backgroundColor,
+  }) {
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        initials,
+        style: const TextStyle(
+          color: AppColors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  String _pickDisplayName(
+    String? primary,
+    String secondary, {
+    required String fallback,
+  }) {
+    final primaryText = primary?.trim() ?? '';
+    if (primaryText.isNotEmpty) return primaryText;
+
+    final secondaryText = secondary.trim();
+    if (secondaryText.isNotEmpty) return secondaryText;
+
+    return fallback;
+  }
+
+  String _joinNonEmpty(List<String?> values) {
+    return values
+        .where((value) => value != null && value.trim().isNotEmpty)
+        .map((value) => value!.trim())
+        .join(' • ');
+  }
+
+  String _initialsFromName(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return 'JG';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
+        .toUpperCase();
   }
 
   Widget _buildSectionLabel(String label) {

@@ -17,6 +17,8 @@ class ApplicationsPage extends StatefulWidget {
 class _ApplicationsPageState extends State<ApplicationsPage>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tabController;
+  int? _lastLoadedCandidateId;
+  bool _loadQueued = false;
 
   @override
   void initState() {
@@ -30,17 +32,31 @@ class _ApplicationsPageState extends State<ApplicationsPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _refreshApplications();
+      _lastLoadedCandidateId = null;
+      _refreshApplications(force: true);
     }
   }
 
-  void _refreshApplications() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  void _refreshApplications({bool force = false}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
 
       final profile = context.read<ProfileProvider>().candidate;
-      if (profile != null) {
-        context.read<ApplicationProvider>().fetchMyApplications(profile.cId);
+      if (profile == null) return;
+      if (_loadQueued) return;
+      if (!force && _lastLoadedCandidateId == profile.cId) return;
+
+      _loadQueued = true;
+      _lastLoadedCandidateId = profile.cId;
+
+      try {
+        await context.read<ApplicationProvider>().fetchMyApplications(
+          profile.cId,
+        );
+      } finally {
+        if (mounted) {
+          _loadQueued = false;
+        }
       }
     });
   }
@@ -107,14 +123,11 @@ class _ApplicationsPageState extends State<ApplicationsPage>
                 return Center(child: Text(provider.error!));
               }
 
-              final allApps = provider.applications;
-
-              // Only fetch if empty to avoid infinite loops, or use a better strategy
-              if (allApps.isEmpty && !provider.isLoading) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  provider.fetchMyApplications(profile.cId);
-                });
+              if (_lastLoadedCandidateId != profile.cId && !_loadQueued) {
+                _refreshApplications();
               }
+
+              final allApps = provider.applications;
 
               // Filter by tab
               final appliedApps = allApps

@@ -36,6 +36,19 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
   }
 
   Future<void> _loadApplicants({bool refresh = false}) async {
+    final jobId = widget.jobId.trim();
+    if (jobId.isEmpty) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Job không hợp lệ.';
+        _allApplications = [];
+        _filteredApplications = [];
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       if (!refresh) {
@@ -229,11 +242,10 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: _filteredApplications.length,
-      itemBuilder: (context, index) =>
-          ApplicantCard(
-            application: _filteredApplications[index],
-            onApplicationChanged: () => _loadApplicants(refresh: true),
-          ),
+      itemBuilder: (context, index) => ApplicantCard(
+        application: _filteredApplications[index],
+        onApplicationChanged: () => _loadApplicants(refresh: true),
+      ),
     );
   }
 }
