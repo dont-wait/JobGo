@@ -15,16 +15,29 @@ class ApplicationsPage extends StatefulWidget {
 }
 
 class _ApplicationsPageState extends State<ApplicationsPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addObserver(this);
 
-    // Fetch applications on init
+    _refreshApplications();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshApplications();
+    }
+  }
+
+  void _refreshApplications() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       final profile = context.read<ProfileProvider>().candidate;
       if (profile != null) {
         context.read<ApplicationProvider>().fetchMyApplications(profile.cId);
@@ -34,6 +47,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     super.dispose();
   }

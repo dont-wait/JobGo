@@ -6,8 +6,13 @@ import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile
 
 class ApplicantCard extends StatelessWidget {
   final JobApplicantModel application;
+  final VoidCallback? onApplicationChanged;
 
-  const ApplicantCard({super.key, required this.application});
+  const ApplicantCard({
+    super.key,
+    required this.application,
+    this.onApplicationChanged,
+  });
 
   String get badgeText => application.statusLabel;
 
@@ -66,7 +71,7 @@ class ApplicantCard extends StatelessWidget {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: badgeColor.withOpacity(0.1),
+                            color: badgeColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -112,15 +117,20 @@ class ApplicantCard extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CandidateProfilePage(
-                        candidate: candidate,
-                        application: application,
+                  onPressed: () async {
+                    final updated = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CandidateProfilePage(
+                          candidate: candidate,
+                          application: application,
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                    if (updated == true) {
+                      onApplicationChanged?.call();
+                    }
+                  },
                   child: const Text('View Profile'),
                 ),
               ),

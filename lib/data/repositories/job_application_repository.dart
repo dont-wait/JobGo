@@ -23,6 +23,9 @@ class JobApplicationRepository {
           (row) =>
               JobApplicantModel.fromJson(Map<String, dynamic>.from(row as Map)),
         )
+        .where(
+          (application) => application.status != ApplicationStatus.withdrawn,
+        )
         .toList();
   }
 

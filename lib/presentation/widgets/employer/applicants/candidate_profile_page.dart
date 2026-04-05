@@ -842,7 +842,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               const SnackBar(content: Text('Candidate rejected successfully.')),
             );
             // Go back to applicants list after rejection
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
