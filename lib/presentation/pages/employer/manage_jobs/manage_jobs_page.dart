@@ -145,15 +145,15 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
     }
   }
 
-  Future<void> _deleteJob(EmployerJobModel job) async {
+  Future<void> _closeJob(EmployerJobModel job) async {
     if (job.id == null) return;
 
     final loc = AppLocalizations.of(context);
-    final shouldDelete = await showDialog<bool>(
+    final shouldClose = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(loc.deleteJobTitle),
-        content: Text(loc.deleteJobConfirm),
+        title: Text(loc.closeJobTitle),
+        content: Text(loc.closeJobConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -161,23 +161,20 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              loc.delete,
-              style: const TextStyle(color: AppColors.error),
-            ),
+            child: Text(loc.close),
           ),
         ],
       ),
     );
 
-    if (shouldDelete != true) return;
+    if (shouldClose != true) return;
 
     try {
-      await _repository.deleteJob(job.id!);
+      await _repository.closeJob(job.id!);
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(loc.jobDeleted)));
+      ).showSnackBar(SnackBar(content: Text(loc.jobClosedSuccess)));
       await _loadJobs(refresh: true);
     } catch (e) {
       if (!mounted) return;
@@ -296,7 +293,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
             DraftJobCard(
               job: job,
               onResume: () => _openEditJob(job),
-              onDelete: () => _deleteJob(job),
+              onClose: () => _closeJob(job),
             ),
           );
           widgets.add(const SizedBox(height: 16));
@@ -310,12 +307,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
             PublishedJobCard(
               job: job,
               onEdit: () => _openEditJob(job),
-              onBoost: () {
-                final l = AppLocalizations.of(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l.boostFeatureComingSoon)),
-                );
-              },
+              onClose: () => _closeJob(job),
             ),
           );
           widgets.add(const SizedBox(height: 16));
@@ -329,7 +321,6 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
             ClosedJobCard(
               job: job,
               onReopen: () => _reopenJob(job),
-              onDelete: () => _deleteJob(job),
               onViewHistory: () {},
             ),
           );
@@ -364,22 +355,16 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         1 => PublishedJobCard(
           job: job,
           onEdit: () => _openEditJob(job),
-          onBoost: () {
-            final l = AppLocalizations.of(context);
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(l.boostFeatureComingSoon)));
-          },
+          onClose: () => _closeJob(job),
         ),
         2 => ClosedJobCard(
           job: job,
           onReopen: () => _reopenJob(job),
-          onDelete: () => _deleteJob(job),
         ),
         3 => DraftJobCard(
           job: job,
           onResume: () => _openEditJob(job),
-          onDelete: () => _deleteJob(job),
+          onClose: () => _closeJob(job),
         ),
         _ => const SizedBox.shrink(),
       });

@@ -6,14 +6,12 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 class ClosedJobCard extends StatelessWidget {
   final EmployerJobModel job;
   final VoidCallback onReopen;
-  final VoidCallback onDelete;
   final VoidCallback? onViewHistory;
 
   const ClosedJobCard({
     super.key,
     required this.job,
     required this.onReopen,
-    required this.onDelete,
     this.onViewHistory,
   });
 
@@ -94,20 +92,15 @@ class ClosedJobCard extends StatelessWidget {
                   onPressed: onReopen,
                   icon: const Icon(Icons.refresh, size: 18),
                   label: const Text('Reopen'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onDelete,
-                  icon: const Icon(
-                    Icons.delete_outline,
-                    size: 18,
-                    color: AppColors.error,
-                  ),
-                  label: const Text(
-                    'Delete',
-                    style: TextStyle(color: AppColors.error),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    backgroundColor: AppColors.primary.withOpacity(0.05),
+                    side: const BorderSide(color: AppColors.primary, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(double.infinity, 48),
                   ),
                 ),
               ),

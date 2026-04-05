@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
+import 'package:jobgo/data/repositories/job_application_repository.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
 
 class CandidateProfilePage extends StatefulWidget {
@@ -772,10 +773,39 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   }
 
   Future<void> _shortlistCandidate() async {
-    _showSnackBar('Candidate shortlisted.');
+    if (widget.application == null) return;
+
+    try {
+      final repository = JobApplicationRepository();
+      final success = await repository.shortlistApplication(
+        widget.application!.applicationId,
+      );
+
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Candidate shortlisted successfully.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to shortlist candidate. Please try again.'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _confirmRejectCandidate() async {
+    if (widget.application == null) return;
+
     final shouldReject = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -800,7 +830,34 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     );
 
     if (shouldReject == true) {
-      _showSnackBar('Candidate rejected.');
+      try {
+        final repository = JobApplicationRepository();
+        final success = await repository.rejectApplication(
+          widget.application!.applicationId,
+        );
+
+        if (mounted) {
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Candidate rejected successfully.')),
+            );
+            // Go back to applicants list after rejection
+            Navigator.pop(context);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to reject candidate. Please try again.'),
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      }
     }
   }
 

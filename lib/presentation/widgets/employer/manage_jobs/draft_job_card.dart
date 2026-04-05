@@ -6,13 +6,13 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 class DraftJobCard extends StatelessWidget {
   final EmployerJobModel job;
   final VoidCallback onResume;
-  final VoidCallback onDelete;
+  final VoidCallback onClose;
 
   const DraftJobCard({
     super.key,
     required this.job,
     required this.onResume,
-    required this.onDelete,
+    required this.onClose,
   });
 
   @override
@@ -80,13 +80,31 @@ class DraftJobCard extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(double.infinity, 48),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-              IconButton(
-                onPressed: onDelete,
-                icon: const Icon(Icons.delete_outline, color: AppColors.error),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onClose,
+                  icon: const Icon(Icons.close, size: 18),
+                  label: const Text('Close'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.orange,
+                    backgroundColor: Colors.orange.withOpacity(0.1),
+                    side: const BorderSide(color: Colors.orange, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                ),
               ),
             ],
           ),

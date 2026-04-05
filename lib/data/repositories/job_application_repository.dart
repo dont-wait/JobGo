@@ -142,4 +142,30 @@ class JobApplicationRepository {
       return false;
     }
   }
+
+  Future<bool> rejectApplication(int applicationId) async {
+    try {
+      await _supabase
+          .from('applications')
+          .update({'a_status': 'rejected'})
+          .eq('a_id', applicationId);
+      return true;
+    } catch (e) {
+      dev.log('Error rejecting application: $e');
+      return false;
+    }
+  }
+
+  Future<bool> shortlistApplication(int applicationId) async {
+    try {
+      await _supabase
+          .from('applications')
+          .update({'a_status': 'shortlisted'})
+          .eq('a_id', applicationId);
+      return true;
+    } catch (e) {
+      dev.log('Error shortlisting application: $e');
+      return false;
+    }
+  }
 }

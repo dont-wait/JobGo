@@ -62,6 +62,7 @@ class AppLocalizations {
   String get save => translate('save');
   String get cancel => translate('cancel');
   String get delete => translate('delete');
+  String get close => translate('close');
   String get edit => translate('edit');
   String get info => translate('info');
   String get favorites => translate('favorites');
@@ -128,7 +129,6 @@ class AppLocalizations {
   String get tryAgain => translate('tryAgain');
   String get noInternetConnection => translate('noInternetConnection');
   String get somethingWentWrong => translate('somethingWentWrong');
-  String get close => translate('close');
   String get open => translate('open');
   String get yes => translate('yes');
   String get no => translate('no');
@@ -324,8 +324,11 @@ class AppLocalizations {
   String get reopenJobConfirm => translate('reopenJobConfirm');
   String get deleteJobTitle => translate('deleteJobTitle');
   String get deleteJobConfirm => translate('deleteJobConfirm');
+  String get closeJobTitle => translate('closeJobTitle');
+  String get closeJobConfirm => translate('closeJobConfirm');
   String get jobReopenedSuccess => translate('jobReopenedSuccess');
   String get jobDeleted => translate('jobDeleted');
+  String get jobClosedSuccess => translate('jobClosedSuccess');
   String get noJobsInTab => translate('noJobsInTab');
   String get tryCreatingNewJob => translate('tryCreatingNewJob');
   String get boostFeatureComingSoon => translate('boostFeatureComingSoon');

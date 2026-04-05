@@ -7,13 +7,13 @@ import 'package:jobgo/presentation/widgets/employer/applicants/job_applicants_pa
 class PublishedJobCard extends StatelessWidget {
   final EmployerJobModel job;
   final VoidCallback onEdit;
-  final VoidCallback onBoost;
+  final VoidCallback onClose;
 
   const PublishedJobCard({
     super.key,
     required this.job,
     required this.onEdit,
-    required this.onBoost,
+    required this.onClose,
   });
 
   @override
@@ -42,9 +42,9 @@ class PublishedJobCard extends StatelessWidget {
                   color: AppColors.success.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'ACTIVE',
-                  style: TextStyle(
+                child: Text(
+                  job.statusLabel,
+                  style: const TextStyle(
                     color: AppColors.success,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
@@ -112,16 +112,33 @@ class PublishedJobCard extends StatelessWidget {
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   label: const Text('Edit'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    backgroundColor: AppColors.primary.withOpacity(0.05),
+                    side: const BorderSide(color: AppColors.primary, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: onBoost,
-                  icon: const Icon(Icons.bolt, size: 18),
-                  label: const Text('Boost'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.orange,
+                child: OutlinedButton.icon(
+                  onPressed: onClose,
+                  icon: const Icon(Icons.close, size: 18),
+                  label: const Text('Close'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.orange,
+                    backgroundColor: Colors.orange.withOpacity(0.1),
+                    side: const BorderSide(color: Colors.orange, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(double.infinity, 48),
                   ),
                 ),
               ),
