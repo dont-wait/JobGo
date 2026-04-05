@@ -194,10 +194,12 @@ class SearchJobCard extends StatelessWidget {
                 SizedBox(
                   height: 32,
                   child: ElevatedButton(
-                    onPressed: () => navigateToApply(context, job),
+                    onPressed: job.isOpen ? () => navigateToApply(context, job) : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: job.isOpen ? AppColors.primary : AppColors.border,
                       foregroundColor: Colors.white,
+                      disabledBackgroundColor: AppColors.border,
+                      disabledForegroundColor: AppColors.textHint,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       shape: RoundedRectangleBorder(
@@ -206,9 +208,9 @@ class SearchJobCard extends StatelessWidget {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize: const Size(0, 32),
                     ),
-                    child: const Text(
-                      'Apply Now',
-                      style: TextStyle(
+                    child: Text(
+                      job.isOpen ? 'Apply Now' : 'Closed',
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),

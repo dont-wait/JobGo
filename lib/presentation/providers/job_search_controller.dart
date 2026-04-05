@@ -451,6 +451,7 @@ class JobSearchProvider extends ChangeNotifier {
       benefits: benefits.isEmpty ? null : benefits,
       tags: tags.isEmpty ? null : tags,
       applicants: applicants > 0 ? applicants : null,
+      status: _stringValue(json['j_status'] ?? json['status'] ?? 'open'),
     );
   }
 
