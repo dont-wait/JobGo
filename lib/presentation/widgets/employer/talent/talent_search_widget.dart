@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
-import 'package:jobgo/presentation/pages/employer/messages/employer_messages_page.dart';
+import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
 
@@ -315,9 +315,7 @@ class TalentSearchWidget extends StatelessWidget {
           candidate: candidate,
           onViewProfile: () => onCandidateTap(candidate),
           onMessage: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const EmployerMessagesPage()),
-            );
+            AppShell.goToMessages(context);
           },
         );
       },

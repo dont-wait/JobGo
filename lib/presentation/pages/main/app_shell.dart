@@ -40,6 +40,15 @@ class AppShell extends StatefulWidget {
     context.findAncestorStateOfType<_AppShellState>()?.goToProfile();
   }
 
+  /// Chuyển đến trang Messages (tab 3 cho employer/candidate) mà vẫn giữ bottom nav.
+  static bool goToMessages(BuildContext context) {
+    final shellState = context.findAncestorStateOfType<_AppShellState>();
+    if (shellState == null) return false;
+
+    shellState.goToMessages();
+    return true;
+  }
+
   @override
   State<AppShell> createState() => _AppShellState();
 }
@@ -78,6 +87,11 @@ class _AppShellState extends State<AppShell> {
   /// Chuyển sang trang Profile (index ẩn = 5) mà vẫn giữ shell.
   void goToProfile() {
     setState(() => _currentIndex = _profileIndex);
+  }
+
+  /// Chuyển sang trang Messages (tab 3) mà vẫn giữ shell.
+  void goToMessages() {
+    setState(() => _currentIndex = 3); // 3 = Messages tab for both employer and candidate
   }
 
   /// Index ẩn dành cho Profile (không có icon trên nav bar).

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/presentation/widgets/common/adaptive_button_label.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/constants/job_categories.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
@@ -117,7 +118,9 @@ class _PostJobPageState extends State<PostJobPage> {
       requirementsText: requirementsController.text.trim(),
       location: locationController.text.trim(),
       employmentType: selectedEmploymentType,
-      category: selectedCategory == JobCategories.defaultCategory ? '' : selectedCategory,
+      category: selectedCategory == JobCategories.defaultCategory
+          ? ''
+          : selectedCategory,
       salaryMin: double.tryParse(minSalaryController.text.trim()),
       salaryMax: double.tryParse(maxSalaryController.text.trim()),
       salaryValue: _deriveSalaryValue(),
@@ -162,7 +165,7 @@ class _PostJobPageState extends State<PostJobPage> {
       return loc.jobTitleRequired;
     }
     if (selectedCategory == JobCategories.defaultCategory) {
-      return 'Please choose a category';
+      return loc.pleaseChooseCategory;
     }
     if (locationController.text.trim().isEmpty) {
       return loc.locationRequired;
@@ -190,7 +193,7 @@ class _PostJobPageState extends State<PostJobPage> {
     if (step2Error != null) return step2Error;
 
     if (selectedEmploymentType.trim().isEmpty) {
-      return 'Employment type is required';
+      return loc.employmentTypeRequired;
     }
 
     final positions = int.tryParse(positionsController.text.trim()) ?? 0;
@@ -342,8 +345,8 @@ class _PostJobPageState extends State<PostJobPage> {
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveDraftDirectly,
-            child: Text(
-              AppLocalizations.of(context).saveDraft,
+            child: AdaptiveButtonLabel(
+              text: AppLocalizations.of(context).saveDraft,
               style: const TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
@@ -444,7 +447,9 @@ class _PostJobPageState extends State<PostJobPage> {
                     borderRadius: BorderRadius.circular(28),
                   ),
                 ),
-                child: Text(AppLocalizations.of(context).back),
+                child: AdaptiveButtonLabel(
+                  text: AppLocalizations.of(context).back,
+                ),
               ),
             ),
           if (currentStep > 1) const SizedBox(width: 12),
@@ -460,8 +465,8 @@ class _PostJobPageState extends State<PostJobPage> {
                   borderRadius: BorderRadius.circular(28),
                 ),
               ),
-              child: Text(
-                currentStep == 3
+              child: AdaptiveButtonLabel(
+                text: currentStep == 3
                     ? AppLocalizations.of(context).previewJob
                     : AppLocalizations.of(context).nextStep,
                 style: const TextStyle(fontWeight: FontWeight.w600),

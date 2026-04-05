@@ -16,7 +16,8 @@ class JobRepository {
             *,
             employers(*)
           ''')
-          .or('j_status.eq.approved,j_moderation_status.eq.approved,j_status.eq.active')
+          .or('j_status.eq.active,j_moderation_status.eq.approved')
+          .neq('j_status', 'closed')
           .limit(5);
 
       // 2. Fetch bookmarks an toàn
@@ -56,7 +57,8 @@ class JobRepository {
       final jobsResponse = await _supabase
           .from('jobs')
           .select('*, employers(*)')
-          .or('j_status.eq.approved,j_moderation_status.eq.approved,j_status.eq.active')
+          .or('j_status.eq.active,j_moderation_status.eq.approved')
+          .neq('j_status', 'closed')
           .order('j_create_at', ascending: false)
           .range(from, to);
 
@@ -122,7 +124,8 @@ class JobRepository {
           .from('jobs')
           .select('*, employers(*)')
           .ilike('j_title', '%$query%')
-          .or('j_status.eq.approved,j_moderation_status.eq.approved,j_status.eq.active')
+          .or('j_status.eq.active,j_moderation_status.eq.approved')
+          .neq('j_status', 'closed')
           .order('j_create_at', ascending: false)
           .limit(10);
 
@@ -158,7 +161,8 @@ class JobRepository {
       final response = await _supabase
           .from('jobs')
           .select('*, employers(*), saved_jobs!inner(*)')
-          .or('j_status.eq.approved,j_moderation_status.eq.approved,j_status.eq.active')
+          .or('j_status.eq.active,j_moderation_status.eq.approved')
+          .neq('j_status', 'closed')
           .eq('saved_jobs.u_id', userId);
 
       return (response as List).map((json) {

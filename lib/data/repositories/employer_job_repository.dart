@@ -133,6 +133,25 @@ class EmployerJobRepository {
     );
   }
 
+  Future<EmployerJobModel> closeJob(int jobId) async {
+    final employerId = await _requireEmployerId();
+
+    final response = await _supabase
+        .from('jobs')
+        .update({
+          'j_status': 'closed',
+          'j_update_at': DateTime.now().toIso8601String(),
+        })
+        .eq('j_id', jobId)
+        .eq('e_id', employerId)
+        .select('*, employers(*)')
+        .single();
+
+    return _withRealApplicationCount(
+      EmployerJobModel.fromJson(Map<String, dynamic>.from(response as Map)),
+    );
+  }
+
   Future<void> deleteJob(int jobId) async {
     final employerId = await _requireEmployerId();
     await _supabase

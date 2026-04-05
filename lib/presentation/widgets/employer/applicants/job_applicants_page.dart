@@ -230,7 +230,10 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: _filteredApplications.length,
       itemBuilder: (context, index) =>
-          ApplicantCard(application: _filteredApplications[index]),
+          ApplicantCard(
+            application: _filteredApplications[index],
+            onApplicationChanged: () => _loadApplicants(refresh: true),
+          ),
     );
   }
 }

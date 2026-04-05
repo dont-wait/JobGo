@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class BenefitSelector extends StatelessWidget {
@@ -23,12 +25,14 @@ class BenefitSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Benefits & Perks',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          loc.perksAndBenefits,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -38,8 +42,8 @@ class BenefitSelector extends StatelessWidget {
             final isSelected = selectedBenefits.contains(benefit);
             return FilterChip(
               selected: isSelected,
-              label: Text(benefit),
-              selectedColor: AppColors.primary.withOpacity(0.15),
+              label: Text(_benefitLabel(loc, benefit)),
+              selectedColor: AppColors.primary.withValues(alpha: 0.15),
               checkmarkColor: AppColors.primary,
               onSelected: (selected) {
                 final newList = List<String>.from(selectedBenefits);
@@ -55,5 +59,26 @@ class BenefitSelector extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _benefitLabel(AppLocalizations loc, String benefit) {
+    switch (benefit) {
+      case 'Health Insurance':
+        return loc.healthInsurance;
+      case 'Gym':
+        return loc.gym;
+      case 'Bonus':
+        return loc.bonus;
+      case 'Remote Work':
+        return loc.remoteWork;
+      case 'Paid Leave':
+        return loc.paidLeave;
+      case 'Flexible Hours':
+        return loc.flexibleHours;
+      case 'Stock Options':
+        return loc.stockOptions;
+      default:
+        return benefit;
+    }
   }
 }

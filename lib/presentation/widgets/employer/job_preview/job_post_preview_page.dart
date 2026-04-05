@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/preview_benefits_grid.dart';
@@ -28,10 +29,11 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
   bool _isSubmitting = false;
 
   String get _primaryActionLabel {
+    final loc = AppLocalizations.of(context);
     if (widget.isEditing) {
-      return widget.job.isDraft ? 'Publish Job' : 'Update Job';
+      return widget.job.isDraft ? loc.publishJob : loc.updateJob;
     }
-    return 'Confirm & Post';
+    return loc.confirmAndPost;
   }
 
   Future<void> _submit(bool publish) async {
@@ -46,9 +48,10 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể lưu tin tuyển dụng.')),
-        );
+        final loc = AppLocalizations.of(context);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(loc.couldNotSaveJob)));
       }
     } finally {
       if (mounted) {
@@ -69,7 +72,9 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
           onPressed: _isSubmitting ? null : () => Navigator.pop(context),
         ),
         title: Text(
-          widget.isEditing ? 'Review Job Changes' : 'Preview Job Post',
+          widget.isEditing
+              ? AppLocalizations.of(context).reviewJobChanges
+              : AppLocalizations.of(context).previewJobPost,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -94,23 +99,23 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
             PreviewSalaryTags(job: widget.job),
             const SizedBox(height: 24),
             PreviewSection(
-              title: 'Job Description',
+              title: AppLocalizations.of(context).jobDescription,
               icon: Icons.description_outlined,
               content: Text(
                 widget.job.description.isEmpty
-                    ? 'No description provided yet.'
+                    ? AppLocalizations.of(context).noDescriptionProvidedYet
                     : widget.job.description,
                 style: const TextStyle(fontSize: 14, height: 1.5),
               ),
             ),
             const SizedBox(height: 24),
             PreviewSection(
-              title: 'Requirements',
+              title: AppLocalizations.of(context).jobRequirements,
               icon: Icons.check_circle_outline,
               content: widget.job.requirementBullets.isEmpty
-                  ? const Text(
-                      'No requirements listed yet.',
-                      style: TextStyle(fontSize: 14, height: 1.5),
+                  ? Text(
+                      AppLocalizations.of(context).noRequirementsListedYet,
+                      style: const TextStyle(fontSize: 14, height: 1.5),
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +134,7 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
                   ? () {}
                   : () => Navigator.pop(context),
               isBusy: _isSubmitting,
-              saveDraftLabel: 'Save Draft',
+              saveDraftLabel: AppLocalizations.of(context).saveDraft,
               confirmLabel: _primaryActionLabel,
             ),
             const SizedBox(height: 30),

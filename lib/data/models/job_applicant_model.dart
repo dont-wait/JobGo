@@ -4,6 +4,7 @@ import 'job_model.dart';
 enum ApplicationStatus {
   pending,
   reviewing,
+  shortlisted,
   interview,
   hired,
   rejected,
@@ -78,6 +79,7 @@ class JobApplicantModel {
 
   int get matchScore {
     final baseScore = switch (status) {
+      ApplicationStatus.shortlisted => 93,
       ApplicationStatus.interview => 95,
       ApplicationStatus.reviewing => 91,
       ApplicationStatus.pending => 87,
@@ -106,6 +108,7 @@ class JobApplicantModel {
     if (value == null) return ApplicationStatus.pending;
     final statusStr = value.toString().trim().toLowerCase();
     if (statusStr == 'reviewed') return ApplicationStatus.reviewing;
+    if (statusStr == 'shortlisted') return ApplicationStatus.shortlisted;
     return ApplicationStatus.values.firstWhere(
       (e) => e.name == statusStr,
       orElse: () => ApplicationStatus.pending,

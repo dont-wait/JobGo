@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/presentation/widgets/common/adaptive_button_label.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class PreviewBottomActions extends StatelessWidget {
@@ -17,13 +19,15 @@ class PreviewBottomActions extends StatelessWidget {
     required this.onConfirm,
     required this.onBackToEdit,
     required this.isBusy,
-    this.saveDraftLabel = 'Save Draft',
-    this.confirmLabel = 'Confirm & Post',
+    this.saveDraftLabel = '',
+    this.confirmLabel = '',
     this.onAddAnotherJob,
   });
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -32,7 +36,7 @@ class PreviewBottomActions extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: isBusy ? null : () => onAddAnotherJob!(),
               icon: const Icon(Icons.add, size: 20),
-              label: const Text('Add Another Job'),
+              label: AdaptiveButtonLabel(text: loc.addAnotherJob),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 52),
                 shape: RoundedRectangleBorder(
@@ -53,7 +57,7 @@ class PreviewBottomActions extends StatelessWidget {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: const Text('Back to Edit'),
+                  child: AdaptiveButtonLabel(text: loc.backToEdit),
                 ),
               ),
               const SizedBox(width: 12),
@@ -73,8 +77,10 @@ class PreviewBottomActions extends StatelessWidget {
                           width: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(
-                          confirmLabel,
+                      : AdaptiveButtonLabel(
+                          text: confirmLabel.isEmpty
+                              ? loc.confirmAndPost
+                              : confirmLabel,
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
                 ),
@@ -86,7 +92,9 @@ class PreviewBottomActions extends StatelessWidget {
             width: double.infinity,
             child: TextButton(
               onPressed: isBusy ? null : () => onSaveDraft(),
-              child: Text(saveDraftLabel),
+              child: AdaptiveButtonLabel(
+                text: saveDraftLabel.isEmpty ? loc.saveDraft : saveDraftLabel,
+              ),
             ),
           ),
         ],

@@ -193,7 +193,7 @@ class JobModel {
     };
   }
 
-  bool get isOpen => status.toLowerCase() == 'open';
+  bool get isOpen => status.toLowerCase() == 'active';
 
   static String _deriveLogoText(dynamic explicitValue, String companyName) {
     if (explicitValue != null) {

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'package:jobgo/presentation/widgets/common/adaptive_button_label.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class PostNewJobBanner extends StatelessWidget {
@@ -8,6 +11,8 @@ class PostNewJobBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -23,13 +28,13 @@ class PostNewJobBanner extends StatelessWidget {
             color: AppColors.textSecondary,
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Need to hire?',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          Text(
+            loc.needToHire,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
-          const Text(
-            'Post a new job opportunity today',
-            style: TextStyle(color: AppColors.textSecondary),
+          Text(
+            loc.postNewJobDescription,
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -37,9 +42,9 @@ class PostNewJobBanner extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onPressed,
               icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text(
-                'Post New Job',
-                style: TextStyle(fontWeight: FontWeight.w600),
+              label: AdaptiveButtonLabel(
+                text: loc.postNewJob,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.orange,
