@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class SkillChipSelector extends StatelessWidget {
@@ -22,10 +24,15 @@ class SkillChipSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Add Skills', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text(
+          loc.addSkills,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
@@ -33,7 +40,7 @@ class SkillChipSelector extends StatelessWidget {
           children: [
             ...selectedSkills.map(
               (skill) => Chip(
-                label: Text(skill),
+                label: Text(_skillLabel(loc, skill)),
                 deleteIconColor: AppColors.error,
                 onDeleted: () {
                   final newList = List<String>.from(selectedSkills)
@@ -47,7 +54,7 @@ class SkillChipSelector extends StatelessWidget {
                 .where((s) => !selectedSkills.contains(s))
                 .map(
                   (skill) => ActionChip(
-                    label: Text(skill),
+                    label: Text(_skillLabel(loc, skill)),
                     onPressed: () {
                       final newList = List<String>.from(selectedSkills)
                         ..add(skill);
@@ -56,10 +63,10 @@ class SkillChipSelector extends StatelessWidget {
                   ),
                 ),
             ActionChip(
-              label: const Text('+ Add Custom'),
+              label: Text(loc.addCustom),
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Custom skill coming soon')),
+                  SnackBar(content: Text(loc.customSkillComingSoon)),
                 );
               },
             ),
@@ -67,5 +74,24 @@ class SkillChipSelector extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _skillLabel(AppLocalizations loc, String skill) {
+    switch (skill) {
+      case 'Figma':
+        return loc.figma;
+      case 'UI Design':
+        return loc.uiDesign;
+      case 'Flutter':
+        return loc.flutter;
+      case 'React':
+        return loc.react;
+      case 'Communication':
+        return loc.communication;
+      case 'Leadership':
+        return loc.leadership;
+      default:
+        return skill;
+    }
   }
 }

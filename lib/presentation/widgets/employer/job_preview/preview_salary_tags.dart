@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 
@@ -10,6 +11,8 @@ class PreviewSalaryTags extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Container(
       color: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -31,17 +34,83 @@ class PreviewSalaryTags extends StatelessWidget {
             alignment: WrapAlignment.center,
             children: [
               if (job.employmentType.isNotEmpty)
-                _buildTag(job.employmentType, Icons.work_outline),
+                _buildTag(
+                  _employmentTypeLabel(loc, job.employmentType),
+                  Icons.work_outline,
+                ),
               if (job.category.isNotEmpty)
-                _buildTag(job.category, Icons.category_outlined),
-              _buildTag(job.positionsLabel, Icons.people_outline),
+                _buildTag(
+                  _categoryLabel(loc, job.category),
+                  Icons.category_outlined,
+                ),
+              _buildTag(
+                _positionsLabel(loc, job.positions),
+                Icons.people_outline,
+              ),
               if (job.deadline != null)
-                _buildTag(job.deadlineLabel, Icons.event_outlined),
+                _buildTag(
+                  _deadlineLabel(loc, job.deadline!),
+                  Icons.event_outlined,
+                ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  String _employmentTypeLabel(AppLocalizations loc, String type) {
+    switch (type) {
+      case 'Full-time':
+        return loc.fullTime;
+      case 'Part-time':
+        return loc.partTime;
+      case 'Remote':
+        return loc.remote;
+      case 'Contract':
+        return loc.contract;
+      case 'Freelance':
+        return loc.freelance;
+      case 'Internship':
+        return loc.internship;
+      default:
+        return type;
+    }
+  }
+
+  String _categoryLabel(AppLocalizations loc, String category) {
+    switch (category) {
+      case 'Software Development':
+        return loc.softwareDevelopment;
+      case 'Design & Creative':
+        return loc.designCreative;
+      case 'Product Management':
+        return loc.productManagement;
+      case 'Data Science & Analytics':
+        return loc.dataScienceAnalytics;
+      case 'DevOps & Infrastructure':
+        return loc.devOpsInfrastructure;
+      case 'Marketing & Growth':
+        return loc.marketingGrowth;
+      case 'Sales & Business Development':
+        return loc.salesBusinessDevelopment;
+      case 'Human Resources':
+        return loc.humanResources;
+      case 'Finance & Accounting':
+        return loc.financeAccounting;
+      case 'Operations & Administration':
+        return loc.operationsAdministration;
+      default:
+        return category;
+    }
+  }
+
+  String _positionsLabel(AppLocalizations loc, int positions) {
+    return positions <= 1 ? '1 ${loc.opening}' : '$positions ${loc.openings}';
+  }
+
+  String _deadlineLabel(AppLocalizations loc, DateTime deadline) {
+    return '${loc.applicationDeadline}: ${deadline.day.toString().padLeft(2, '0')}/${deadline.month.toString().padLeft(2, '0')}/${deadline.year}';
   }
 
   Widget _buildTag(String label, IconData icon) {

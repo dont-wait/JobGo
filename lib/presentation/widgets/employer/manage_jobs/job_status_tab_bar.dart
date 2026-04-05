@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class JobStatusTabBar extends StatelessWidget {
@@ -11,10 +13,16 @@ class JobStatusTabBar extends StatelessWidget {
     required this.onTabChanged,
   });
 
-  static const List<String> tabs = ['All Jobs', 'Active', 'Closed', 'Drafts'];
-
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final tabs = <String>[
+      loc.allJobs,
+      loc.activeJobs,
+      loc.closedJobs,
+      loc.draftJobs,
+    ];
+
     return Container(
       color: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

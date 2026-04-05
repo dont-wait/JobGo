@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class EmploymentTypeSelector extends StatelessWidget {
@@ -15,6 +17,7 @@ class EmploymentTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final availableTypes = List<String>.from(types);
     if (selectedType.isNotEmpty && !availableTypes.contains(selectedType)) {
       availableTypes.insert(0, selectedType);
@@ -23,9 +26,9 @@ class EmploymentTypeSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Employment Type',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          loc.employmentType,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -48,7 +51,7 @@ class EmploymentTypeSelector extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  type,
+                  _typeLabel(loc, type),
                   style: TextStyle(
                     color: isSelected ? Colors.white : AppColors.textPrimary,
                     fontWeight: FontWeight.w500,
@@ -60,5 +63,24 @@ class EmploymentTypeSelector extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _typeLabel(AppLocalizations loc, String type) {
+    switch (type) {
+      case 'Full-time':
+        return loc.fullTime;
+      case 'Part-time':
+        return loc.partTime;
+      case 'Remote':
+        return loc.remote;
+      case 'Contract':
+        return loc.contract;
+      case 'Freelance':
+        return loc.freelance;
+      case 'Internship':
+        return loc.internship;
+      default:
+        return type;
+    }
   }
 }

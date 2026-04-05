@@ -40,9 +40,7 @@ class Step1JobDetailsWidget extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           controller: jobTitleController,
-          decoration: InputDecoration(
-            hintText: '${loc.example}: Senior Flutter Developer',
-          ),
+          decoration: InputDecoration(hintText: loc.jobTitleExampleHint),
         ),
         const SizedBox(height: 20),
 
@@ -57,7 +55,11 @@ class Step1JobDetailsWidget extends StatelessWidget {
               .map(
                 (e) => DropdownMenuItem(
                   value: e,
-                  child: Text(e == 'Select Category' ? loc.selectCategory : e),
+                  child: Text(
+                    e == JobCategories.defaultCategory
+                        ? loc.selectCategory
+                        : _categoryLabel(loc, e),
+                  ),
                 ),
               )
               .toList(),
@@ -80,9 +82,36 @@ class Step1JobDetailsWidget extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           controller: locationController,
-          decoration: const InputDecoration(hintText: 'City, Country'),
+          decoration: InputDecoration(hintText: loc.enterLocationHint),
         ),
       ],
     );
+  }
+
+  String _categoryLabel(AppLocalizations loc, String category) {
+    switch (category) {
+      case 'Software Development':
+        return loc.softwareDevelopment;
+      case 'Design & Creative':
+        return loc.designCreative;
+      case 'Product Management':
+        return loc.productManagement;
+      case 'Data Science & Analytics':
+        return loc.dataScienceAnalytics;
+      case 'DevOps & Infrastructure':
+        return loc.devOpsInfrastructure;
+      case 'Marketing & Growth':
+        return loc.marketingGrowth;
+      case 'Sales & Business Development':
+        return loc.salesBusinessDevelopment;
+      case 'Human Resources':
+        return loc.humanResources;
+      case 'Finance & Accounting':
+        return loc.financeAccounting;
+      case 'Operations & Administration':
+        return loc.operationsAdministration;
+      default:
+        return category;
+    }
   }
 }

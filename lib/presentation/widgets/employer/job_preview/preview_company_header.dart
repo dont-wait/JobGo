@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 
@@ -10,6 +11,7 @@ class PreviewCompanyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final logoColor = _parseColor(job.companyLogoColor);
     final hasLogoUrl = job.companyLogoUrl.trim().isNotEmpty;
 
@@ -46,7 +48,7 @@ class PreviewCompanyHeader extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            job.companyName.isEmpty ? 'Unknown Company' : job.companyName,
+            job.companyName.isEmpty ? loc.unknownCompany : job.companyName,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
@@ -61,20 +63,20 @@ class PreviewCompanyHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                job.location.isEmpty ? 'Location not set' : job.location,
+                job.location.isEmpty ? loc.locationNotSet : job.location,
                 style: const TextStyle(color: AppColors.textSecondary),
               ),
               const SizedBox(width: 8),
               const Icon(Icons.verified, color: AppColors.success, size: 18),
-              const Text(
-                ' • Verified',
-                style: TextStyle(color: AppColors.success),
+              Text(
+                ' • ${loc.verified}',
+                style: const TextStyle(color: AppColors.success),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
-            job.title.isEmpty ? 'Untitled Job' : job.title,
+            job.title.isEmpty ? loc.untitledJob : job.title,
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,

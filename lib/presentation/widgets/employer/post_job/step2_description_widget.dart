@@ -44,8 +44,7 @@ class Step2DescriptionWidget extends StatelessWidget {
           controller: requirementsController,
           maxLines: 4,
           decoration: InputDecoration(
-            hintText:
-                '${AppLocalizations.of(context).example} 5+ years experience...',
+            hintText: AppLocalizations.of(context).experienceExampleHint,
           ),
         ),
         const SizedBox(height: 16),

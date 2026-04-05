@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class PreviewBenefitsGrid extends StatelessWidget {
@@ -9,16 +10,18 @@ class PreviewBenefitsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 4, bottom: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 12),
             child: Text(
-              'Benefits',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              loc.perksAndBenefits,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
           if (benefits.isEmpty)
@@ -30,9 +33,9 @@ class PreviewBenefitsGrid extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border),
               ),
-              child: const Text(
-                'No benefits added yet.',
-                style: TextStyle(color: AppColors.textSecondary),
+              child: Text(
+                loc.noBenefitsAddedYet,
+                style: const TextStyle(color: AppColors.textSecondary),
               ),
             )
           else
@@ -74,11 +77,11 @@ class PreviewBenefitsGrid extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Included benefit',
+                      Text(
+                        loc.includedBenefit,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:jobgo/presentation/widgets/common/adaptive_button_label.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 
@@ -17,6 +19,8 @@ class ClosedJobCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -38,9 +42,9 @@ class ClosedJobCard extends StatelessWidget {
                   color: AppColors.error.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'CLOSED',
-                  style: TextStyle(
+                child: Text(
+                  loc.statusClosed,
+                  style: const TextStyle(
                     color: AppColors.error,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
@@ -59,7 +63,7 @@ class ClosedJobCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            job.title.isEmpty ? 'Untitled Job' : job.title,
+            job.title.isEmpty ? loc.untitledJob : job.title,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           Row(
@@ -71,15 +75,20 @@ class ClosedJobCard extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                '${job.applicationCount} Applicants',
+                '${job.applicationCount} ${loc.applicants}',
                 style: const TextStyle(color: AppColors.textSecondary),
               ),
               const Spacer(),
-              GestureDetector(
-                onTap: onViewHistory,
-                child: const Text(
-                  'View History →',
-                  style: TextStyle(color: AppColors.primary),
+              Flexible(
+                child: GestureDetector(
+                  onTap: onViewHistory,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: AdaptiveButtonLabel(
+                      text: loc.viewHistory,
+                      style: const TextStyle(color: AppColors.primary),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -91,11 +100,14 @@ class ClosedJobCard extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onReopen,
                   icon: const Icon(Icons.refresh, size: 18),
-                  label: const Text('Reopen'),
+                  label: AdaptiveButtonLabel(text: loc.reopen),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     backgroundColor: AppColors.primary.withOpacity(0.05),
-                    side: const BorderSide(color: AppColors.primary, width: 1.5),
+                    side: const BorderSide(
+                      color: AppColors.primary,
+                      width: 1.5,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

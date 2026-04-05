@@ -55,7 +55,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       if (!mounted) return;
       final message = e is StateError
           ? e.message
-          : 'Không tải được tin tuyển dụng.';
+          : AppLocalizations.of(context).couldNotLoadJobs;
 
       if (_jobs.isEmpty || !refresh) {
         setState(() {
@@ -357,10 +357,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
           onEdit: () => _openEditJob(job),
           onClose: () => _closeJob(job),
         ),
-        2 => ClosedJobCard(
-          job: job,
-          onReopen: () => _reopenJob(job),
-        ),
+        2 => ClosedJobCard(job: job, onReopen: () => _reopenJob(job)),
         3 => DraftJobCard(
           job: job,
           onResume: () => _openEditJob(job),
