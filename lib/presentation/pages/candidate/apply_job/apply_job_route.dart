@@ -14,8 +14,11 @@ Future<void> navigateToApply(BuildContext context, JobModel job) async {
   // If profile not loaded yet, try to load it (handles race condition)
   if (candidate == null) {
     await profileProvider.loadProfile();
+    if (!context.mounted) return;
     candidate = profileProvider.candidate;
   }
+
+  if (!context.mounted) return;
 
   if (candidate == null) {
     ScaffoldMessenger.of(context).showSnackBar(

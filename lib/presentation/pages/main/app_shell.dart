@@ -41,8 +41,12 @@ class AppShell extends StatefulWidget {
   }
 
   /// Chuyển đến trang Messages (tab 3 cho employer/candidate) mà vẫn giữ bottom nav.
-  static void goToMessages(BuildContext context) {
-    context.findAncestorStateOfType<_AppShellState>()?.goToMessages();
+  static bool goToMessages(BuildContext context) {
+    final shellState = context.findAncestorStateOfType<_AppShellState>();
+    if (shellState == null) return false;
+
+    shellState.goToMessages();
+    return true;
   }
 
   @override

@@ -180,6 +180,7 @@ class ApplicationDetailPage extends StatelessWidget {
         'title': loc.shortlistedInterview,
         'desc': loc.shortlistedInterview,
         'done':
+        application.status == ApplicationStatus.shortlisted ||
             application.status == ApplicationStatus.interview ||
             application.status == ApplicationStatus.hired,
       },
@@ -442,6 +443,8 @@ class ApplicationDetailPage extends StatelessWidget {
         return Colors.orange;
       case ApplicationStatus.reviewing:
         return Colors.blue;
+      case ApplicationStatus.shortlisted:
+        return Colors.deepPurple;
       case ApplicationStatus.interview:
         return Colors.purple;
       case ApplicationStatus.hired:
@@ -459,6 +462,8 @@ class ApplicationDetailPage extends StatelessWidget {
         return loc.pendingReview;
       case ApplicationStatus.reviewing:
         return loc.employerReviewing;
+      case ApplicationStatus.shortlisted:
+        return loc.shortlistedInterview;
       case ApplicationStatus.interview:
         return loc.interviewInvited;
       case ApplicationStatus.hired:

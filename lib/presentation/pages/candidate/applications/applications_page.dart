@@ -122,6 +122,7 @@ class _ApplicationsPageState extends State<ApplicationsPage>
                     (a) =>
                         a.status == ApplicationStatus.pending ||
                         a.status == ApplicationStatus.reviewing ||
+                        a.status == ApplicationStatus.shortlisted ||
                         a.status == ApplicationStatus.rejected ||
                         a.status == ApplicationStatus.withdrawn,
                   )
@@ -390,6 +391,8 @@ class _ApplicationCard extends StatelessWidget {
         return (const Color(0xFFFFF3E0), const Color(0xFFE65100));
       case ApplicationStatus.reviewing:
         return (const Color(0xFFE3F2FD), const Color(0xFF1565C0));
+      case ApplicationStatus.shortlisted:
+        return (const Color(0xFFF3E8FF), const Color(0xFF7C3AED));
       case ApplicationStatus.interview:
         return (const Color(0xFFEDE7F6), const Color(0xFF6A1B9A));
       case ApplicationStatus.hired:

@@ -4,6 +4,7 @@ import 'package:jobgo/data/mockdata/mock_interview.dart';
 enum ApplicationStatus {
   pending,
   reviewing,
+  shortlisted,
   interview,
   hired,
   rejected,
@@ -64,6 +65,8 @@ class MockApplication {
         return 'PENDING';
       case ApplicationStatus.reviewing:
         return 'REVIEWING';
+      case ApplicationStatus.shortlisted:
+        return 'SHORTLISTED';
       case ApplicationStatus.interview:
         return 'INTERVIEW';
       case ApplicationStatus.hired:
