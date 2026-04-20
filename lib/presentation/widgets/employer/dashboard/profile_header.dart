@@ -4,7 +4,41 @@ import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 class DashboardProfileHeader extends StatelessWidget {
-  const DashboardProfileHeader({super.key});
+  final String? companyName;
+  final String? contactName;
+  final String? logoColor;
+
+  const DashboardProfileHeader({
+    super.key,
+    this.companyName,
+    this.contactName,
+    this.logoColor,
+  });
+
+  Color _parseLogoColor(String? value) {
+    if (value == null || value.trim().isEmpty) return AppColors.primary;
+    final normalized = value.trim();
+    final parsed = int.tryParse(normalized);
+    if (parsed != null) return Color(parsed);
+
+    final hex = normalized.startsWith('0x')
+        ? normalized.substring(2)
+        : normalized;
+    final hexValue = int.tryParse(hex, radix: 16);
+    return Color(hexValue ?? AppColors.primary.value);
+  }
+
+  String _displayCompany() {
+    final name = companyName?.trim() ?? '';
+    return name.isEmpty ? 'COMPANY' : name.toUpperCase();
+  }
+
+  String _displayContact() {
+    final name = contactName?.trim() ?? '';
+    if (name.isNotEmpty) return name;
+    final company = companyName?.trim() ?? '';
+    return company.isNotEmpty ? company : 'Employer';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +59,7 @@ class DashboardProfileHeader extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.primary,
+                      color: _parseLogoColor(logoColor),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Center(
@@ -37,11 +71,11 @@ class DashboardProfileHeader extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'DODY MENTORING',
+                        _displayCompany(),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -50,7 +84,7 @@ class DashboardProfileHeader extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Alex Sterling',
+                        _displayContact(),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

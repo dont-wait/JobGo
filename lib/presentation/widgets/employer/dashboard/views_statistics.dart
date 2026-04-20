@@ -3,10 +3,22 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 
 class ViewsStatisticsChart extends StatelessWidget {
   final List<double> weeklyData;
+  final int totalViews;
+  final String? trendLabel;
+  final bool trendPositive;
+  final String title;
+  final String subtitle;
+  final String totalLabel;
 
   const ViewsStatisticsChart({
     super.key,
     this.weeklyData = const [250, 650, 400, 500, 350, 200, 800],
+    this.totalViews = 1240,
+    this.trendLabel,
+    this.trendPositive = true,
+    this.title = 'Views Statistics',
+    this.subtitle = 'Total reach this week',
+    this.totalLabel = 'Total Views',
   });
 
   @override
@@ -38,18 +50,18 @@ class ViewsStatisticsChart extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Views Statistics',
-                style: TextStyle(
+              Text(
+                title,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Total reach this week',
-                style: TextStyle(
+              Text(
+                subtitle,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textSecondary,
@@ -64,18 +76,18 @@ class ViewsStatisticsChart extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Total Views',
-                    style: TextStyle(
+                  Text(
+                    totalLabel,
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    '1,240',
-                    style: TextStyle(
+                  Text(
+                    _formatNumber(totalViews),
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textPrimary,
@@ -83,21 +95,28 @@ class ViewsStatisticsChart extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  '0.44% ↑ WOW',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.success,
+              if (trendLabel != null && trendLabel!.trim().isNotEmpty)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: (trendPositive
+                            ? AppColors.success
+                            : AppColors.error)
+                        .withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    '${trendLabel!} ${trendPositive ? '↑' : '↓'}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: trendPositive
+                          ? AppColors.success
+                          : AppColors.error,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -158,6 +177,19 @@ class ViewsStatisticsChart extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _formatNumber(int value) {
+    final text = value.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < text.length; i++) {
+      final indexFromEnd = text.length - i;
+      buffer.write(text[i]);
+      if (indexFromEnd > 1 && indexFromEnd % 3 == 1) {
+        buffer.write(',');
+      }
+    }
+    return buffer.toString();
   }
 }
 

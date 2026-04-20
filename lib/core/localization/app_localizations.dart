@@ -137,6 +137,10 @@ class AppLocalizations {
   String get privacyPolicy => translate('privacyPolicy');
   String get termsOfService => translate('termsOfService');
   String get helpCenter => translate('helpCenter');
+    String get privacyPolicyContent => translate('privacyPolicyContent');
+    String get termsOfServiceContent => translate('termsOfServiceContent');
+    String get helpCenterContent => translate('helpCenterContent');
+    String get contactUsContent => translate('contactUsContent');
   String get changePassword => translate('changePassword');
   String get pushNotifications => translate('pushNotifications');
   String get account => translate('account');

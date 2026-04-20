@@ -119,6 +119,47 @@ final Map<String, String> vietStrings = {
   'privacyPolicy': 'Chính sách bảo mật',
   'termsOfService': 'Điều khoản dịch vụ',
   'helpCenter': 'Trung tâm trợ giúp',
+  'privacyPolicyContent': 'Chính sách bảo mật\n\n'
+      '1) Dữ liệu thu thập\n'
+      '- Thông tin hồ sơ, liên hệ, và hoạt động trong ứng dụng.\n'
+      '- Nhật ký sử dụng cơ bản để cải thiện trải nghiệm.\n\n'
+      '2) Mục đích sử dụng\n'
+      '- Kết nối nhà tuyển dụng và ứng viên.\n'
+      '- Gửi thông báo liên quan đến tuyển dụng.\n'
+      '- Hỗ trợ chăm sóc khách hàng và bảo mật tài khoản.\n\n'
+      '3) Bảo vệ dữ liệu\n'
+      '- Dữ liệu được lưu trữ an toàn và chỉ truy cập khi cần thiết.\n'
+      '- Bạn có thể yêu cầu chỉnh sửa hoặc xóa thông tin.\n\n'
+      '4) Chia sẻ dữ liệu\n'
+      '- Chỉ chia sẻ trong phạm vi chức năng tuyển dụng.\n'
+      '- Không bán dữ liệu cho bên thứ ba.',
+  'termsOfServiceContent': 'Điều khoản dịch vụ\n\n'
+      '1) Tài khoản\n'
+      '- Cung cấp thông tin chính xác và cập nhật.\n'
+      '- Tự chịu trách nhiệm về bảo mật tài khoản.\n\n'
+      '2) Nội dung\n'
+      '- Không đăng tải nội dung vi phạm pháp luật hoặc gây hiểu nhầm.\n'
+      '- Nhà tuyển dụng chịu trách nhiệm về thông tin tuyển dụng.\n\n'
+      '3) Hành vi bị cấm\n'
+      '- Gian lận, spam, hoặc khai thác hệ thống trái phép.\n'
+      '- Tấn công hoặc làm gián đoạn dịch vụ.\n\n'
+      '4) Thay đổi điều khoản\n'
+      '- Điều khoản có thể cập nhật và sẽ thông báo trong ứng dụng.',
+  'helpCenterContent': 'Trung tâm trợ giúp\n\n'
+      'Chúng tôi sẵn sàng hỗ trợ các vấn đề sau:\n'
+      '- Không nhận được thông báo.\n'
+      '- Lỗi đăng nhập hoặc xác minh email.\n'
+      '- Cập nhật hồ sơ, bài đăng tuyển dụng, và ứng tuyển.\n\n'
+      'Gợi ý tự xử lý nhanh:\n'
+      '1) Kiểm tra kết nối mạng.\n'
+      '2) Cập nhật ứng dụng lên phiên bản mới nhất.\n'
+      '3) Đăng xuất và đăng nhập lại.\n\n'
+      'Nếu vẫn gặp lỗi, hãy liên hệ với chúng tôi.',
+  'contactUsContent': 'Liên hệ với chúng tôi\n\n'
+      'Email: support@jobgo.vn\n'
+      'Hotline: 1900 123 456 (08:30 - 18:00)\n'
+      'Địa chỉ: 68 Nguyen Hue, Quan 1, TP. Ho Chi Minh\n\n'
+      'Chúng tôi phản hồi trong vòng 24 - 48 giờ làm việc.',
   'changePassword': 'Thay đổi mật khẩu',
   'pushNotifications': 'Thông báo đẩy',
   'account': 'TÀI KHOẢN',
@@ -292,7 +333,7 @@ final Map<String, String> vietStrings = {
   'employerDashboard': 'Bảng điều khiển',
   'overview': 'Tổng quan',
   'last30Days': '30 ngày qua',
-  'activeJobs': 'Công việc đang mở',
+  'activeJobs': 'Đang mở',
   'applicants': 'Ứng viên',
   'interviewsCount': 'Phỏng vấn',
   'recentActivities': 'Hoạt động gần đây',
@@ -305,8 +346,8 @@ final Map<String, String> vietStrings = {
   'needToHire': 'Cần tuyển người?',
   'postNewJobDescription': 'Đăng tin tuyển dụng ngay hôm nay',
   'draftJobs': 'Bản nháp',
-  'closedJobs': 'Công việc đã đóng',
-  'allJobs': 'Tất cả công việc',
+  'closedJobs': 'Đã đóng',
+  'allJobs': 'Tất cả',
   'activeStatus': 'ĐANG MỞ',
   'closedStatus': 'ĐÃ ĐÓNG',
   'draftStatus': 'NHÁP',
