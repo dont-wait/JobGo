@@ -214,7 +214,7 @@ class _MainAppState extends State<MainApp> {
               }
               return MaterialPageRoute(
                 settings: settings,
-                builder: (_) => AppShell(role: role),
+                builder: (_) => AppShell(key: AppShell.shellKey, role: role),
               );
             }
             return null;
@@ -278,7 +278,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         final roleStr = snapshot.data!['u_role'] as String?;
         final role = parseUserRole(roleStr);
-        return AppShell(role: role);
+        return AppShell(key: AppShell.shellKey, role: role);
       },
     );
   }
