@@ -7,12 +7,14 @@ class InterviewCard extends StatelessWidget {
   final InterviewScheduleModel schedule;
   final VoidCallback? onTap; // thêm cái này để click
   final VoidCallback? onDelete; // nếu muốn có nút xóa sau này
+  final VoidCallback? onEdit; // nếu muốn có nút sửa sau này
 
   const InterviewCard({
     super.key,
     required this.schedule,
     this.onTap,
     this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -52,7 +54,29 @@ class InterviewCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  //const SizedBox(width: 6),
+                  //edit
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => onEdit?.call(),
+                      customBorder: const CircleBorder(),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.edit_outlined,
+                          size: 18,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 6),
+                  //delete
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -121,7 +145,7 @@ class InterviewCard extends StatelessWidget {
                     "Liên hệ: ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : 'N/A'}",
               ),
 
-              // 📝 Note
+              //  Note
               if (schedule.note.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 _buildRow(
