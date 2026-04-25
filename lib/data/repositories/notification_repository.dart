@@ -19,7 +19,6 @@ class NotificationRepository {
         .eq('u_id', userId)
         .order('n_create_at', ascending: false);
 
-    if (data is! List) return [];
     return data
         .map((row) => NotificationModel.fromJson(Map<String, dynamic>.from(row)))
         .toList();
@@ -56,6 +55,12 @@ class NotificationRepository {
         .or('auth_uid.eq.${authUser.id},u_email.eq.${authUser.email}')
         .maybeSingle();
 
-    return userRow == null ? null : userRow['u_id'] as int?;
+    if (userRow == null) return null;
+
+    final rawUserId = userRow['u_id'];
+    if (rawUserId is int) return rawUserId;
+    if (rawUserId is num) return rawUserId.toInt();
+    if (rawUserId is String) return int.tryParse(rawUserId);
+    return null;
   }
 }

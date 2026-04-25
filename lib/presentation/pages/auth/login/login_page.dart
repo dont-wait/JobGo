@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/app_logger.dart';
 import '../../../widgets/common/auth_text_field.dart';
 import '../../../widgets/common/social_login_row.dart';
 import '../../../widgets/common/language_selector_button.dart';
@@ -213,8 +214,12 @@ class _LoginPageState extends State<LoginPage> {
             await _handleLoginSuccess(authResponse.user!.id);
             return;
           }
-        } catch (authError) {
-          print('Auth login failed: $authError, trying database fallback...');
+        } catch (authError, st) {
+          AppLogger.warning(
+            'Auth login failed, trying database fallback',
+            error: authError,
+            stackTrace: st,
+          );
         }
 
         // Fallback: Query bảng users với email + password
@@ -232,8 +237,8 @@ class _LoginPageState extends State<LoginPage> {
             SnackBar(content: Text(loc.invalidCredentials)),
           );
         }
-      } catch (e) {
-        print('Error: $e');
+      } catch (e, st) {
+        AppLogger.error('Login error', error: e, stackTrace: st);
         final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(
           context,

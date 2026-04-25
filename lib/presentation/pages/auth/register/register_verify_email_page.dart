@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../../core/enums/user_role.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/utils/app_logger.dart';
 import 'package:jobgo/main.dart'; //  để dùng isInRegisterFlow
 
 class RegisterVerifyEmailPage extends StatefulWidget {
@@ -140,8 +141,8 @@ class _RegisterVerifyEmailPageState extends State<RegisterVerifyEmailPage> {
 
       try {
         await supabase.auth.refreshSession();
-      } catch (e) {
-        print('Refresh failed: $e');
+      } catch (e, st) {
+        AppLogger.warning('Refresh failed', error: e, stackTrace: st);
       }
 
       var currentUser = supabase.auth.currentUser;

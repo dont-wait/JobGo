@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 
 class CandidateCardWidget extends StatelessWidget {
   final CandidateSupabaseModel candidate;
@@ -165,7 +166,11 @@ class CandidateCardWidget extends StatelessWidget {
         backgroundImage: NetworkImage(avatarUrl),
         backgroundColor: AppColors.divider,
         onBackgroundImageError: (exception, stackTrace) {
-          debugPrint('Loi tai avatar: $exception');
+          AppLogger.error(
+            'Loi tai avatar',
+            error: exception,
+            stackTrace: stackTrace,
+          );
         },
       );
     }

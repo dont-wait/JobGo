@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:jobgo/data/models/interview_schedule_model.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 
 class InterviewCard extends StatelessWidget {
@@ -57,7 +58,7 @@ class InterviewCard extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        print("DELETE CLICKED");
+                        AppLogger.debug('DELETE CLICKED');
                         onDelete?.call();
                       },
                       customBorder: const CircleBorder(),

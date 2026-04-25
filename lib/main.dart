@@ -19,6 +19,7 @@ import 'package:jobgo/presentation/pages/auth/login/login_page.dart';
 import 'package:jobgo/presentation/pages/auth/register/register_role_page.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/pages/welcome/welcome_page.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/bookmark_provider.dart';
@@ -59,14 +60,14 @@ Future<void> main() async {
   );
 
   final runtimeSupabaseUrl = Supabase.instance.client.rest.url.toString();
-  debugPrint('Supabase runtime URL: $runtimeSupabaseUrl');
+  AppLogger.info('Supabase runtime URL: $runtimeSupabaseUrl');
 
   final appLinks = AppLinks();
   appLinks.uriLinkStream.listen((uri) {
     try {
       Supabase.instance.client.auth.getSessionFromUrl(uri);
-    } catch (e) {
-      print('Error processing auth link: $e');
+    } catch (e, st) {
+      AppLogger.error('Error processing auth link', error: e, stackTrace: st);
     }
   });
 
@@ -141,8 +142,12 @@ class _MainAppState extends State<MainApp> {
                       arguments: role,
                     );
                   }
-                } catch (e) {
-                  print('Error navigating after sign-in: $e');
+                } catch (e, st) {
+                  AppLogger.error(
+                    'Error navigating after sign-in',
+                    error: e,
+                    stackTrace: st,
+                  );
                   Supabase.instance.client.auth.signOut();
                 }
               });
@@ -165,8 +170,12 @@ class _MainAppState extends State<MainApp> {
               });
             }
           },
-          onError: (error) {
-            print('Auth state error: $error');
+          onError: (error, stackTrace) {
+            AppLogger.error(
+              'Auth state stream error',
+              error: error,
+              stackTrace: stackTrace,
+            );
           },
         );
   }
@@ -214,7 +223,7 @@ class _MainAppState extends State<MainApp> {
               }
               return MaterialPageRoute(
                 settings: settings,
-                builder: (_) => AppShell(key: AppShell.shellKey, role: role),
+                builder: (_) => AppShell(role: role),
               );
             }
             return null;
@@ -278,7 +287,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         final roleStr = snapshot.data!['u_role'] as String?;
         final role = parseUserRole(roleStr);
-        return AppShell(key: AppShell.shellKey, role: role);
+        return AppShell(role: role);
       },
     );
   }

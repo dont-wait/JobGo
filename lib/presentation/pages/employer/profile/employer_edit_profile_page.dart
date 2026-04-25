@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/employer_provider.dart';
 
@@ -82,8 +83,8 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
           );
         }
       }
-    } catch (e) {
-      print('Error picking image: $e');
+    } catch (e, st) {
+      AppLogger.error('Error picking image', error: e, stackTrace: st);
     }
   }
 

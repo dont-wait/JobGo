@@ -142,11 +142,18 @@ class ApplicantCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (AppShell.goToMessages(context)) return;
+                    final rootNavigator = navigatorKey.currentState;
+                    if (rootNavigator == null) return;
 
-                      Navigator.of(context).push(
+                    rootNavigator.popUntil((route) => route.isFirst);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      final shellContext = navigatorKey.currentContext;
+                      if (shellContext != null &&
+                          AppShell.goToMessages(shellContext)) {
+                        return;
+                      }
+
+                      rootNavigator.push(
                         MaterialPageRoute(
                           builder: (_) => const EmployerMessagesPage(),
                         ),

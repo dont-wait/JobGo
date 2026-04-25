@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 import '../../../widgets/employer/company/company_profile_card.dart';
 
@@ -50,8 +51,8 @@ class _CompanyProfilePageState extends State<CompanyProfilePage> {
         employer = data;
         isLoading = false;
       });
-    } catch (e) {
-      print("Load company error: $e");
+    } catch (e, st) {
+      AppLogger.error('Load company error', error: e, stackTrace: st);
       setState(() => isLoading = false);
     }
   }
