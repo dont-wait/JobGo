@@ -55,6 +55,24 @@ class InterviewCard extends StatelessWidget {
                     ),
                   ),
                   //const SizedBox(width: 6),
+                  // Status badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _statusColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: _statusColor),
+                    ),
+                    child: Text(
+                      _statusText,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: _statusColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
                   //edit
                   Material(
                     color: Colors.transparent,
@@ -183,4 +201,22 @@ class InterviewCard extends StatelessWidget {
       ],
     );
   }
+  
+Color get _statusColor {
+  switch (schedule.status) {
+    case 'accepted': return Colors.green;
+    case 'rejected': return Colors.red;
+    case 'reschedule': return Colors.orange;
+    default: return Colors.grey;
+  }
+}
+
+String get _statusText {
+  switch (schedule.status) {
+    case 'accepted': return 'Đã xác nhận';
+    case 'rejected': return 'Từ chối';
+    case 'reschedule': return 'Đổi lịch';
+    default: return 'Chờ phản hồi';
+  }
+}
 }

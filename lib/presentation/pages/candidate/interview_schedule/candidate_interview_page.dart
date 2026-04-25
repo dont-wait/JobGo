@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/presentation/pages/candidate/interview_schedule/candidate_interview_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
@@ -106,7 +107,16 @@ class _CandidateInterviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(  
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CandidateInterviewDetailPage(schedule: schedule),
+        ),
+      );
+    },
+    child:  Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -259,7 +269,7 @@ class _CandidateInterviewCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    )   );
   }
 
   Future<void> _respond(BuildContext context, String status) async {

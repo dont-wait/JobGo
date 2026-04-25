@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/create_interview_page.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/edit_interview_page.dart';
+import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_detail_page.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:jobgo/presentation/widgets/employer/interview_schedule/interview_card.dart';
 import 'package:provider/provider.dart';
@@ -108,7 +109,14 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
 
               return InterviewCard(
                   schedule: schedule,
-
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => InterviewDetailPage(schedule: schedule),
+                      ),
+                    );
+                  },
                   onDelete: () {
                     showDialog(
                       context: context,
