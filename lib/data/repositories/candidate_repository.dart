@@ -40,6 +40,7 @@ class CandidateRepository {
           i_contact_person,
           i_note,
           i_status,
+          i_requested_date,
           candidates (c_full_name),
           jobs (j_title)
         ''')

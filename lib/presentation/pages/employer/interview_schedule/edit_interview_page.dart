@@ -48,7 +48,8 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
-      firstDate: DateTime.now(),
+      // firstDate: DateTime.now(),
+      firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       initialDate: _date,
     );
