@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/interview_schedule_model.dart';
@@ -5,13 +6,36 @@ import 'package:jobgo/presentation/pages/employer/interview_schedule/edit_interv
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:provider/provider.dart';
 
-class InterviewDetailPage extends StatelessWidget {
+class InterviewDetailPage extends StatefulWidget {
   final InterviewScheduleModel schedule;
 
   const InterviewDetailPage({super.key, required this.schedule});
 
+  @override
+  State<InterviewDetailPage> createState() => _InterviewDetailPageState();
+}
+
+class _InterviewDetailPageState extends State<InterviewDetailPage> {
+  late InterviewScheduleModel _schedule;
+
+  @override
+  void initState() {
+    super.initState();
+    _schedule = widget.schedule;
+    Future.microtask(() async {
+      await context.read<InterviewProvider>().loadSchedules();
+      final updated = context.read<InterviewProvider>()
+          .schedules
+          .firstWhere((s) => s.id == widget.schedule.id,
+              orElse: () => widget.schedule);
+      if (mounted) {
+        setState(() => _schedule = updated);
+      }
+    });
+  }
+
   Color get _statusColor {
-    switch (schedule.status) {
+    switch (_schedule.status) {
       case 'accepted': return Colors.green;
       case 'rejected': return Colors.red;
       case 'reschedule': return Colors.orange;
@@ -20,7 +44,7 @@ class InterviewDetailPage extends StatelessWidget {
   }
 
   String get _statusText {
-    switch (schedule.status) {
+    switch (_schedule.status) {
       case 'accepted': return 'Ứng viên đã xác nhận';
       case 'rejected': return 'Ứng viên đã từ chối';
       case 'reschedule': return 'Ứng viên yêu cầu đổi lịch';
@@ -29,7 +53,7 @@ class InterviewDetailPage extends StatelessWidget {
   }
 
   IconData get _statusIcon {
-    switch (schedule.status) {
+    switch (_schedule.status) {
       case 'accepted': return Icons.check_circle_outline;
       case 'rejected': return Icons.cancel_outlined;
       case 'reschedule': return Icons.schedule;
@@ -52,7 +76,7 @@ class InterviewDetailPage extends StatelessWidget {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => EditInterviewPage(schedule: schedule),
+                  builder: (_) => EditInterviewPage(schedule: _schedule),
                 ),
               );
               if (context.mounted) {
@@ -95,7 +119,7 @@ class InterviewDetailPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Info card
+            // Thông tin ứng viên
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -112,21 +136,71 @@ class InterviewDetailPage extends StatelessWidget {
                     icon: Icons.person_outline,
                     iconColor: AppColors.primary,
                     label: 'Ứng viên',
-                    value: schedule.candidateName,
+                    value: _schedule.candidateName,
                   ),
                   _buildRow(
                     icon: Icons.work_outline,
                     iconColor: AppColors.primary,
                     label: 'Vị trí',
-                    value: schedule.jobTitle,
+                    value: _schedule.jobTitle,
                   ),
                 ],
               ),
             ),
 
             const SizedBox(height: 16),
-            // ✅ Thêm sau Container thông tin lịch hẹn
-            if (schedule.status == 'reschedule' && schedule.requestedDate != null) ...[
+
+            // Thông tin lịch hẹn
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('Thông tin lịch hẹn'),
+                  _buildRow(
+                    icon: Icons.calendar_today_rounded,
+                    iconColor: AppColors.primary,
+                    label: 'Ngày giờ',
+                    value: '${_schedule.date.day}/${_schedule.date.month}/${_schedule.date.year} • '
+                        '${_schedule.date.hour}:${_schedule.date.minute.toString().padLeft(2, '0')}',
+                  ),
+                  _buildRow(
+                    icon: Icons.videocam_outlined,
+                    iconColor: Colors.blueAccent,
+                    label: 'Hình thức',
+                    value: _schedule.type,
+                  ),
+                  _buildRow(
+                    icon: Icons.location_on_rounded,
+                    iconColor: Colors.redAccent,
+                    label: 'Địa điểm',
+                    value: _schedule.location.isNotEmpty ? _schedule.location : 'Chưa có',
+                  ),
+                  _buildRow(
+                    icon: Icons.person_outline,
+                    iconColor: Colors.blueAccent,
+                    label: 'Người liên hệ',
+                    value: _schedule.contactPerson.isNotEmpty ? _schedule.contactPerson : 'N/A',
+                  ),
+                  if (_schedule.note.isNotEmpty)
+                    _buildRow(
+                      icon: Icons.note_alt_outlined,
+                      iconColor: Colors.orange,
+                      label: 'Ghi chú',
+                      value: _schedule.note,
+                    ),
+                ],
+              ),
+            ),
+
+            // ✅ Phần xác nhận/từ chối đổi lịch
+            if (_schedule.status == 'reschedule' && _schedule.requestedDate != null) ...[
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
@@ -156,8 +230,8 @@ class InterviewDetailPage extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       'Ngày/giờ đề xuất: '
-                      '${schedule.requestedDate!.day}/${schedule.requestedDate!.month}/${schedule.requestedDate!.year} • '
-                      '${schedule.requestedDate!.hour}:${schedule.requestedDate!.minute.toString().padLeft(2, '0')}',
+                      '${_schedule.requestedDate!.day}/${_schedule.requestedDate!.month}/${_schedule.requestedDate!.year} • '
+                      '${_schedule.requestedDate!.hour}:${_schedule.requestedDate!.minute.toString().padLeft(2, '0')}',
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.orange,
@@ -195,57 +269,6 @@ class InterviewDetailPage extends StatelessWidget {
                 ),
               ),
             ],
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Thông tin lịch hẹn'),
-                  _buildRow(
-                    icon: Icons.calendar_today_rounded,
-                    iconColor: AppColors.primary,
-                    label: 'Ngày giờ',
-                    value: '${schedule.date.day}/${schedule.date.month}/${schedule.date.year} • '
-                        '${schedule.date.hour}:${schedule.date.minute.toString().padLeft(2, '0')}',
-                  ),
-                  _buildRow(
-                    icon: Icons.videocam_outlined,
-                    iconColor: Colors.blueAccent,
-                    label: 'Hình thức',
-                    value: schedule.type,
-                  ),
-                  _buildRow(
-                    icon: Icons.location_on_rounded,
-                    iconColor: Colors.redAccent,
-                    label: 'Địa điểm',
-                    value: schedule.location.isNotEmpty
-                        ? schedule.location
-                        : 'Chưa có',
-                  ),
-                  _buildRow(
-                    icon: Icons.person_outline,
-                    iconColor: Colors.blueAccent,
-                    label: 'Người liên hệ',
-                    value: schedule.contactPerson.isNotEmpty
-                        ? schedule.contactPerson
-                        : 'N/A',
-                  ),
-                  if (schedule.note.isNotEmpty)
-                    _buildRow(
-                      icon: Icons.note_alt_outlined,
-                      iconColor: Colors.orange,
-                      label: 'Ghi chú',
-                      value: schedule.note,
-                    ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -283,21 +306,8 @@ class InterviewDetailPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textHint,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textHint)),
+                Text(value, style: const TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -305,9 +315,10 @@ class InterviewDetailPage extends StatelessWidget {
       ),
     );
   }
+
   Future<void> _confirmReschedule(BuildContext context) async {
     try {
-      await context.read<InterviewProvider>().confirmReschedule(schedule.id);
+      await context.read<InterviewProvider>().confirmReschedule(_schedule.id);
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -328,7 +339,7 @@ class InterviewDetailPage extends StatelessWidget {
 
   Future<void> _rejectReschedule(BuildContext context) async {
     try {
-      await context.read<InterviewProvider>().rejectReschedule(schedule.id);
+      await context.read<InterviewProvider>().rejectReschedule(_schedule.id);
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -346,5 +357,4 @@ class InterviewDetailPage extends StatelessWidget {
       }
     }
   }
-  
 }

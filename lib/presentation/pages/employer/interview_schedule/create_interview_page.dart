@@ -1,98 +1,11 @@
-// import 'package:flutter/material.dart';
-// import 'package:jobgo/presentation/providers/interview_provider.dart';
-// import 'package:provider/provider.dart';
 
-// class CreateInterviewPage extends StatefulWidget {
-//   const CreateInterviewPage({super.key});
-
-//   @override
-//   State<CreateInterviewPage> createState() =>
-//       _CreateInterviewPageState();
-// }
-
-// class _CreateInterviewPageState extends State<CreateInterviewPage> {
-//   final locationCtrl = TextEditingController();
-//   final contactCtrl = TextEditingController();
-//   final noteCtrl = TextEditingController();
-
-//   DateTime? date;
-//   String type = 'Offline';
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final provider = context.read<InterviewProvider>();
-
-//     return Scaffold(
-//       appBar: AppBar(title: const Text("Tạo lịch phỏng vấn")),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16),
-//         child: Column(
-//           children: [
-//             ListTile(
-//               title: Text(date == null
-//                   ? "Chọn ngày"
-//                   : date.toString()),
-//               trailing: const Icon(Icons.calendar_today),
-//               onTap: () async {
-//                 final picked = await showDatePicker(
-//                   context: context,
-//                   firstDate: DateTime.now(),
-//                   lastDate: DateTime(2100),
-//                   initialDate: DateTime.now(),
-//                 );
-
-//                 if (picked != null) {
-//                   setState(() => date = picked);
-//                 }
-//               },
-//             ),
-
-//             DropdownButtonFormField(
-//               value: type,
-//               items: const [
-//                 DropdownMenuItem(value: 'Online', child: Text('Online')),
-//                 DropdownMenuItem(value: 'Offline', child: Text('Offline')),
-//               ],
-//               onChanged: (v) => type = v!,
-//             ),
-
-//             TextField(controller: locationCtrl, decoration: const InputDecoration(labelText: "Địa điểm")),
-//             TextField(controller: contactCtrl, decoration: const InputDecoration(labelText: "Người liên hệ")),
-//             TextField(controller: noteCtrl, decoration: const InputDecoration(labelText: "Ghi chú")),
-
-//             const SizedBox(height: 20),
-
-//             ElevatedButton(
-//               onPressed: () async {
-//                 if (date == null) return;
-
-//                 await provider.createSchedule(
-//                   date: date!,
-//                   type: type,
-//                   location: locationCtrl.text,
-//                   contactPerson: contactCtrl.text,
-//                   note: noteCtrl.text,
-//                   cId: 1, // tạm
-//                   jId: 1, // tạm
-//                 );
-
-//                 Navigator.pop(context);
-//               },
-//               child: const Text("Tạo"),
-//             )
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/data/repositories/employer_job_repository.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CreateInterviewPage extends StatefulWidget {
   const CreateInterviewPage({super.key});
@@ -131,68 +44,6 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
     super.dispose();
   }
 
-//   Future<void> _loadData() async {
-//   try {
-//     final supabase = Supabase.instance.client;
-//     final authUser = supabase.auth.currentUser;
-//      print('🔍 authUser: ${authUser?.email}');
-
-//     // Lấy u_id
-//     final userRow = await supabase
-//         .from('users')
-//         .select('u_id')
-//         .or('auth_uid.eq.${authUser!.id},u_email.eq.${authUser.email}')
-//         .maybeSingle();
-//     print('🔍 userRow: $userRow');
-//     final uId = userRow!['u_id'] as int;
-
-//     // Lấy e_id
-//     final employerRow = await supabase
-//         .from('employers')
-//         .select('e_id')
-//         .eq('u_id', uId)
-//         .maybeSingle();
-//     print('🔍 employerRow: $employerRow');
-//     final eId = employerRow!['e_id'] as int;
-
-//     // Load jobs của employer này thôi
-//     final jobsData = await supabase
-//         .from('jobs')
-//         .select('j_id, j_title')
-//         .eq('e_id', eId)
-//         .order('j_id', ascending: true);
-//       print('🔍 jobsData: $jobsData');
-//     // Load candidates
-//     final candidatesData = await supabase
-//         .from('candidates')
-//         .select('c_id, c_full_name')
-//         .not('c_full_name', 'is', null);
-//     print('🔍 candidatesData: $candidatesData');
-
-//     if (!mounted) return;
-//     setState(() {
-//       _jobs = (jobsData as List)
-//           .map((j) => {
-//                 'id': j['j_id'] as int,
-//                 'title': j['j_title'] as String,
-//               })
-//           .toList();
-//       _candidates = (candidatesData as List)
-//           .map((c) => {
-//                 'id': c['c_id'] as int,
-//                 'name': c['c_full_name'] as String,
-//               })
-//           .toList();
-//       _isLoading = false;
-//     });
-//   } catch (e) {
-//     if (!mounted) return;
-//     setState(() => _isLoading = false);
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text('Lỗi tải dữ liệu: $e')),
-//     );
-//   }
-// }
   Future<void> _loadData() async {
       try {
         final jobRepo = EmployerJobRepository();

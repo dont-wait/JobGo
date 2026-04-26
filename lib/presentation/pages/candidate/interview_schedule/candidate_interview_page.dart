@@ -272,39 +272,8 @@ class _CandidateInterviewCard extends StatelessWidget {
     )   );
   }
 
-  // Future<void> _respond(BuildContext context, String status) async {
-  //   try {
-  //     await context.read<InterviewProvider>().updateScheduleStatus(
-  //       scheduleId: schedule.id,
-  //       status: status,
-  //     );
-
-  //     if (context.mounted) {
-  //       final msg = status == 'accepted'
-  //           ? loc.scheduleConfirmedMessage
-  //           : status == 'rejected'
-  //           ? loc.scheduleDeclinedMessage
-  //           : loc.rescheduleRequestedMessage;
-
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(msg),
-  //           backgroundColor: status == 'accepted'
-  //               ? Colors.green
-  //               : Colors.orange,
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (context.mounted) {
-  //       ScaffoldMessenger.of(
-  //         context,
-  //       ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
-  //     }
-  //   }
-  // }
   Future<void> _respond(BuildContext context, String status) async {
-  // ✅ Nếu đổi lịch thì hiện dialog chọn ngày/giờ
+  // Nếu đổi lịch thì hiện dialog chọn ngày/giờ
   if (status == 'reschedule') {
     await _showRescheduleDialog(context);
     return;
