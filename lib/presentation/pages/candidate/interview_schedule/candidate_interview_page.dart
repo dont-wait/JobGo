@@ -272,38 +272,159 @@ class _CandidateInterviewCard extends StatelessWidget {
     )   );
   }
 
+  // Future<void> _respond(BuildContext context, String status) async {
+  //   try {
+  //     await context.read<InterviewProvider>().updateScheduleStatus(
+  //       scheduleId: schedule.id,
+  //       status: status,
+  //     );
+
+  //     if (context.mounted) {
+  //       final msg = status == 'accepted'
+  //           ? loc.scheduleConfirmedMessage
+  //           : status == 'rejected'
+  //           ? loc.scheduleDeclinedMessage
+  //           : loc.rescheduleRequestedMessage;
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(msg),
+  //           backgroundColor: status == 'accepted'
+  //               ? Colors.green
+  //               : Colors.orange,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (context.mounted) {
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
+  //     }
+  //   }
+  // }
   Future<void> _respond(BuildContext context, String status) async {
-    try {
-      await context.read<InterviewProvider>().updateScheduleStatus(
-        scheduleId: schedule.id,
-        status: status,
-      );
-
-      if (context.mounted) {
-        final msg = status == 'accepted'
-            ? loc.scheduleConfirmedMessage
-            : status == 'rejected'
-            ? loc.scheduleDeclinedMessage
-            : loc.rescheduleRequestedMessage;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(msg),
-            backgroundColor: status == 'accepted'
-                ? Colors.green
-                : Colors.orange,
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
-      }
-    }
+  // ✅ Nếu đổi lịch thì hiện dialog chọn ngày/giờ
+  if (status == 'reschedule') {
+    await _showRescheduleDialog(context);
+    return;
   }
 
+  try {
+    await context.read<InterviewProvider>().updateScheduleStatus(
+      scheduleId: schedule.id,
+      status: status,
+    );
+
+    if (context.mounted) {
+      final msg = status == 'accepted'
+          ? loc.scheduleConfirmedMessage
+          : loc.scheduleDeclinedMessage;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          backgroundColor: status == 'accepted' ? Colors.green : Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${loc.errorMessage}$e')),
+      );
+    }
+  }
+}
+
+  // ✅ Thêm hàm dialog vào _CandidateInterviewCard
+  Future<void> _showRescheduleDialog(BuildContext context) async {
+    DateTime? selectedDate;
+    TimeOfDay? selectedTime;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Yêu cầu đổi lịch'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Chọn ngày và giờ mới bạn muốn phỏng vấn:',
+                style: TextStyle(fontSize: 14)),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.calendar_today, color: Colors.blue),
+                title: Text(selectedDate == null
+                    ? 'Chọn ngày'
+                    : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: ctx,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2100),
+                    initialDate: DateTime.now(),
+                  );
+                  if (picked != null) setDialogState(() => selectedDate = picked);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.access_time, color: Colors.blue),
+                title: Text(selectedTime == null
+                    ? 'Chọn giờ'
+                    : '${selectedTime!.hour}:${selectedTime!.minute.toString().padLeft(2, '0')}'),
+                onTap: () async {
+                  final picked = await showTimePicker(
+                    context: ctx,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  if (picked != null) setDialogState(() => selectedTime = picked);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: selectedDate == null || selectedTime == null
+                  ? null
+                  : () async {
+                      final requestedDate = DateTime(
+                        selectedDate!.year, selectedDate!.month, selectedDate!.day,
+                        selectedTime!.hour, selectedTime!.minute,
+                      );
+                      Navigator.pop(ctx);
+                      try {
+                        await context.read<InterviewProvider>().requestReschedule(
+                          scheduleId: schedule.id,
+                          requestedDate: requestedDate,
+                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Đã gửi yêu cầu đổi lịch!'),
+                              backgroundColor: Colors.orange,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Lỗi: $e')),
+                          );
+                        }
+                      }
+                    },
+              child: const Text('Gửi yêu cầu'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   Widget _buildRow({
     required IconData icon,
     required Color iconColor,

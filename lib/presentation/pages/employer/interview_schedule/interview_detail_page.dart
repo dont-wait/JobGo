@@ -125,7 +125,76 @@ class InterviewDetailPage extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
-
+            // ✅ Thêm sau Container thông tin lịch hẹn
+            if (schedule.status == 'reschedule' && schedule.requestedDate != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.orange),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.schedule, color: Colors.orange),
+                        SizedBox(width: 8),
+                        Text(
+                          'Ứng viên yêu cầu đổi lịch',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Ngày/giờ đề xuất: '
+                      '${schedule.requestedDate!.day}/${schedule.requestedDate!.month}/${schedule.requestedDate!.year} • '
+                      '${schedule.requestedDate!.hour}:${schedule.requestedDate!.minute.toString().padLeft(2, '0')}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => _rejectReschedule(context),
+                            icon: const Icon(Icons.close, color: Colors.red),
+                            label: const Text('Từ chối', style: TextStyle(color: Colors.red)),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Colors.red),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => _confirmReschedule(context),
+                            icon: const Icon(Icons.check),
+                            label: const Text('Xác nhận'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -236,4 +305,46 @@ class InterviewDetailPage extends StatelessWidget {
       ),
     );
   }
+  Future<void> _confirmReschedule(BuildContext context) async {
+    try {
+      await context.read<InterviewProvider>().confirmReschedule(schedule.id);
+      if (context.mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã xác nhận đổi lịch!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _rejectReschedule(BuildContext context) async {
+    try {
+      await context.read<InterviewProvider>().rejectReschedule(schedule.id);
+      if (context.mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã từ chối yêu cầu đổi lịch'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
+    }
+  }
+  
 }
