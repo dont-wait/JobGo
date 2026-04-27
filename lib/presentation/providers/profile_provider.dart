@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 
 class ProfileProvider extends ChangeNotifier {
   CandidateSupabaseModel? _candidate;
@@ -76,8 +77,8 @@ class ProfileProvider extends ChangeNotifier {
 
         _candidate = _candidate!.copyWith(resumes: newResumes);
         notifyListeners();
-      } catch (e) {
-        debugPrint('Error adding resume: $e');
+      } catch (e, st) {
+        AppLogger.error('Error adding resume', error: e, stackTrace: st);
       }
     }
   }
@@ -96,8 +97,12 @@ class ProfileProvider extends ChangeNotifier {
 
         _candidate = _candidate!.copyWith(resumes: newResumes);
         notifyListeners();
-      } catch (e) {
-        debugPrint('Error setting default resume: $e');
+      } catch (e, st) {
+        AppLogger.error(
+          'Error setting default resume',
+          error: e,
+          stackTrace: st,
+        );
       }
     }
   }
@@ -118,8 +123,8 @@ class ProfileProvider extends ChangeNotifier {
 
         _candidate = _candidate!.copyWith(resumes: newResumes);
         notifyListeners();
-      } catch (e) {
-        debugPrint('Error replacing resume: $e');
+      } catch (e, st) {
+        AppLogger.error('Error replacing resume', error: e, stackTrace: st);
       }
     }
   }
@@ -138,8 +143,8 @@ class ProfileProvider extends ChangeNotifier {
 
         _candidate = _candidate!.copyWith(resumes: newResumes);
         notifyListeners();
-      } catch (e) {
-        debugPrint('Error removing resume: $e');
+      } catch (e, st) {
+        AppLogger.error('Error removing resume', error: e, stackTrace: st);
       }
     }
   }

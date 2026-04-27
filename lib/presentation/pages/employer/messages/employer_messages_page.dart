@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/data/mockdata/mock_employer_messages.dart';
+import 'package:jobgo/data/models/employer_message_thread.dart';
+import 'package:jobgo/data/repositories/message_repository.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 /// Trang nhắn tin của Employer — phân loại theo Employer, Candidate, Admin.
@@ -14,11 +15,27 @@ class EmployerMessagesPage extends StatefulWidget {
 
 class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
   ChatUserRole? _selectedFilter;
+  final MessageRepository _repository = MessageRepository();
+  late Future<List<EmployerMessageThread>> _threadsFuture;
+  List<EmployerMessageThread> _threads = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _threadsFuture = _loadThreads();
+  }
+
+  Future<List<EmployerMessageThread>> _loadThreads() async {
+    final threads = await _repository.fetchEmployerThreads();
+    if (mounted) {
+      setState(() => _threads = threads);
+    }
+    return threads;
+  }
 
   List<EmployerMessageThread> get _filteredThreads {
-    final all = MockEmployerMessages.threads;
-    if (_selectedFilter == null) return all;
-    return all.where((t) => t.userRole == _selectedFilter).toList();
+    if (_selectedFilter == null) return _threads;
+    return _threads.where((t) => t.userRole == _selectedFilter).toList();
   }
 
   List<EmployerMessageThread> get _pinned =>
@@ -35,37 +52,58 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
         children: [
           _buildBackground(),
           SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _buildHeader()),
-                SliverToBoxAdapter(child: _buildSearch()),
-                SliverToBoxAdapter(child: _buildFilters()),
-                if (_pinned.isNotEmpty) ...[
-                  SliverToBoxAdapter(
-                    child: _buildSectionHeader('Pinned', _pinned.length),
+            child: FutureBuilder<List<EmployerMessageThread>>(
+              future: _threadsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return _buildError(snapshot.error.toString());
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {
+                      _threadsFuture = _loadThreads();
+                    });
+                    await _threadsFuture;
+                  },
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(child: _buildHeader()),
+                      SliverToBoxAdapter(child: _buildSearch()),
+                      SliverToBoxAdapter(child: _buildFilters()),
+                      if (_pinned.isNotEmpty) ...[
+                        SliverToBoxAdapter(
+                          child: _buildSectionHeader('Pinned', _pinned.length),
+                        ),
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (_, i) => _MessageTile(thread: _pinned[i]),
+                            childCount: _pinned.length,
+                          ),
+                        ),
+                      ],
+                      if (_others.isNotEmpty) ...[
+                        SliverToBoxAdapter(
+                          child: _buildSectionHeader('All', _others.length),
+                        ),
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (_, i) => _MessageTile(thread: _others[i]),
+                            childCount: _others.length,
+                          ),
+                        ),
+                      ],
+                      if (_filteredThreads.isEmpty)
+                        SliverFillRemaining(child: _buildEmpty()),
+                      const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                    ],
                   ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, i) => _MessageTile(thread: _pinned[i]),
-                      childCount: _pinned.length,
-                    ),
-                  ),
-                ],
-                if (_others.isNotEmpty) ...[
-                  SliverToBoxAdapter(
-                    child: _buildSectionHeader('All', _others.length),
-                  ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (_, i) => _MessageTile(thread: _others[i]),
-                      childCount: _others.length,
-                    ),
-                  ),
-                ],
-                if (_filteredThreads.isEmpty)
-                  SliverFillRemaining(child: _buildEmpty()),
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              ],
+                );
+              },
             ),
           ),
         ],
@@ -241,6 +279,49 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildError(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline,
+                size: 64, color: AppColors.error.withValues(alpha: 0.7)),
+            const SizedBox(height: 12),
+            const Text(
+              'Unable to load messages',
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              message,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textHint,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _threadsFuture = _loadThreads();
+                });
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -119,6 +119,47 @@ final Map<String, String> englishStrings = {
   'privacyPolicy': 'Privacy Policy',
   'termsOfService': 'Terms of Service',
   'helpCenter': 'Help Center',
+  'privacyPolicyContent': 'Privacy Policy\n\n'
+      '1) Data we collect\n'
+      '- Profile, contact, and in-app activity information.\n'
+      '- Basic usage logs to improve the experience.\n\n'
+      '2) Purpose of use\n'
+      '- Connect employers with candidates.\n'
+      '- Send recruitment-related notifications.\n'
+      '- Support customer care and account security.\n\n'
+      '3) Data protection\n'
+      '- Data is stored securely and accessed only when necessary.\n'
+      '- You can request updates or deletion of your information.\n\n'
+      '4) Data sharing\n'
+      '- Shared only within recruitment features.\n'
+      '- We do not sell data to third parties.',
+  'termsOfServiceContent': 'Terms of Service\n\n'
+      '1) Account\n'
+      '- Provide accurate and up-to-date information.\n'
+      '- You are responsible for keeping your account secure.\n\n'
+      '2) Content\n'
+      '- Do not post illegal or misleading content.\n'
+      '- Employers are responsible for job posting accuracy.\n\n'
+      '3) Prohibited behavior\n'
+      '- Fraud, spam, or unauthorized system access.\n'
+      '- Attacking or disrupting the service.\n\n'
+      '4) Changes to terms\n'
+      '- Terms may be updated and announced in-app.',
+  'helpCenterContent': 'Help Center\n\n'
+      'We can assist with:\n'
+      '- Missing notifications.\n'
+      '- Login issues or email verification.\n'
+      '- Profile updates, job posts, and applications.\n\n'
+      'Quick self-help tips:\n'
+      '1) Check your network connection.\n'
+      '2) Update the app to the latest version.\n'
+      '3) Sign out and sign back in.\n\n'
+      'If the issue persists, contact us.',
+  'contactUsContent': 'Contact Us\n\n'
+      'Email: support@jobgo.vn\n'
+      'Hotline: 1900 123 456 (08:30 - 18:00)\n'
+      'Address: 68 Nguyen Hue, District 1, Ho Chi Minh City\n\n'
+      'We respond within 24 - 48 business hours.',
   'changePassword': 'Change Password',
   'pushNotifications': 'Push Notifications',
   'account': 'ACCOUNT',

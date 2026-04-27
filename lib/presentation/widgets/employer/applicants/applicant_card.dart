@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
+import 'package:jobgo/main.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/pages/employer/messages/employer_messages_page.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile_page.dart';
@@ -141,13 +142,23 @@ class ApplicantCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    if (!AppShell.goToMessages(context)) {
-                      Navigator.of(context).push(
+                    final rootNavigator = navigatorKey.currentState;
+                    if (rootNavigator == null) return;
+
+                    rootNavigator.popUntil((route) => route.isFirst);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      final shellContext = navigatorKey.currentContext;
+                      if (shellContext != null &&
+                          AppShell.goToMessages(shellContext)) {
+                        return;
+                      }
+
+                      rootNavigator.push(
                         MaterialPageRoute(
                           builder: (_) => const EmployerMessagesPage(),
                         ),
                       );
-                    }
+                    });
                   },
                   icon: const Icon(Icons.message, size: 18),
                   label: const Text('Message'),

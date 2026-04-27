@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/employer_model.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 
 class EmployerRepository {
   final _supabase = Supabase.instance.client;
@@ -26,8 +27,8 @@ class EmployerRepository {
 
       if (employerData == null) return null;
       return EmployerModel.fromJson(employerData);
-    } catch (e) {
-      print('Error fetching employer: $e');
+    } catch (e, st) {
+      AppLogger.error('Error fetching employer', error: e, stackTrace: st);
       return null;
     }
   }
@@ -39,8 +40,12 @@ class EmployerRepository {
           .update(employer.toJson())
           .eq('e_id', eId);
       return true;
-    } catch (e) {
-      print('Error updating employer profile: $e');
+    } catch (e, st) {
+      AppLogger.error(
+        'Error updating employer profile',
+        error: e,
+        stackTrace: st,
+      );
       return false;
     }
   }
@@ -64,8 +69,8 @@ class EmployerRepository {
           .from('logos')
           .getPublicUrl(path);
       return publicUrl;
-    } catch (e) {
-      print('Error uploading logo: $e');
+    } catch (e, st) {
+      AppLogger.error('Error uploading logo', error: e, stackTrace: st);
       return null;
     }
   }

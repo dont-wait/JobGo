@@ -137,12 +137,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildMenuItem(
                     icon: Icons.shield_outlined,
                     label: loc.privacyPolicy,
-                    onTap: () {},
+                    onTap: () => _showInfoSheet(
+                      title: loc.privacyPolicy,
+                      body: _privacyPolicyContent(),
+                    ),
                   ),
                   _buildMenuItem(
                     icon: Icons.description_outlined,
                     label: loc.termsOfService,
-                    onTap: () {},
+                    onTap: () => _showInfoSheet(
+                      title: loc.termsOfService,
+                      body: _termsOfServiceContent(),
+                    ),
                     showDivider: false,
                   ),
                 ]),
@@ -155,12 +161,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildMenuItem(
                     icon: Icons.help_outline,
                     label: loc.helpCenter,
-                    onTap: () {},
+                    onTap: () => _showInfoSheet(
+                      title: loc.helpCenter,
+                      body: _helpCenterContent(),
+                    ),
                   ),
                   _buildMenuItem(
                     icon: Icons.mail_outline,
                     label: loc.contactUs,
-                    onTap: () {},
+                    onTap: () => _showInfoSheet(
+                      title: loc.contactUs,
+                      body: _contactUsContent(),
+                    ),
                     showDivider: false,
                   ),
                 ]),
@@ -523,6 +535,89 @@ class _SettingsPageState extends State<SettingsPage> {
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
         .toUpperCase();
+  }
+
+  void _showInfoSheet({required String title, required String body}) {
+    final loc = AppLocalizations.of(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.divider,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      body,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(loc.close),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _privacyPolicyContent() {
+    return AppLocalizations.of(context).privacyPolicyContent;
+  }
+
+  String _termsOfServiceContent() {
+    return AppLocalizations.of(context).termsOfServiceContent;
+  }
+
+  String _helpCenterContent() {
+    return AppLocalizations.of(context).helpCenterContent;
+  }
+
+  String _contactUsContent() {
+    return AppLocalizations.of(context).contactUsContent;
   }
 
   Widget _buildSectionLabel(String label) {

@@ -31,18 +31,23 @@ import 'package:jobgo/presentation/pages/admin/profile/admin_profile_page.dart';
 /// Shell chính của ứng dụng — hiển thị bottom nav + pages theo role.
 /// Tab Profile cũ được thay bằng Notification. Profile hiển thị qua avatar trên AppBar.
 class AppShell extends StatefulWidget {
+  static final GlobalKey<_AppShellState> shellKey =
+      GlobalKey<_AppShellState>();
   final UserRole role;
 
   const AppShell({super.key, required this.role});
 
   /// Chuyển đến trang Profile (ẩn) mà vẫn giữ bottom nav.
   static void goToProfile(BuildContext context) {
-    context.findAncestorStateOfType<_AppShellState>()?.goToProfile();
+    final shellState = context.findAncestorStateOfType<_AppShellState>() ??
+        shellKey.currentState;
+    shellState?.goToProfile();
   }
 
   /// Chuyển đến trang Messages (tab 3 cho employer/candidate) mà vẫn giữ bottom nav.
   static bool goToMessages(BuildContext context) {
-    final shellState = context.findAncestorStateOfType<_AppShellState>();
+    final shellState = context.findAncestorStateOfType<_AppShellState>() ??
+        shellKey.currentState;
     if (shellState == null) return false;
 
     shellState.goToMessages();

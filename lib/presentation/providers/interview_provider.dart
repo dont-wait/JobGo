@@ -3,6 +3,7 @@ import 'package:jobgo/data/models/interview_schedule_model.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/data/repositories/interview_repository.dart';
 import 'package:jobgo/data/repositories/notification_repository.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InterviewProvider extends ChangeNotifier {
@@ -173,8 +174,12 @@ class InterviewProvider extends ChangeNotifier {
       candidateSchedules = data
           .map((e) => InterviewScheduleModel.fromMap(e))
           .toList();
-    } catch (e) {
-      print('Error loading candidate schedules: $e');
+    } catch (e, st) {
+      AppLogger.error(
+        'Error loading candidate schedules',
+        error: e,
+        stackTrace: st,
+      );
     } finally {
       isLoading = false;
       notifyListeners();
@@ -206,8 +211,8 @@ class InterviewProvider extends ChangeNotifier {
         );
         notifyListeners();
       }
-    } catch (e) {
-      print('Error updating status: $e');
+    } catch (e, st) {
+      AppLogger.error('Error updating status', error: e, stackTrace: st);
       rethrow;
     }
   }
