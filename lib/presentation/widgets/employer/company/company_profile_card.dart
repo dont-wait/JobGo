@@ -96,12 +96,18 @@ class CompanyProfileCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.5,
-                    color: AppColors.textSecondary,
+               
+                SizedBox(
+                  height: 120, // giới hạn chiều cao phần mô tả
+                  child: SingleChildScrollView(
+                    child: Text(
+                      description,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ),
                 ),
 

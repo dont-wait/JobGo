@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:jobgo/presentation/pages/employer/company/company_detail_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/utils/app_logger.dart';
 import '../../../../core/configs/theme/app_colors.dart';
@@ -40,6 +41,7 @@ class _CompanyProfilePageState extends State<CompanyProfilePage> {
 
       final uId = userRow['u_id'];
 
+
       // Lấy employer
       final data = await supabase
           .from('employers')
@@ -70,23 +72,27 @@ class _CompanyProfilePageState extends State<CompanyProfilePage> {
           ? const Center(child: CircularProgressIndicator())
           : employer == null
               ? const Center(child: Text("Không có dữ liệu công ty"))
-              : CompanyProfileCard(
-                  companyName: employer!['e_company_name'] ?? 'Chưa có tên',
-                  imagePath: employer!['e_logo_url'] ??
-                      "assets/images/role_candidate1.jpg",
-                  description:
-                      employer!['e_company_description'] ?? 'Chưa có mô tả',
-                  location:
-                      employer!['e_company_address'] ?? 'Chưa có địa chỉ',
-                  website:
-                      employer!['e_website'] ?? 'Chưa có website',
-                  email: 
-                      employer!['e_email'] ?? '',
-                  phone: 
-                      employer!['e_phone'] ?? '',
-                  companySize: 
-                      employer!['e_company_size'] ?? '',
+              : InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CompanyDetailPage(employer: employer!),
+                      ),
+                    );
+                  },
+                  child: CompanyProfileCard(
+                    companyName: employer!['e_company_name'] ?? 'Chưa có tên',
+                    imagePath: employer!['e_logo_url'] ?? "assets/images/role_candidate1.jpg",
+                    description: employer!['e_company_description'] ?? 'Chưa có mô tả',
+                    location: employer!['e_company_address'] ?? 'Chưa có địa chỉ',
+                    website: employer!['e_website'] ?? 'Chưa có website',
+                    email: employer!['e_email'] ?? '',
+                    phone: employer!['e_phone'] ?? '',
+                    companySize: employer!['e_company_size'] ?? '',
+                  ),
                 ),
+
     );
   }
 }

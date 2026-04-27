@@ -8,6 +8,8 @@ class InterviewScheduleModel {
   final String contactPerson;
   final String note;
   final String status;
+  final DateTime? requestedDate; 
+
 
   InterviewScheduleModel({
     required this.id,
@@ -19,6 +21,7 @@ class InterviewScheduleModel {
     required this.contactPerson,
     required this.note,
     this.status = 'pending',
+    this.requestedDate,
   });
 
   factory InterviewScheduleModel.fromMap(Map<String, dynamic> map) {
@@ -32,6 +35,9 @@ class InterviewScheduleModel {
       contactPerson: map['i_contact_person'] ?? '',
       note: map['i_note'] ?? '',
       status: map['i_status'] ?? 'pending',
+      requestedDate: map['i_requested_date'] != null
+          ? DateTime.parse(map['i_requested_date'])
+          : null,
     );
   }
 }
