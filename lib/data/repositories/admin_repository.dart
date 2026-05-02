@@ -652,6 +652,115 @@ class AdminRepository {
     return false;
   }
 
+  Future<List<AdminUserModel>> getDeletedUsers({
+    int page = 0,
+    int pageSize = 20,
+  }) async {
+    final from = page * pageSize;
+    final to = from + pageSize - 1;
+
+    try {
+      // Tìm các user có trạng thái là deleted
+      final response = await _supabase
+          .from('users')
+          .select('*')
+          .or('u_status.eq.deleted,u_role.eq.deleted')
+          .order('u_create_at', ascending: false)
+          .range(from, to);
+
+      return (response as List)
+          .map((json) => AdminUserModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      dev.log('Error fetching deleted users: $e');
+      return [];
+    }
+  }
+
+  Future<bool> restoreUser(String userId) async {
+    final trimmedUserId = userId.trim();
+    final numericId = int.tryParse(trimmedUserId);
+    final isUuid = RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+    ).hasMatch(trimmedUserId);
+
+    int? resolvedUserId;
+    try {
+      if (numericId != null) {
+        final userRow = await _supabase.from('users').select('u_id').eq('u_id', numericId).maybeSingle();
+        if (userRow != null) resolvedUserId = int.tryParse(userRow['u_id'].toString());
+      }
+      if (resolvedUserId == null && isUuid) {
+        final userRow = await _supabase.from('users').select('u_id').eq('auth_uid', trimmedUserId).maybeSingle();
+        if (userRow != null) resolvedUserId = int.tryParse(userRow['u_id'].toString());
+      }
+    } catch (_) {}
+
+    resolvedUserId ??= numericId;
+
+    if (resolvedUserId != null) {
+      try {
+        await _supabase.from('users').update({
+          'u_status': 'active', // Trả về trạng thái hoạt động bình thường
+          'u_deleted_at': null,
+        }).eq('u_id', resolvedUserId);
+        return true;
+      } catch (e) {
+        dev.log('Restore user failed: $e');
+      }
+    }
+    return false;
+  }
+
+  Future<bool> hardDeleteUser(String userId) async {
+    final trimmedUserId = userId.trim();
+    final numericId = int.tryParse(trimmedUserId);
+    final isUuid = RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+    ).hasMatch(trimmedUserId);
+
+    int? resolvedUserId;
+    try {
+      if (numericId != null) {
+        final userRow = await _supabase.from('users').select('u_id').eq('u_id', numericId).maybeSingle();
+        if (userRow != null) resolvedUserId = int.tryParse(userRow['u_id'].toString());
+      }
+      if (resolvedUserId == null && isUuid) {
+        final userRow = await _supabase.from('users').select('u_id').eq('auth_uid', trimmedUserId).maybeSingle();
+        if (userRow != null) resolvedUserId = int.tryParse(userRow['u_id'].toString());
+      }
+    } catch (_) {}
+
+    resolvedUserId ??= numericId;
+
+    if (resolvedUserId != null) {
+      // Cố gắng xóa các dữ liệu liên quan trước (Candidates, Employers) để tránh lỗi Khóa ngoại (Foreign Key)
+      try {
+        await _supabase.from('candidates').delete().eq('u_id', resolvedUserId);
+      } catch (_) {}
+      
+      try {
+        await _supabase.from('employers').delete().eq('u_id', resolvedUserId);
+      } catch (_) {}
+
+      // Cuối cùng xóa vĩnh viễn khỏi bảng users
+      try {
+        await _supabase.from('users').delete().eq('u_id', resolvedUserId);
+        
+        // Thử xóa luôn cả trong bảng auth.users nếu có quyền admin
+        if (isUuid) {
+          try {
+             await _supabase.auth.admin.deleteUser(trimmedUserId);
+          } catch (_) {}
+        }
+        return true;
+      } catch (e) {
+        dev.log('Hard delete user failed: $e');
+      }
+    }
+    return false;
+  }
+
   Future<List<JobModerationItem>> getPendingJobs({
     int page = 0,
     int pageSize = 20,
@@ -740,6 +849,10 @@ class AdminRepository {
           query = query.or(
             'j_moderation_status.eq.rejected,j_status.eq.rejected,j_status.eq.inactive',
           );
+        } else if (normalized == 'expired') {
+          query = query.or(
+            'j_status.eq.expired,j_status.eq.closed',
+          );
         }
       } else {
         query = query.neq('j_moderation_status', 'pending');
@@ -770,6 +883,9 @@ class AdminRepository {
         }
 
         final normalized = status.trim().toLowerCase();
+        if (normalized == 'expired') {
+          return mapped.where((item) => item.status == 'expired' || item.status == 'closed').toList();
+        }
         return mapped.where((item) => item.status == normalized).toList();
       }
 
@@ -778,6 +894,9 @@ class AdminRepository {
         return items.where((item) => item.status != 'pending').toList();
       }
       final normalized = status.trim().toLowerCase();
+      if (normalized == 'expired') {
+        return items.where((item) => item.status == 'expired' || item.status == 'closed').toList();
+      }
       return items.where((item) => item.status == normalized).toList();
     } catch (e) {
       dev.log('Error fetching moderated jobs: $e');
@@ -1279,12 +1398,15 @@ class AdminRepository {
             .toList() ??
         const <String>[];
 
-    final rawStatus = (json['j_moderation_status'] ??
-        json['status'] ??
-        json['j_status'] ??
-        'pending')
-      .toString()
-      .toLowerCase();
+    String rawStatus = 'pending';
+    final jStat = (json['j_status'] ?? json['status'])?.toString().toLowerCase();
+    final mStat = json['j_moderation_status']?.toString().toLowerCase();
+
+    if (jStat == 'expired' || jStat == 'closed') {
+      rawStatus = jStat!;
+    } else {
+      rawStatus = mStat ?? jStat ?? 'pending';
+    }
 
     final normalizedStatus = rawStatus == 'active'
       ? 'approved'

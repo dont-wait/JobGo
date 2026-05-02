@@ -25,6 +25,7 @@ import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/bookmark_provider.dart';
 
 import 'package:jobgo/presentation/providers/employer_provider.dart';
+import 'package:jobgo/presentation/providers/job_search_controller.dart';
 
 // Flag để biết đang ở flow register
 bool isInRegisterFlow = false;
@@ -83,6 +84,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => InterviewProvider()),
         ChangeNotifierProvider(create: (_) => ApplicationProvider()),
         ChangeNotifierProvider(create: (_) => AdminProvider()),
+        ChangeNotifierProvider(create: (_) => JobSearchProvider()),
       ],
       child: const MainApp(),
     ),
@@ -140,6 +142,13 @@ class _MainAppState extends State<MainApp> {
                       '/main',
                       (route) => false,
                       arguments: role,
+                    );
+                  } else {
+                    // Chuyển hướng mặc định nếu không có dữ liệu user (tránh bị treo app)
+                    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                      '/main',
+                      (route) => false,
+                      arguments: UserRole.candidate,
                     );
                   }
                 } catch (e, st) {

@@ -85,7 +85,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: const Color.fromARGB(255, 166, 223, 243),
             elevation: 0,
             centerTitle: true,
             automaticallyImplyLeading: false,

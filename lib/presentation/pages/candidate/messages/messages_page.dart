@@ -1,400 +1,150 @@
 import 'package:flutter/material.dart';
-import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/core/localization/app_localizations.dart';
-import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
-class MessagesPage extends StatelessWidget {
+class MessagesPage extends StatefulWidget {
   const MessagesPage({super.key});
 
-  static const List<_MessageThread> _threads = [
-    _MessageThread(
-      name: 'Anh Khoa',
-      company: 'VietFin Bank',
-      role: 'Senior Flutter Dev',
-      lastMessage: 'Anh đã xem CV. Em có thể phỏng vấn thứ 6?',
-      time: '09:12',
-      unreadCount: 2,
-      isPinned: true,
-      isOnline: true,
-      hasAttachment: true,
-      avatarColor: Color(0xFF0A73B7),
-    ),
-    _MessageThread(
-      name: 'Chi Hanh',
-      company: 'Sunrise Studio',
-      role: 'UI/UX Designer',
-      lastMessage: 'Gửi giúp portfolio dạng PDF nhé.',
-      time: '08:41',
-      unreadCount: 0,
-      isPinned: true,
-      isOnline: false,
-      hasAttachment: false,
-      avatarColor: Color(0xFF10B981),
-    ),
-    _MessageThread(
-      name: 'Mr. Toan',
-      company: 'Aster Tech',
-      role: 'Mobile Engineer',
-      lastMessage: 'Lịch phỏng vấn: Thứ 5, 2:00 PM',
-      time: 'Yesterday',
-      unreadCount: 1,
-      isPinned: false,
-      isOnline: true,
-      hasAttachment: false,
-      avatarColor: Color(0xFFF59E0B),
-    ),
-    _MessageThread(
-      name: 'Ms. Linh',
-      company: 'Blue Ocean',
-      role: 'QA Engineer',
-      lastMessage: 'Cảm ơn bạn! Chúng tôi sẽ phản hồi sớm.',
-      time: 'Tue',
-      unreadCount: 0,
-      isPinned: false,
-      isOnline: false,
-      hasAttachment: false,
-      avatarColor: Color(0xFF6366F1),
-    ),
-    _MessageThread(
-      name: 'Recruitment',
-      company: 'NovaWorks',
-      role: 'Product Intern',
-      lastMessage: 'Bạn có thể bắt đầu tuần tới không?',
-      time: 'Mon',
-      unreadCount: 3,
-      isPinned: false,
-      isOnline: true,
-      hasAttachment: true,
-      avatarColor: Color(0xFFEF4444),
-    ),
-  ];
-
   @override
-  Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
-    final pinned = _threads
-        .where((thread) => thread.isPinned)
-        .toList(growable: false);
-    final others = _threads
-        .where((thread) => !thread.isPinned)
-        .toList(growable: false);
-
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      body: Stack(
-        children: [
-          _buildBackground(),
-          SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _buildHeader(loc)),
-                SliverToBoxAdapter(child: _buildSearch(loc)),
-                SliverToBoxAdapter(child: _buildFilters(loc)),
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader(loc.pinnedLabel, pinned.length),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) =>
-                        _MessageTile(thread: pinned[index], loc: loc),
-                    childCount: pinned.length,
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader(loc.allLabel, others.length),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) =>
-                        _MessageTile(thread: others[index], loc: loc),
-                    childCount: others.length,
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBackground() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFF8FAFF), AppColors.lightBackground],
-        ),
-      ),
-      child: Stack(
-        children: const [
-          Positioned(
-            top: -80,
-            right: -40,
-            child: _GlowCircle(size: 180, color: Color(0x334DA3E0)),
-          ),
-          Positioned(
-            top: 140,
-            left: -60,
-            child: _GlowCircle(size: 140, color: Color(0x220A73B7)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(AppLocalizations loc) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  loc.messagesTitle,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  loc.fromRecruiters,
-                  style: const TextStyle(color: AppColors.textSecondary),
-                ),
-              ],
-            ),
-          ),
-          const _CircleIconButton(icon: Icons.tune),
-          const SizedBox(width: 12),
-          const ProfileAvatar(role: UserRole.candidate),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearch(AppLocalizations loc) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 6, 20, 12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.search, color: AppColors.textHint),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                loc.searchMessagesHint,
-                style: const TextStyle(color: AppColors.textHint),
-              ),
-            ),
-            const Icon(Icons.mic_none, color: AppColors.textHint),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilters(AppLocalizations loc) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: [
-          _FilterChip(label: loc.unreadFilter, isActive: true),
-          _FilterChip(label: loc.urgentFilter, isActive: false),
-          _FilterChip(label: loc.interviewedFilter, isActive: false),
-          _FilterChip(label: loc.savedFilter, isActive: false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title, int count) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 6, 20, 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Text(
-              '$count',
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  State<MessagesPage> createState() => _MessagesPageState();
 }
 
-class _MessageTile extends StatelessWidget {
-  const _MessageTile({required this.thread, required this.loc});
+class _MessagesPageState extends State<MessagesPage> {
+  String _searchQuery = '';
 
-  final _MessageThread thread;
-  final AppLocalizations loc;
+  // Dữ liệu mẫu (Demo Data)
+  final List<Map<String, dynamic>> _dummyMessages = [
+    {
+      'name': 'Tech Solutions Inc.',
+      'lastMessage': 'Chào bạn, chúng tôi đã nhận được CV của bạn. Xin vui lòng chờ phản hồi nhé!',
+      'time': '10:00 AM',
+      'isRead': false,
+    },
+    {
+      'name': 'Global Corp',
+      'lastMessage': 'Lịch phỏng vấn của bạn sẽ diễn ra vào ngày mai.',
+      'time': 'Hôm qua',
+      'isRead': true,
+    },
+    {
+      'name': 'FPT Software',
+      'lastMessage': 'Chúng tôi rất ấn tượng với profile của bạn.',
+      'time': '3 ngày trước',
+      'isRead': true,
+    },
+  ];
+
+  Widget _buildMessageList(List<Map<String, dynamic>> messages) {
+    if (messages.isEmpty) {
+      return const Center(child: Text('Không tìm thấy tin nhắn nào.'));
+    }
+    return ListView.separated(
+      itemCount: messages.length,
+      separatorBuilder: (context, index) => const Divider(),
+      itemBuilder: (context, index) {
+        final msg = messages[index];
+        final isRead = msg['isRead'] as bool? ?? true;
+        
+        return ListTile(
+          leading: const CircleAvatar(
+            radius: 25,
+            child: Icon(Icons.business),
+          ),
+          title: Text(
+            msg['name']?.toString() ?? '', 
+            style: TextStyle(fontWeight: isRead ? FontWeight.w600 : FontWeight.bold),
+          ),
+          subtitle: Text(
+            msg['lastMessage']?.toString() ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: isRead ? Colors.grey : Colors.black87, 
+              fontWeight: isRead ? FontWeight.normal : FontWeight.w500,
+            ),
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                msg['time']?.toString() ?? '', 
+                style: TextStyle(color: isRead ? Colors.grey : Colors.blue, fontSize: 12),
+              ),
+              if (!isRead)
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+            ],
+          ),
+          onTap: () {
+            // Bấm vào sẽ mở ra trang detail (có thể thiết kế tĩnh sau)
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+    final filteredMessages = _dummyMessages.where((msg) {
+      final searchLower = _searchQuery.toLowerCase();
+      return msg['name'].toString().toLowerCase().contains(searchLower) ||
+             msg['lastMessage'].toString().toLowerCase().contains(searchLower);
+    }).toList();
+
+    final unreadMessages = filteredMessages.where((m) => m['isRead'] == false).toList();
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Tin nhắn'),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () {
+                // TODO: Hiện bottom sheet các bộ lọc khác
+              },
             ),
           ],
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Tất cả'),
+              Tab(text: 'Chưa đọc'),
+            ],
+          ),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: Column(
           children: [
-            _AvatarBadge(
-              name: thread.name,
-              color: thread.avatarColor,
-              isOnline: thread.isOnline,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm tin nhắn...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+              ),
             ),
-            const SizedBox(width: 12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: TabBarView(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          thread.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        thread.time,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textHint,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${thread.company} • ${thread.role}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (thread.hasAttachment)
-                        const Padding(
-                          padding: EdgeInsets.only(right: 6),
-                          child: Icon(
-                            Icons.attach_file,
-                            size: 16,
-                            color: AppColors.textHint,
-                          ),
-                        ),
-                      Expanded(
-                        child: Text(
-                          thread.lastMessage,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: thread.unreadCount > 0
-                                ? AppColors.textPrimary
-                                : AppColors.textSecondary,
-                            fontWeight: thread.unreadCount > 0
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      if (thread.unreadCount > 0)
-                        Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            '${thread.unreadCount}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (thread.isPinned)
-                        _Tag(
-                          label: loc.pinnedLabel,
-                          color: const Color(0xFFEFF6FF),
-                        ),
-                      _Tag(
-                        label: loc.respondsIn24h,
-                        color: const Color(0xFFEFFAF3),
-                      ),
-                    ],
-                  ),
+                  _buildMessageList(filteredMessages),
+                  _buildMessageList(unreadMessages),
                 ],
               ),
             ),
@@ -403,182 +153,4 @@ class _MessageTile extends StatelessWidget {
       ),
     );
   }
-}
-
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.isActive});
-
-  final String label;
-  final bool isActive;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isActive ? AppColors.primary : AppColors.border,
-        ),
-        boxShadow: [
-          if (isActive)
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-        ],
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isActive ? Colors.white : AppColors.textSecondary,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
-}
-
-class _Tag extends StatelessWidget {
-  const _Tag({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
-        ),
-      ),
-    );
-  }
-}
-
-class _AvatarBadge extends StatelessWidget {
-  const _AvatarBadge({
-    required this.name,
-    required this.color,
-    required this.isOnline,
-  });
-
-  final String name;
-  final Color color;
-  final bool isOnline;
-
-  @override
-  Widget build(BuildContext context) {
-    final initial = name.isNotEmpty ? name.characters.first : '?';
-    return Stack(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: color,
-          child: Text(
-            initial.toUpperCase(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: isOnline ? AppColors.success : AppColors.textHint,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Icon(icon, color: AppColors.textSecondary, size: 20),
-    );
-  }
-}
-
-class _GlowCircle extends StatelessWidget {
-  const _GlowCircle({required this.size, required this.color});
-
-  final double size;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
-  }
-}
-
-class _MessageThread {
-  const _MessageThread({
-    required this.name,
-    required this.company,
-    required this.role,
-    required this.lastMessage,
-    required this.time,
-    required this.unreadCount,
-    required this.isPinned,
-    required this.isOnline,
-    required this.hasAttachment,
-    required this.avatarColor,
-  });
-
-  final String name;
-  final String company;
-  final String role;
-  final String lastMessage;
-  final String time;
-  final int unreadCount;
-  final bool isPinned;
-  final bool isOnline;
-  final bool hasAttachment;
-  final Color avatarColor;
 }

@@ -86,7 +86,9 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
     final q = _searchController.text.trim().toLowerCase();
     final source = _selectedFilter == 'Employers'
         ? _users.where((u) => u.role == 'employer').toList()
-        : _users;
+        : _selectedFilter == 'Candidates'
+            ? _users.where((u) => u.role == 'candidate').toList()
+            : _users; // Trường hợp 'All' sẽ lấy toàn bộ _users
 
     if (q.isEmpty) return source;
 
@@ -111,7 +113,7 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
   @override
   Widget build(BuildContext context) {
     final showUsers = _selectedFilter == 'All' ||
-        _selectedFilter == 'Users' ||
+        _selectedFilter == 'Candidates' ||
         _selectedFilter == 'Employers';
     final showJobs = _selectedFilter == 'All' || _selectedFilter == 'Job Posts';
 
@@ -145,7 +147,7 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
                   controller: _searchController,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: 'Search users, jobs, companies...',
+                    hintText: 'Search candidates, employers, jobs...',
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.refresh),
@@ -164,18 +166,18 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
                   children: [
                     _chip('All'),
                     const SizedBox(width: 8),
-                    _chip('Users'),
-                    const SizedBox(width: 8),
-                    _chip('Job Posts'),
+                    _chip('Candidates'),
                     const SizedBox(width: 8),
                     _chip('Employers'),
+                    const SizedBox(width: 8),
+                    _chip('Job Posts'),
                   ],
                 ),
                 const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Loaded: ${_users.length} users, ${_jobs.length} jobs',
+                    'Loaded: ${_users.length} accounts, ${_jobs.length} jobs',
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -196,7 +198,10 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
                       padding: const EdgeInsets.all(16),
                       children: [
                         if (showUsers) ...[
-                          const Text('Users', style: TextStyle(fontWeight: FontWeight.w700)),
+                          Text(
+                            _selectedFilter == 'All' ? 'Accounts (Candidates & Employers)' : _selectedFilter,
+                            style: const TextStyle(fontWeight: FontWeight.w700)
+                          ),
                           const SizedBox(height: 8),
                           ..._filteredUsers.take(50).map(_userTile),
                           const SizedBox(height: 16),
@@ -252,7 +257,7 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
   }
 
   Widget _userTile(AdminUserModel u) {
-    final name = u.name.trim().isEmpty ? 'Unknown User' : u.name;
+    final name = u.name.trim().isEmpty ? 'Unknown Account' : u.name;
     final subtitle = u.email.trim().isEmpty ? 'Email not available' : u.email;
 
     return Card(

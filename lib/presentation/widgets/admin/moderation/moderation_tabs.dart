@@ -25,6 +25,8 @@ class ModerationTabs extends StatelessWidget {
           _buildTab('Approved', null),
           const SizedBox(width: 12),
           _buildTab('Rejected', null),
+          const SizedBox(width: 12),
+          _buildTab('Expired', null),
         ],
       ),
     );

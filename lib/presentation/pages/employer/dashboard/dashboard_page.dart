@@ -126,12 +126,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ),
                                   const SizedBox(height: 12),
                                   OverviewCard(
-                                    title: loc.applicants,
-                                    value: stats.totalApplications.toString(),
+                                    title: 'Hồ sơ mới', // Đã đổi title sang Hồ sơ mới nhận
+                                    value: stats.newProfiles.toString(),
                                     percentage: _formatTrendLabel(
                                       data.applicantsTrend,
                                     ),
-                                    icon: Icons.people_outline,
+                                    icon: Icons.person_add_alt_1_outlined,
                                     color: AppColors.success,
                                     isPositive: data.applicantsTrend >= 0,
                                   ),
@@ -167,12 +167,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: OverviewCard(
-                                    title: loc.applicants,
-                                    value: stats.totalApplications.toString(),
+                                    title: 'Hồ sơ mới', // Đã đổi title sang Hồ sơ mới nhận
+                                    value: stats.newProfiles.toString(),
                                     percentage: _formatTrendLabel(
                                       data.applicantsTrend,
                                     ),
-                                    icon: Icons.people_outline,
+                                    icon: Icons.person_add_alt_1_outlined,
                                     color: AppColors.success,
                                     isPositive: data.applicantsTrend >= 0,
                                   ),
@@ -357,6 +357,14 @@ class _DashboardPageState extends State<DashboardPage> {
 
       final totalApplications = (applicationsResp as List).length;
 
+      // Lấy số lượng "Hồ sơ mới nhận" (trạng thái 'pending')
+      final newApplicationsResp = await supabase
+          .from('applications')
+          .select('a_id, jobs!inner(e_id)')
+          .eq('jobs.e_id', employerId)
+          .eq('a_status', 'pending');
+      final newProfilesCount = (newApplicationsResp as List).length;
+
       final interviewsResp = await supabase
           .from('interview_schedule')
           .select('i_id, jobs!inner(e_id)')
@@ -388,7 +396,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       final stats = DashboardStats(
         activePostings: activeJobs,
-        newProfiles: 0,
+        newProfiles: newProfilesCount, // Cập nhật số hồ sơ mới nhận
         totalApplications: totalApplications,
         totalViews: totalViews,
         lastUpdated: now,

@@ -102,6 +102,7 @@ class JobSearchProvider extends ChangeNotifier {
   bool _isRefreshing = false;
   bool _hasLoadedOnce = false;
   String? _errorMessage;
+  bool _isDisposed = false;
 
   List<JobModel> get allJobs => List.unmodifiable(_allJobs);
   String get searchQuery => _searchQuery;
@@ -110,6 +111,19 @@ class JobSearchProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isRefreshing => _isRefreshing;
   String? get errorMessage => _errorMessage;
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
+  }
 
   List<JobModel> get filteredJobs {
     final query = _searchQuery.trim().toLowerCase();
@@ -143,8 +157,8 @@ class JobSearchProvider extends ChangeNotifier {
       final jobsResponse = await _supabase
           .from('jobs')
           .select('*, employers(*)')
-          .or('j_status.eq.active,j_moderation_status.eq.approved')
-          .neq('j_status', 'closed')
+          .eq('j_status', 'active')
+          .eq('j_moderation_status', 'approved')
           .order('j_create_at', ascending: false)
           .limit(100);
 
