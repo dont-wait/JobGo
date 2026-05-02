@@ -496,4 +496,21 @@ final Map<String, String> vietStrings = {
   'currentStatus': 'Trạng thái hiện tại',
   'applicationStatus': 'Trạng thái ứng tuyển',
   'negotiableSubtitle': 'Cho ứng viên biết mức lương có thể thỏa thuận.',
+
+  // Deleted Users
+  'restoreAccountTitle': 'Khôi phục tài khoản',
+  'restoreAccountConfirm': 'Bạn muốn khôi phục tài khoản',
+  'restoreAccountNormal': 'Tài khoản này sẽ hoạt động lại bình thường.',
+  'restoreAction': 'Khôi phục',
+  'restoreSuccess': 'Đã khôi phục tài khoản thành công.',
+  'restoreError': 'Lỗi khi khôi phục.',
+  'hardDeleteTitle': 'Xóa VĨNH VIỄN',
+  'hardDeleteConfirm': 'CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn',
+  'hardDeleteUndone': 'khỏi cơ sở dữ liệu Supabase và không thể hoàn tác. Bạn có chắc chắn không?',
+  'hardDeleteAction': 'Xóa vĩnh viễn',
+  'hardDeleteSuccess': 'Đã xóa vĩnh viễn khỏi hệ thống.',
+  'hardDeleteError': 'Lỗi khi xóa vĩnh viễn.',
+  'accountTrashTitle': 'Thùng rác tài khoản',
+  'emptyTrash': 'Thùng rác trống',
+  'rolePrefix': 'Vai trò:',
 };

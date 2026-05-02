@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/providers/admin_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -19,18 +20,20 @@ class _DeletedUsersPageState extends State<DeletedUsersPage> {
     });
   }
 
-  void _handleRestore(String userId, String userName) async {
+  void _handleRestore(dynamic userId, String userName) async {
+    final loc = AppLocalizations.of(context);
+    final uIdStr = userId.toString();
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Khôi phục tài khoản'),
-        content: Text('Bạn muốn khôi phục tài khoản "$userName"? Tài khoản này sẽ hoạt động lại bình thường.'),
+        title: Text(loc.restoreAccountTitle),
+        content: Text('${loc.restoreAccountConfirm} "$userName"? ${loc.restoreAccountNormal}'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(loc.cancel)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Khôi phục', style: TextStyle(color: Colors.white)),
+            child: Text(loc.restoreAction, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -38,29 +41,31 @@ class _DeletedUsersPageState extends State<DeletedUsersPage> {
 
     if (confirm != true || !mounted) return;
 
-    final success = await context.read<AdminProvider>().restoreUser(userId);
+    final success = await context.read<AdminProvider>().restoreUser(uIdStr);
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(success ? 'Đã khôi phục tài khoản thành công.' : 'Lỗi khi khôi phục.'),
+        content: Text(success ? loc.restoreSuccess : loc.restoreError),
         backgroundColor: success ? AppColors.success : AppColors.error,
       ),
     );
   }
 
-  void _handleHardDelete(String userId, String userName) async {
+  void _handleHardDelete(dynamic userId, String userName) async {
+    final loc = AppLocalizations.of(context);
+    final uIdStr = userId.toString();
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xóa VĨNH VIỄN'),
-        content: Text('CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn "$userName" khỏi cơ sở dữ liệu Supabase và không thể hoàn tác. Bạn có chắc chắn không?'),
+        title: Text(loc.hardDeleteTitle),
+        content: Text('${loc.hardDeleteConfirm} "$userName" ${loc.hardDeleteUndone}'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(loc.cancel)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Xóa vĩnh viễn', style: TextStyle(color: Colors.white)),
+            child: Text(loc.hardDeleteAction, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -68,12 +73,12 @@ class _DeletedUsersPageState extends State<DeletedUsersPage> {
 
     if (confirm != true || !mounted) return;
 
-    final success = await context.read<AdminProvider>().hardDeleteUser(userId);
+    final success = await context.read<AdminProvider>().hardDeleteUser(uIdStr);
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(success ? 'Đã xóa vĩnh viễn khỏi hệ thống.' : 'Lỗi khi xóa vĩnh viễn.'),
+        content: Text(success ? loc.hardDeleteSuccess : loc.hardDeleteError),
         backgroundColor: success ? AppColors.warning : AppColors.error,
       ),
     );
@@ -81,10 +86,11 @@ class _DeletedUsersPageState extends State<DeletedUsersPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text('Thùng rác tài khoản'),
+        title: Text(loc.accountTrashTitle),
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
@@ -95,10 +101,10 @@ class _DeletedUsersPageState extends State<DeletedUsersPage> {
           }
 
           if (provider.deletedUsers.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'Thùng rác trống',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+                loc.emptyTrash,
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 16),
               ),
             );
           }
@@ -113,19 +119,19 @@ class _DeletedUsersPageState extends State<DeletedUsersPage> {
                 child: ListTile(
                   leading: CircleAvatar(child: Text(user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U')),
                   title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('${user.email}\nVai trò: ${user.role}'),
+                  subtitle: Text('${user.email}\n${loc.rolePrefix} ${user.role}'),
                   isThreeLine: true,
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.restore, color: AppColors.success),
-                        tooltip: 'Khôi phục',
+                        tooltip: loc.restoreAction,
                         onPressed: () => _handleRestore(user.id, user.name),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_forever, color: AppColors.error),
-                        tooltip: 'Xóa vĩnh viễn',
+                        tooltip: loc.hardDeleteAction,
                         onPressed: () => _handleHardDelete(user.id, user.name),
                       ),
                     ],
