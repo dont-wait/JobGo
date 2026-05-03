@@ -28,54 +28,50 @@ class AdminUserModel {
     final inferredRole = (json['e_id'] ?? json['e_company_name']) != null
         ? 'employer'
         : (json['c_id'] ?? json['c_full_name']) != null
-        ? 'candidate'
-        : 'candidate';
+            ? 'candidate'
+            : 'candidate';
     return AdminUserModel(
       id: (json['u_id'] ?? user?['u_id'] ?? json['id'] ?? json['c_id'] ?? '')
-        .toString(),
+          .toString(),
       name: (json['u_name'] ??
-          json['c_full_name'] ??
-          json['name'] ??
-          user?['u_name'] ??
-          '')
-        .toString(),
+              json['c_full_name'] ??
+              json['name'] ??
+              user?['u_name'] ??
+              '')
+          .toString(),
       email: (json['u_email'] ?? user?['u_email'] ?? json['email'] ?? '')
-        .toString(),
-        role: (json['u_role'] ?? user?['u_role'] ?? json['role'] ?? inferredRole)
-        .toString(),
+          .toString(),
+      role: (json['u_role'] ?? user?['u_role'] ?? json['role'] ?? inferredRole)
+          .toString(),
       status:
-        (json['u_status'] ?? user?['u_status'] ?? json['status'] ?? 'active')
+          (json['u_status'] ?? user?['u_status'] ?? json['status'] ?? 'active')
               .toString(),
       title: (json['u_title'] ?? json['c_title'] ?? json['title']) as String?,
-      company:
-          (json['company_name'] ?? json['company'] ?? json['e_company_name'])
-              as String?,
-      avatarUrl:
-        (json['u_avatar_url'] ??
-            json['c_avatar_url'] ??
-            user?['u_avatar_url'] ??
-            json['avatarUrl'])
-          as String?,
-      createdAt:
-          (json['u_created_at'] ??
-          json['u_create_at'] ??
-            json['c_created_at'] ??
-              user?['u_created_at'] ??
-              user?['u_create_at'] ??
+      company: (json['company_name'] ??
+          json['company'] ??
+          json['e_company_name']) as String?,
+      avatarUrl: (json['u_avatar_url'] ??
+          json['c_avatar_url'] ??
+          user?['u_avatar_url'] ??
+          json['avatarUrl']) as String?,
+      createdAt: (json['u_created_at'] ??
+                  json['u_create_at'] ??
+                  json['c_created_at'] ??
+                  user?['u_created_at'] ??
+                  user?['u_create_at'] ??
                   json['createdAt']) !=
               null
           ? DateTime.parse(
               (json['u_created_at'] ??
-            json['u_create_at'] ??
-              json['c_created_at'] ??
-                user?['u_created_at'] ??
-                user?['u_create_at'] ??
+                      json['u_create_at'] ??
+                      json['c_created_at'] ??
+                      user?['u_created_at'] ??
+                      user?['u_create_at'] ??
                       json['createdAt'])
                   .toString(),
             )
           : DateTime.now(),
-      lastActive:
-          (json['u_last_active'] ??
+      lastActive: (json['u_last_active'] ??
                   user?['u_last_active'] ??
                   json['lastActive']) !=
               null
