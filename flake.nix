@@ -1,7 +1,7 @@
 {
-  description = "Flutter 3.13.x";
+  description = "Flutter/Dart Development Environment";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
   outputs =
@@ -30,13 +30,13 @@
             "34"
             "28"
           ];
-          abiVersions = [ "x86_64" ]; # đổi sang x86_64 cho emulator nhanh hơn
-          includeEmulator = true; # <-- emulator binary
-          includeSystemImages = true; # <-- system image cho AVD
+          abiVersions = [ "x86_64" ]; 
+          includeEmulator = true; 
+          includeSystemImages = true; 
           systemImageTypes = [ "google_apis_playstore" ];
           includeSources = false;
           includeNDK = false;
-          cmdLineToolsVersion = "8.0"; # <-- avdmanager, sdkmanager nằm ở đây
+          cmdLineToolsVersion = "8.0"; 
         };
         androidSdk = androidComposition.androidsdk;
       in
