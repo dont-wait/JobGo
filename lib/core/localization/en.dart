@@ -498,4 +498,21 @@ final Map<String, String> englishStrings = {
   'currentStatus': 'Current Status',
   'applicationStatus': 'Application Status',
   'negotiableSubtitle': 'Let candidates know salary can be discussed.',
+
+  // Deleted Users
+  'restoreAccountTitle': 'Restore Account',
+  'restoreAccountConfirm': 'Do you want to restore account',
+  'restoreAccountNormal': 'This account will operate normally again.',
+  'restoreAction': 'Restore',
+  'restoreSuccess': 'Account restored successfully.',
+  'restoreError': 'Error restoring account.',
+  'hardDeleteTitle': 'PERMANENT DELETE',
+  'hardDeleteConfirm': 'WARNING: This action will permanently delete',
+  'hardDeleteUndone': 'from the Supabase database and cannot be undone. Are you sure?',
+  'hardDeleteAction': 'Delete permanently',
+  'hardDeleteSuccess': 'Permanently deleted from the system.',
+  'hardDeleteError': 'Error deleting permanently.',
+  'accountTrashTitle': 'Account Trash',
+  'emptyTrash': 'Trash is empty',
+  'rolePrefix': 'Role:',
 };

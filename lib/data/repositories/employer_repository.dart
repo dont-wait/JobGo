@@ -74,4 +74,35 @@ class EmployerRepository {
       return null;
     }
   }
+
+  /// Lấy thống kê nhanh cho Dashboard của nhà tuyển dụng
+  Future<Map<String, int>> getDashboardStats(int employerId) async {
+    try {
+      // Lấy số lượng tin đang đăng (active)
+      final activeJobsResponse = await _supabase
+          .from('jobs')
+          .select('j_id')
+          .eq('e_id', employerId)
+          .eq('j_status', 'active');
+          
+      // Lấy số lượng hồ sơ mới nhận (pending)
+      // Sử dụng inner join để lọc các application thuộc về các job của employer này
+      final newApplicationsResponse = await _supabase
+          .from('applications')
+          .select('a_id, jobs!inner(e_id)')
+          .eq('jobs.e_id', employerId)
+          .eq('a_status', 'pending');
+
+      return {
+        'activeJobs': (activeJobsResponse as List).length,
+        'newApplications': (newApplicationsResponse as List).length,
+      };
+    } catch (e, st) {
+      AppLogger.error('Error fetching employer dashboard stats', error: e, stackTrace: st);
+      return {
+        'activeJobs': 0,
+        'newApplications': 0,
+      };
+    }
+  }
 }

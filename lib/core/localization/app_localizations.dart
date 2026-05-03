@@ -475,6 +475,23 @@ class AppLocalizations {
   String get currentStatus => translate('currentStatus');
   String get applicationStatus => translate('applicationStatus');
   String get negotiableSubtitle => translate('negotiableSubtitle');
+
+  // Deleted Users
+  String get restoreAccountTitle => translate('restoreAccountTitle');
+  String get restoreAccountConfirm => translate('restoreAccountConfirm');
+  String get restoreAccountNormal => translate('restoreAccountNormal');
+  String get restoreAction => translate('restoreAction');
+  String get restoreSuccess => translate('restoreSuccess');
+  String get restoreError => translate('restoreError');
+  String get hardDeleteTitle => translate('hardDeleteTitle');
+  String get hardDeleteConfirm => translate('hardDeleteConfirm');
+  String get hardDeleteUndone => translate('hardDeleteUndone');
+  String get hardDeleteAction => translate('hardDeleteAction');
+  String get hardDeleteSuccess => translate('hardDeleteSuccess');
+  String get hardDeleteError => translate('hardDeleteError');
+  String get accountTrashTitle => translate('accountTrashTitle');
+  String get emptyTrash => translate('emptyTrash');
+  String get rolePrefix => translate('rolePrefix');
 }
 
 class _AppLocalizationsDelegate

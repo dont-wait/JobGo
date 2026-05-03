@@ -22,6 +22,11 @@ class AdminProvider extends ChangeNotifier {
   String get userSearchQuery => _userSearchQuery;
   String? get userLoadError => _userLoadError;
 
+  List<AdminUserModel> _deletedUsers = [];
+  bool _isLoadingDeleted = false;
+  List<AdminUserModel> get deletedUsers => _deletedUsers;
+  bool get isLoadingDeleted => _isLoadingDeleted;
+
   List<AdminUserModel> get _filteredUsers {
     var filtered = _users;
 
@@ -59,6 +64,7 @@ class AdminProvider extends ChangeNotifier {
       if (_selectedJobFilter == 'Pending') return j.status == 'pending';
       if (_selectedJobFilter == 'Approved') return j.status == 'approved';
       if (_selectedJobFilter == 'Rejected') return j.status == 'rejected';
+      if (_selectedJobFilter == 'Expired') return j.status == 'expired' || j.status == 'closed';
       return true;
     }).toList();
   }
@@ -189,6 +195,41 @@ class AdminProvider extends ChangeNotifier {
       return true;
     }
 
+    return false;
+  }
+
+  Future<void> loadDeletedUsers() async {
+    _isLoadingDeleted = true;
+    notifyListeners();
+
+    try {
+      _deletedUsers = await _repository.getDeletedUsers(page: 0, pageSize: 100);
+    } catch (e) {
+      dev.log('Error loading deleted users: $e');
+    }
+
+    _isLoadingDeleted = false;
+    notifyListeners();
+  }
+
+  Future<bool> restoreUser(String userId) async {
+    final ok = await _repository.restoreUser(userId);
+    if (ok) {
+      _deletedUsers.removeWhere((u) => u.id == userId);
+      final roleFilter = _selectedUserFilter == 'Candidates' ? 'candidate' : _selectedUserFilter == 'Employers' ? 'employer' : null;
+      await loadUsers(roleFilter: roleFilter); // Tải lại danh sách chính
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> hardDeleteUser(String userId) async {
+    final ok = await _repository.hardDeleteUser(userId);
+    if (ok) {
+      _deletedUsers.removeWhere((u) => u.id == userId);
+      notifyListeners();
+      return true;
+    }
     return false;
   }
 

@@ -230,6 +230,8 @@ class _LoginPageState extends State<LoginPage> {
             .eq('u_password', password)
             .maybeSingle();
 
+        if (!mounted) return;
+
         if (userData != null) {
           _navigateToHome(userData['u_role'] as String);
         } else {
@@ -239,6 +241,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       } catch (e, st) {
         AppLogger.error('Login error', error: e, stackTrace: st);
+        if (!mounted) return;
         final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(
           context,
@@ -255,6 +258,8 @@ class _LoginPageState extends State<LoginPage> {
           .eq('auth_uid', authUid)
           .maybeSingle();
 
+      if (!mounted) return;
+
       if (userData != null) {
         _navigateToHome(userData['u_role'] as String);
       } else {
@@ -264,6 +269,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(
         context,
@@ -304,6 +310,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _navigateToHome(String roleString) {
+    if (!mounted) return;
+
     UserRole role;
 
     if (roleString == 'employer') {

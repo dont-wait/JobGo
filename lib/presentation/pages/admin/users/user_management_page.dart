@@ -8,6 +8,7 @@ import 'package:jobgo/presentation/widgets/admin/users/user_detail_dialog.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 import 'package:jobgo/presentation/providers/admin_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:jobgo/presentation/pages/admin/users/deleted_users_page.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -22,11 +23,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final adminProvider = context.read<AdminProvider>();
-      final roleFilter = adminProvider.selectedUserFilter == 'Candidates'
-          ? 'candidate'
-          : adminProvider.selectedUserFilter == 'Employers'
+      final tabLower = adminProvider.selectedUserFilter.toLowerCase();
+      final roleFilter = tabLower.contains('employer')
           ? 'employer'
-          : null;
+          : (tabLower.contains('user') || tabLower.contains('candidate'))
+              ? 'candidate'
+              : null;
       adminProvider.loadUsers(roleFilter: roleFilter);
     });
   }
@@ -162,7 +164,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           centerTitle: true,
           automaticallyImplyLeading: false,
           title: const Text(
-            'User Management',
+            'Candidate & Employer',
             style: TextStyle(
               color: AppColors.textPrimary,
               fontSize: 18,
@@ -188,7 +190,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                         adminProvider.setUserSearchQuery(value);
                       },
                       decoration: InputDecoration(
-                        hintText: 'Search users, emails, or roles...',
+                      hintText: 'Search candidates, employers...',
                         hintStyle: TextStyle(
                           color: AppColors.textHint,
                           fontSize: 14,
@@ -230,9 +232,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
               selectedTab: adminProvider.selectedUserFilter,
               onTabChanged: (tab) {
                 adminProvider.setUserFilter(tab);
-                final roleFilter = tab == 'Candidates'
-                    ? 'candidate'
-                    : 'employer';
+                final tabLower = tab.toLowerCase();
+                final roleFilter = tabLower.contains('employer')
+                    ? 'employer'
+                    : (tabLower.contains('user') || tabLower.contains('candidate'))
+                        ? 'candidate'
+                        : null; // null để load cả ứng viên + nhà tuyển dụng
                 adminProvider.loadUsers(roleFilter: roleFilter);
               },
             ),
@@ -254,7 +259,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           const SizedBox(height: 16),
                           Text(
                             adminProvider.userLoadError != null
-                                ? 'Failed to load users'
+                                ? 'Failed to load data'
                                 : adminProvider.userSearchQuery.isEmpty
                                 ? 'No ${adminProvider.selectedUserFilter.toLowerCase()} found'
                                 : 'No results for "${adminProvider.userSearchQuery}"',
@@ -281,11 +286,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
                             const SizedBox(height: 12),
                             OutlinedButton(
                               onPressed: () {
-                                final roleFilter =
-                                    adminProvider.selectedUserFilter ==
-                                        'Candidates'
-                                    ? 'candidate'
-                                    : 'employer';
+                                final tabLower = adminProvider.selectedUserFilter.toLowerCase();
+                                final roleFilter = tabLower.contains('employer')
+                                    ? 'employer'
+                                    : (tabLower.contains('user') || tabLower.contains('candidate'))
+                                        ? 'candidate'
+                                        : null;
                                 adminProvider.loadUsers(roleFilter: roleFilter);
                               },
                               child: const Text('Retry'),
@@ -310,10 +316,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            adminProvider.loadMoreUsers();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const DeletedUsersPage()),
+            );
           },
-          backgroundColor: AppColors.primary,
-          child: const Icon(Icons.add, color: AppColors.white),
+          backgroundColor: AppColors.error,
+          tooltip: 'Thùng rác',
+          child: const Icon(Icons.delete_outline, color: Colors.white),
         ),
       ),
     );

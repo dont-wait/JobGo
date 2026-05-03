@@ -196,6 +196,8 @@ class _JobModerationPageState extends State<JobModerationPage> {
                 adminProvider.setJobFilter(tab);
                 if (tab == 'Pending') {
                   adminProvider.loadPendingJobs();
+                } else if (tab == 'Expired') {
+                  adminProvider.loadModeratedJobs(status: 'expired');
                 } else {
                   adminProvider.loadModeratedJobs(status: tab.toLowerCase());
                 }
