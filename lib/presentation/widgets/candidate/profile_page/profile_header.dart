@@ -44,7 +44,7 @@ class ProfileHeader extends StatelessWidget {
       final fileBytes = await pickedFile.readAsBytes();
       final fileName = 'avatar_${authUser.id}.jpg';
 
-      // ✅ Upload lên Storage
+      // Upload lên Storage
       await supabase.storage.from('avatars').uploadBinary(
         fileName,
         fileBytes,
@@ -55,7 +55,7 @@ class ProfileHeader extends StatelessWidget {
           .from('avatars')
           .getPublicUrl(fileName);
 
-      // ✅ Lấy u_id trước
+      // Lấy u_id trước
       final userRow = await supabase
           .from('users')
           .select('u_id')
@@ -65,11 +65,11 @@ class ProfileHeader extends StatelessWidget {
       if (userRow == null) return;
       final uId = userRow['u_id'] as int;
 
-      // ✅ Update đúng cột, đúng điều kiện
+      // Update đúng cột, đúng điều kiện
       await supabase
           .from('candidates')
-          .update({'c_avatar_url': publicUrl}) // ✅ đúng tên cột
-          .eq('u_id', uId); // ✅ đúng điều kiện
+          .update({'c_avatar_url': publicUrl}) // đúng tên cột
+          .eq('u_id', uId); //  đúng điều kiện
 
       if (context.mounted) {
         context.read<ProfileProvider>().reloadProfile();
