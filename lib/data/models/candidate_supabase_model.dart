@@ -75,8 +75,21 @@ class CandidateSupabaseModel {
       updatedAt: _toDateTime(json['c_updated_at'] ?? json['updated_at']),
       title: _nullableStringValue(json['c_title']),
       summary: _nullableStringValue(json['c_summary']),
+      // skills: (json['candidates_skill'] as List?)
+      //     ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
+      //     .toList(),
       skills: (json['candidates_skill'] as List?)
-          ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
+          ?.map((e) {
+            final item = e as Map<String, dynamic>;
+            final skill = item['skill'] as Map<String, dynamic>;
+
+            return SkillModel(
+              skId: skill['sk_id'],
+              skName: skill['sk_name'],
+              skDescription: skill['sk_description'],
+              csYears: item['cs_years'],
+            );
+          })
           .toList(),
       experiences: (json['experiences'] as List?)
           ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
