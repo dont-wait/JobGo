@@ -127,7 +127,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
       case 2:
         // return SkillsSection(skills: candidate?.skill);
-        return const SkillsSection();
+        return SkillsSection(
+          skills: candidate?.skills,
+          cId: candidate?.cId,
+        );
       case 3:
         return const FavoritesSection();
       default:
