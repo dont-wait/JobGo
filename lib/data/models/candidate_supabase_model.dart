@@ -1,14 +1,17 @@
+import 'package:jobgo/data/models/experience_model.dart';
+import 'package:jobgo/data/models/skill_model.dart';
+
 class CandidateSupabaseModel {
   final int cId;
   final String? fullName;
   final String? dateOfBirth;
   final String? gender;
   final String? address;
-  final String? skill;
+  // final String? skill;
   final String? phone;
   final String? avatarUrl;
   final String? education;
-  final String? experience;
+  // final String? experience;
   final List<String>? resumes;
   final double? desiredSalaryMin;
   final double? desiredSalaryMax;
@@ -19,6 +22,8 @@ class CandidateSupabaseModel {
   final DateTime? updatedAt;
   final String? title;
   final String? summary;
+  final List<SkillModel>? skills;       
+  final List<ExperienceModel>? experiences; 
 
   CandidateSupabaseModel({
     required this.cId,
@@ -26,11 +31,11 @@ class CandidateSupabaseModel {
     this.dateOfBirth,
     this.gender,
     this.address,
-    this.skill,
+    // this.skill,
     this.phone,
     this.avatarUrl,
     this.education,
-    this.experience,
+    // this.experience,
     this.resumes,
     this.desiredSalaryMin,
     this.desiredSalaryMax,
@@ -41,6 +46,8 @@ class CandidateSupabaseModel {
     this.updatedAt,
     this.title,
     this.summary,
+    this.skills,
+    this.experiences,
   });
 
   factory CandidateSupabaseModel.fromJson(Map<String, dynamic> json) {
@@ -53,11 +60,11 @@ class CandidateSupabaseModel {
       dateOfBirth: _nullableStringValue(json['c_date_of_birth']),
       gender: _nullableStringValue(json['c_gender']),
       address: _nullableStringValue(json['c_address']),
-      skill: _nullableStringValue(json['c_skill']),
+      // skill: _nullableStringValue(json['c_skill']),
       phone: _nullableStringValue(json['c_phone'] ?? user?['u_phone']),
       avatarUrl: _nullableStringValue(json['c_avatar_url']),
       education: _nullableStringValue(json['c_education']),
-      experience: _nullableStringValue(json['c_experience']),
+      // experience: _nullableStringValue(json['c_experience']),
       resumes: _toList(json['c_resume'] ?? json['resume']),
       desiredSalaryMin: _toDouble(json['c_desired_salary_min']),
       desiredSalaryMax: _toDouble(json['c_desired_salary_max']),
@@ -68,6 +75,12 @@ class CandidateSupabaseModel {
       updatedAt: _toDateTime(json['c_updated_at'] ?? json['updated_at']),
       title: _nullableStringValue(json['c_title']),
       summary: _nullableStringValue(json['c_summary']),
+      skills: (json['candidates_skill'] as List?)
+          ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      experiences: (json['experiences'] as List?)
+          ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -77,10 +90,10 @@ class CandidateSupabaseModel {
     String? dateOfBirth,
     String? gender,
     String? address,
-    String? skill,
+    // String? skill,
     String? phone,
     String? avatarUrl,
-    String? education,
+    // String? education,
     String? experience,
     List<String>? resumes,
     double? desiredSalaryMin,
@@ -92,6 +105,8 @@ class CandidateSupabaseModel {
     DateTime? updatedAt,
     String? title,
     String? summary,
+    List<SkillModel>? skills,
+    List<ExperienceModel>? experiences,
   }) {
     return CandidateSupabaseModel(
       cId: cId ?? this.cId,
@@ -99,11 +114,11 @@ class CandidateSupabaseModel {
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       gender: gender ?? this.gender,
       address: address ?? this.address,
-      skill: skill ?? this.skill,
+      // skill: skill ?? this.skill,
       phone: phone ?? this.phone,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       education: education ?? this.education,
-      experience: experience ?? this.experience,
+      // experience: experience ?? this.experience,
       resumes: resumes ?? this.resumes,
       desiredSalaryMin: desiredSalaryMin ?? this.desiredSalaryMin,
       desiredSalaryMax: desiredSalaryMax ?? this.desiredSalaryMax,
@@ -114,13 +129,21 @@ class CandidateSupabaseModel {
       updatedAt: updatedAt ?? this.updatedAt,
       title: title ?? this.title,
       summary: summary ?? this.summary,
+      skills: skills ?? this.skills,
+      experiences: experiences ?? this.experiences,
     );
   }
 
   String get displayName => _cleanValue(fullName, fallback: 'Candidate');
 
-  String get displayExperience =>
-      _cleanValue(experience, fallback: 'Open to opportunities');
+  // String get displayExperience =>
+  //     _cleanValue(experience, fallback: 'Open to opportunities');
+  String get displayExperience {
+  if (experiences == null || experiences!.isEmpty) {
+    return 'Open to opportunities';
+  }
+  return experiences!.map((e) => '${e.position} tại ${e.companyName}').join(', ');
+}
 
   String get displayTitle {
     final titleText = _cleanValue(title, fallback: '');
@@ -154,12 +177,13 @@ class CandidateSupabaseModel {
   String get displayPhone =>
       _cleanValue(phone, fallback: 'Phone not available');
 
-  List<String> get skillList => _splitSkillList(skill);
+  // List<String> get skillList => _splitSkillList(skill);
+  List<String> get skillList => skills?.map((s) => s.skName).toList() ?? [];
+
 
   String get roleLabel {
     final searchBlob =
-        '${title ?? ''} ${summary ?? ''} ${experience ?? ''} ${skill ?? ''}'
-            .toLowerCase();
+      '${title ?? ''} ${summary ?? ''} ${skillList.join(' ')}'.toLowerCase();
     if (searchBlob.contains('design') ||
         searchBlob.contains('figma') ||
         searchBlob.contains('ui/ux') ||
@@ -197,8 +221,8 @@ class CandidateSupabaseModel {
 
   String get seniorityLabel {
     final searchBlob =
-        '${title ?? ''} ${summary ?? ''} ${experience ?? ''} ${skill ?? ''}'
-            .toLowerCase();
+      '${title ?? ''} ${summary ?? ''} ${skillList.join(' ')}'.toLowerCase();
+            
     if (searchBlob.contains('intern')) {
       return 'Intern';
     }
@@ -233,7 +257,7 @@ class CandidateSupabaseModel {
     displayName,
     displayTitle,
     displaySummary,
-    displayExperience,
+    // displayExperience,
     displayLocation,
     displayEducation,
     displayEmail,
@@ -241,6 +265,8 @@ class CandidateSupabaseModel {
     roleLabel,
     seniorityLabel,
     skillList.join(' '),
+    experiences?.map((e) => '${e.companyName} ${e.position}').join(' ') ?? '',
+
   ].join(' ').toLowerCase();
 
   String? get resume =>

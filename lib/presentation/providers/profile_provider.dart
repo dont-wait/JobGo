@@ -12,6 +12,8 @@ class ProfileProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  
+
   Future<void> loadProfile() async {
     _isLoading = true;
     _error = null;
@@ -39,11 +41,21 @@ class ProfileProvider extends ChangeNotifier {
 
       final uId = userRow['u_id'] as int;
 
+      // final data = await supabase
+      //     .from('candidates')
+      //     .select('*, users(u_email, u_role)')
+      //     .eq('u_id', uId)
+      //     .maybeSingle();
       final data = await supabase
-          .from('candidates')
-          .select('*, users(u_email, u_role)')
-          .eq('u_id', uId)
-          .maybeSingle();
+        .from('candidates')
+        .select('''
+          *,
+          users(u_email, u_role),
+          candidates_skill(cs_years, skill(sk_id, sk_name, sk_description)),
+          experiences(ex_id, ex_company_name, ex_position, ex_start_date, ex_end_date, ex_description, c_id)
+        ''')
+        .eq('u_id', uId)
+        .maybeSingle();
 
       _candidate = data != null ? CandidateSupabaseModel.fromJson(data) : null;
     } catch (e) {
