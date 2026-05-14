@@ -118,7 +118,9 @@ class _ProfilePageState extends State<ProfilePage> {
       case 0:
         return _buildInfoTab(context, candidate);
       case 1:
-        return ExperienceSection(experience: candidate?.experience);
+        // return ExperienceSection(experience: candidate?.experience);
+        return const ExperienceSection();
+
       case 2:
         // return SkillsSection(skills: candidate?.skill);
         return const SkillsSection();

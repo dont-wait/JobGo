@@ -39,10 +39,10 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
     _dobCtrl = TextEditingController(text: c?.dateOfBirth ?? '');
     _genderCtrl = TextEditingController(text: c?.gender ?? '');
     _addressCtrl = TextEditingController(text: c?.address ?? '');
-    _skillCtrl = TextEditingController(text: c?.skill ?? '');
+    // _skillCtrl = TextEditingController(text: c?.skill ?? '');
     _phoneCtrl = TextEditingController(text: c?.phone ?? '');
     _educationCtrl = TextEditingController(text: c?.education ?? '');
-    _experienceCtrl = TextEditingController(text: c?.experience ?? '');
+    // _experienceCtrl = TextEditingController(text: c?.experience ?? '');
     _salaryMinCtrl = TextEditingController(
       text: c?.desiredSalaryMin?.toString() ?? '',
     );
