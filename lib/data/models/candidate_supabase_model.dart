@@ -79,23 +79,30 @@ class CandidateSupabaseModel {
       //     ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
       //     .toList(),
       skills: (json['candidates_skill'] as List?)
-          ?.map((e) {
-            final item = e as Map<String, dynamic>;
-            final skill = item['skill'] as Map<String, dynamic>;
+        ?.map((e) {
+          final item = e as Map<String, dynamic>;
+          final skillData = item['skill'] as Map<String, dynamic>?;
+          return SkillModel(
+            skId: skillData?['sk_id'] as int? ?? 0,
+            skName: skillData?['sk_name'] as String? ?? '',
+            skDescription: skillData?['sk_description'] as String?,
+            csYears: item['cs_years'] as int?,
+          );
+        })
+        .toList(),
+     
 
-            return SkillModel(
-              skId: skill['sk_id'],
-              skName: skill['sk_name'],
-              skDescription: skill['sk_description'],
-              csYears: item['cs_years'],
-            );
-          })
-          .toList(),
+      // experiences: (json['experiences'] as List?)
+      //     ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
+      //     .toList(),
       experiences: (json['experiences'] as List?)
-          ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+        ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    
     );
+    
   }
+  
 
   CandidateSupabaseModel copyWith({
     int? cId,
@@ -106,7 +113,7 @@ class CandidateSupabaseModel {
     // String? skill,
     String? phone,
     String? avatarUrl,
-    // String? education,
+    String? education,
     String? experience,
     List<String>? resumes,
     double? desiredSalaryMin,
