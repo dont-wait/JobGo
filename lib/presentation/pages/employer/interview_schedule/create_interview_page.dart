@@ -5,7 +5,7 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/data/repositories/employer_job_repository.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:provider/provider.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CreateInterviewPage extends StatefulWidget {
   const CreateInterviewPage({super.key});

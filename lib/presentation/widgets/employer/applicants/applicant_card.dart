@@ -130,6 +130,7 @@ class ApplicantCard extends StatelessWidget {
                           application: application,
                         ),
                       ),
+                     
                     );
                     if (updated == true) {
                       onApplicationChanged?.call();

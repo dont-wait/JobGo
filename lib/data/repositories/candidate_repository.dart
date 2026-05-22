@@ -25,7 +25,7 @@ class CandidateRepository {
         .select('c_id')
         .eq('u_id', uId)
         .maybeSingle();
-
+    
     return candidateRow?['c_id'] as int?;
   }
 
@@ -53,9 +53,22 @@ class CandidateRepository {
   Future<List<CandidateSupabaseModel>> fetchCandidates() async {
     final response = await _supabase
         .from('candidates')
-        .select('*, users(u_email, u_role, u_name, u_phone)')
+        // .select('*, users(u_email, u_role, u_name, u_phone)')
+        .select('''
+          *,
+          users(u_email, u_role, u_name, u_phone),
+          experiences!experiences_c_id_fkey(*),
+           candidates_skill!candidates_skill_c_id_fkey(
+            cs_years,
+            skill(
+              sk_id,
+              sk_name,
+              sk_description
+            )
+          )
+        ''')
         .order('c_updated_at', ascending: false);
-
+        print('Raw response: $response');
     final rows = response as List<dynamic>;
     return rows
         .map(
@@ -64,24 +77,54 @@ class CandidateRepository {
           ),
         )
         .toList();
+    
   }
 
   Future<CandidateSupabaseModel?> fetchCandidateById(int candidateId) async {
     try {
+      // final response = await _supabase
+      //     .from('candidates')
+      //     .select('*, users(u_email, u_role, u_name, u_phone)')
+      //     .eq('c_id', candidateId)
+      //     .maybeSingle();
       final response = await _supabase
-          .from('candidates')
-          .select('*, users(u_email, u_role, u_name, u_phone)')
-          .eq('c_id', candidateId)
-          .maybeSingle();
+        .from('candidates')
+        .select('''
+          *,
+          users(u_email, u_role, u_name, u_phone),
+          experiences!experiences_c_id_fkey(*),
+          candidates_skill!candidates_skill_c_id_fkey(
+            cs_years,
+            skill(
+              sk_id,
+              sk_name,
+              sk_description
+            )
+          )
+        ''')
+        .eq('c_id', candidateId)
+        .maybeSingle();
+        print(' RAW RESPONSE: $response');      
+        // if (response == null) {
+      //   return null;
+      // }
 
-      if (response == null) {
-        return null;
-      }
+      // return CandidateSupabaseModel.fromJson(
+      //   Map<String, dynamic>.from(response as Map),
+      // );
+      if (response == null) return null;
 
-      return CandidateSupabaseModel.fromJson(
+      final model = CandidateSupabaseModel.fromJson(
         Map<String, dynamic>.from(response as Map),
       );
-    } catch (e) {
+
+      print('skills: ${model.skills}'); 
+      print('experiences: ${model.experiences}'); 
+
+      return model;
+    } catch (e, stackTrace) {
+      print('ERROR: $e');
+      print('STACK: $stackTrace');
       dev.log('Error fetching candidate by id: $e');
       return null;
     }
@@ -103,7 +146,20 @@ class CandidateRepository {
 
       final candidateRow = await _supabase
           .from('candidates')
-          .select('*, users(u_email, u_role, u_name, u_phone)')
+          // .select('*, users(u_email, u_role, u_name, u_phone)')
+          .select('''
+              *,
+              users(u_email, u_role, u_name, u_phone),
+              experiences!experiences_c_id_fkey(*),
+               candidates_skill!candidates_skill_c_id_fkey(
+                cs_years,
+                skill(
+                  sk_id,
+                  sk_name,
+                  sk_description
+                )
+              )
+            ''')
           .eq('u_id', userId)
           .maybeSingle();
 

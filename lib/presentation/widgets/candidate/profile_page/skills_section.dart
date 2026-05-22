@@ -1,183 +1,39 @@
 
-// import 'package:flutter/material.dart';
-// import '../../../../core/configs/theme/app_colors.dart';
-
-// class SkillsSection extends StatelessWidget {
-//   final String? skills;
-
-//   const SkillsSection({super.key, this.skills});
-
-//   // Parse chuỗi skills thành list
-//   List<String> get _skillList {
-//     if (skills == null || skills!.trim().isEmpty) return [];
-//     return skills!.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final skillList = _skillList;
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         _buildSearchBox(),
-//         const SizedBox(height: 20),
-
-//         if (skillList.isEmpty)
-//           const Center(
-//             child: Padding(
-//               padding: EdgeInsets.symmetric(vertical: 32),
-//               child: Text(
-//                 'No skills added yet.\nUpdate your profile to add skills.',
-//                 textAlign: TextAlign.center,
-//                 style: TextStyle(color: Colors.grey),
-//               ),
-//             ),
-//           )
-//         else
-//           _buildSkillGroup(title: 'My Skills', skills: skillList),
-
-//         const SizedBox(height: 24),
-//         _buildSuggested(),
-//       ],
-//     );
-//   }
-
-//   Widget _buildSearchBox() {
-//     return TextField(
-//       decoration: InputDecoration(
-//         hintText: 'Add a skill...',
-//         prefixIcon: const Icon(Icons.search),
-//       ),
-//     );
-//   }
-
-//   Widget _buildSkillGroup({
-//     required String title,
-//     required List<String> skills,
-//   }) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Row(
-//           children: [
-//             Text(title,
-//               style: const TextStyle(
-//                 fontWeight: FontWeight.w600,
-//                 fontSize: 15,
-//                 color: AppColors.textPrimary,
-//               )),
-//             const Spacer(),
-//             Text('${skills.length} skills',
-//               style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-//           ],
-//         ),
-//         const SizedBox(height: 12),
-//         Wrap(
-//           spacing: 8,
-//           runSpacing: 8,
-//           children: skills.map((skill) => _SkillChip(skill)).toList(),
-//         ),
-//         const SizedBox(height: 20),
-//       ],
-//     );
-//   }
-
-//   Widget _buildSuggested() {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         const Text('Suggested for your profile',
-//           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.textPrimary)),
-//         const SizedBox(height: 12),
-//         Wrap(
-//           spacing: 8,
-//           runSpacing: 8,
-//           children: const [
-//             _SuggestedChip('UX Research'),
-//             _SuggestedChip('Accessibility'),
-//             _SuggestedChip('Design Systems'),
-//           ],
-//         ),
-//       ],
-//     );
-//   }
-// }
-
-// class _SkillChip extends StatelessWidget {
-//   final String label;
-//   const _SkillChip(this.label);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Chip(
-//       label: Text(label),
-//       deleteIcon: const Icon(Icons.close, size: 16),
-//       onDeleted: () {},
-//       backgroundColor: AppColors.searchPrimaryBar,
-//       labelStyle: const TextStyle(
-//         color: AppColors.searchPrimaryBarText,
-//         fontWeight: FontWeight.w500,
-//       ),
-//     );
-//   }
-// }
-
-// class _SuggestedChip extends StatelessWidget {
-//   final String label;
-//   const _SuggestedChip(this.label);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Chip(
-//       label: Text('+ $label'),
-//       backgroundColor: AppColors.divider,
-//       labelStyle: const TextStyle(
-//         color: AppColors.textSecondary,
-//         fontWeight: FontWeight.w500,
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jobgo/presentation/providers/profile_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/models/skill_model.dart';
+import 'package:jobgo/presentation/providers/profile_provider.dart';
 
 class SkillsSection extends StatelessWidget {
-  final String? skills;
+  final List<SkillModel>? skills;
+  final int? cId;
 
-  const SkillsSection({super.key, this.skills});
-
-  List<String> get _skillList {
-    if (skills == null || skills!.trim().isEmpty) return [];
-    return skills!
-        .split(',')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
-  }
+  const SkillsSection({super.key, this.skills, this.cId});
 
   @override
   Widget build(BuildContext context) {
-    final skillList = _skillList;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Skills',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: AppColors.textPrimary,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Skills',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            TextButton.icon(
+              onPressed: () => _showAddSkillDialog(context),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Add'),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
 
-        if (skillList.isEmpty)
+        if (skills == null || skills!.isEmpty)
           const Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 32),
@@ -189,144 +45,204 @@ class SkillsSection extends StatelessWidget {
             ),
           )
         else
-          _buildSkillGroup(title: 'My Skills', skills: skillList),
-
-        const SizedBox(height: 20),
-
-        Center(
-          child: OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () async {
-              final newSkill = await showDialog<String>(
-                context: context,
-                builder: (_) => _AddSkillDialog(),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: skills!.map((skill) {
+              return Chip(
+                label: Text(
+                  skill.csYears != null
+                      ? '${skill.skName} • ${skill.csYears} yrs'
+                      : skill.skName,
+                ),
+                deleteIcon: const Icon(Icons.close, size: 16),
+                onDeleted: () => _deleteSkill(context, skill.skId),
+                backgroundColor: AppColors.searchPrimaryBar,
+                labelStyle: const TextStyle(
+                  color: AppColors.searchPrimaryBarText,
+                  fontWeight: FontWeight.w500,
+                ),
               );
-
-              if (newSkill != null && newSkill.trim().isNotEmpty) {
-                final supabase = Supabase.instance.client;
-                final authUser = supabase.auth.currentUser;
-                if (authUser == null) return;
-
-                final userRow = await supabase
-                    .from('users')
-                    .select('u_id')
-                    .eq('auth_uid', authUser.id)
-                    .maybeSingle();
-
-                if (userRow == null) return;
-                final uId = userRow['u_id'] as int;
-
-                final candidateRow = await supabase
-                    .from('candidates')
-                    .select('c_skill') // ✅ đúng tên cột
-                    .eq('u_id', uId)
-                    .maybeSingle();
-
-                final currentSkills = candidateRow?['c_skill'] ?? '';
-                final updatedSkills = currentSkills.isEmpty
-                    ? newSkill
-                    : '$currentSkills, $newSkill';
-
-                await supabase
-                    .from('candidates')
-                    .update({'c_skill': updatedSkills}) // ✅ đúng tên cột
-                    .eq('u_id', uId);
-
-                context.read<ProfileProvider>().reloadProfile();
-              }
-            },
-            icon: const Icon(Icons.add),
-            label: const Text(
-              'Add New Skill',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
+            }).toList(),
           ),
-        ),
       ],
     );
   }
 
-  Widget _buildSkillGroup({
-    required String title,
-    required List<String> skills,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                  color: AppColors.textPrimary,
-                )),
-            const Spacer(),
-            Text('${skills.length} skills',
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textSecondary)),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: skills.map((skill) => _SkillChip(skill)).toList(),
-        ),
-      ],
+  Future<void> _showAddSkillDialog(BuildContext context) async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (_) => _AddSkillDialog(cId: cId, existingSkills: skills),
     );
+    print(' result: $result');
+    print(' cId: $cId');
+
+    if (result == null || cId == null) return;
+
+    try {
+      final supabase = Supabase.instance.client;
+      await supabase.from('candidates_skill').insert({
+        'c_id': cId,
+        'sk_id': result['skId'],
+        'cs_years': result['years'],
+      });
+
+      print('Insert thành công');
+
+      if (context.mounted) {
+        context.read<ProfileProvider>().reloadProfile();
+      }
+    } catch (e) {
+      print(' Lỗi: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: $e')),
+        );
+      }
+    }
   }
-}
 
-class _SkillChip extends StatelessWidget {
-  final String label;
-  const _SkillChip(this.label);
+  Future<void> _deleteSkill(BuildContext context, int skId) async {
+    try {
+      final supabase = Supabase.instance.client;
+      await supabase
+          .from('candidates_skill')
+          .delete()
+          .eq('c_id', cId!)
+          .eq('sk_id', skId);
 
-  @override
-  Widget build(BuildContext context) {
-    return Chip(
-      label: Text(label),
-      backgroundColor: AppColors.searchPrimaryBar,
-      labelStyle: const TextStyle(
-        color: AppColors.searchPrimaryBarText,
-        fontWeight: FontWeight.w500,
-      ),
-    );
+      if (context.mounted) {
+        context.read<ProfileProvider>().reloadProfile();
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi xóa: $e')),
+        );
+      }
+    }
   }
 }
 
 class _AddSkillDialog extends StatefulWidget {
+  final int? cId;
+  final List<SkillModel>? existingSkills;
+
+  const _AddSkillDialog({this.cId, this.existingSkills});
+
   @override
   State<_AddSkillDialog> createState() => _AddSkillDialogState();
 }
 
 class _AddSkillDialogState extends State<_AddSkillDialog> {
-  final controller = TextEditingController();
+  List<Map<String, dynamic>> _availableSkills = [];
+  int? _selectedSkillId;
+  String? _selectedSkillName;
+  int? _years;
+  bool _isLoading = true;
+  String? _loadError;
+  @override
+  void initState() {
+    super.initState();
+    _loadSkills();
+  }
+
+  Future<void> _loadSkills() async {
+    try {
+      final supabase = Supabase.instance.client;
+      final data = await supabase
+          .from('skill')
+          .select('sk_id, sk_name')
+          .order('sk_name');
+
+      // Lọc bỏ skill đã có
+      final existingIds = widget.existingSkills
+              ?.map((s) => s.skId)
+              .toSet() ??
+          {};
+      if (!mounted) return;
+      setState(() {
+        _availableSkills = (data as List)
+            .map((e) => {'id': e['sk_id'] as int, 'name': e['sk_name'] as String})
+            .where((s) => !existingIds.contains(s['id']))
+            .toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      // if (!mounted) return;
+      // setState(() => _isLoading = false);
+      if (!mounted) return;
+        setState(() {
+          _isLoading = false;
+          _loadError = 'Failed to load skills';
+        });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Add Skill'),
-      content: TextField(
-        controller: controller,
-        decoration: const InputDecoration(
-          hintText: 'Enter your skill',
-          border: OutlineInputBorder(),
-        ),
-      ),
+      content: _isLoading
+          ? const SizedBox(
+              height: 100,
+              child: Center(child: CircularProgressIndicator()),
+            )
+          : _loadError != null    
+            ? Text(_loadError!)  
+          : _availableSkills.isEmpty
+              ? const Text('Bạn đã thêm tất cả skills có sẵn!')
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Dropdown chọn skill
+                    DropdownButtonFormField<int>(
+                      value: _selectedSkillId,
+                      hint: const Text('Chọn skill'),
+                      items: _availableSkills.map((s) {
+                        return DropdownMenuItem<int>(
+                          value: s['id'] as int,
+                          child: Text(s['name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (v) => setState(() {
+                        _selectedSkillId = v;
+                        _selectedSkillName = _availableSkills
+                            .firstWhere((s) => s['id'] == v)['name'] as String;
+                      }),
+                      decoration: const InputDecoration(
+                        labelText: 'Skill *',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Nhập số năm
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Years of experience',
+                        hintText: 'e.g. 2',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (v) => _years = int.tryParse(v),
+                    ),
+                  ],
+                ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () => Navigator.pop(context, controller.text),
-          child: const Text('Save'),
+          onPressed: _selectedSkillId == null
+              ? null
+              : () => Navigator.pop(context, {
+                    'skId': _selectedSkillId,
+                    'years': _years,
+                  }),
+          child: const Text('Add'),
         ),
       ],
     );

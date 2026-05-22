@@ -21,10 +21,10 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
   late final TextEditingController _dobCtrl;
   late final TextEditingController _genderCtrl;
   late final TextEditingController _addressCtrl;
-  late final TextEditingController _skillCtrl;
+  // late final TextEditingController _skillCtrl;
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _educationCtrl;
-  late final TextEditingController _experienceCtrl;
+  // late final TextEditingController _experienceCtrl;
   late final TextEditingController _salaryMinCtrl;
   late final TextEditingController _salaryMaxCtrl;
   late final TextEditingController _emailCtrl;
@@ -39,10 +39,10 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
     _dobCtrl = TextEditingController(text: c?.dateOfBirth ?? '');
     _genderCtrl = TextEditingController(text: c?.gender ?? '');
     _addressCtrl = TextEditingController(text: c?.address ?? '');
-    _skillCtrl = TextEditingController(text: c?.skill ?? '');
+    // _skillCtrl = TextEditingController(text: c?.skill ?? '');
     _phoneCtrl = TextEditingController(text: c?.phone ?? '');
     _educationCtrl = TextEditingController(text: c?.education ?? '');
-    _experienceCtrl = TextEditingController(text: c?.experience ?? '');
+    // _experienceCtrl = TextEditingController(text: c?.experience ?? '');
     _salaryMinCtrl = TextEditingController(
       text: c?.desiredSalaryMin?.toString() ?? '',
     );
@@ -60,10 +60,10 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
     _dobCtrl.dispose();
     _genderCtrl.dispose();
     _addressCtrl.dispose();
-    _skillCtrl.dispose();
+    // _skillCtrl.dispose();
     _phoneCtrl.dispose();
     _educationCtrl.dispose();
-    _experienceCtrl.dispose();
+    // _experienceCtrl.dispose();
     _salaryMinCtrl.dispose();
     _salaryMaxCtrl.dispose();
     _emailCtrl.dispose();
@@ -97,10 +97,10 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
                   : _dobCtrl.text.trim(),
               'c_gender': _genderCtrl.text.trim(),
               'c_address': _addressCtrl.text.trim(),
-              'c_skill': _skillCtrl.text.trim(),
+              // 'c_skill': _skillCtrl.text.trim(),
               'c_phone': _phoneCtrl.text.trim(),
               'c_education': _educationCtrl.text.trim(),
-              'c_experience': _experienceCtrl.text.trim(),
+              // 'c_experience': _experienceCtrl.text.trim(),
               'c_desired_salary_min': _salaryMinCtrl.text.trim().isEmpty
                   ? null
                   : double.tryParse(_salaryMinCtrl.text.trim()),
@@ -196,11 +196,42 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
                 controller: _addressCtrl,
                 icon: Icons.home_outlined,
               ),
-              _buildField(
-                label: 'Skill',
-                controller: _skillCtrl,
-                icon: Icons.build_outlined,
-                maxLines: 2,
+              // _buildField(
+              //   label: 'Skill',
+              //   controller: _skillCtrl,
+              //   icon: Icons.build_outlined,
+              //   maxLines: 2,
+              // ),
+              const SizedBox(height: 8),
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Skills',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children:
+                    widget.candidate?.skills?.map((skill) {
+                      return Chip(
+                        label: Text(
+                          skill.csYears != null
+                              ? '${skill.skName} • ${skill.csYears} yrs'
+                              : skill.skName,
+                        ),
+                      );
+                    }).toList() ??
+                    [],
               ),
               _buildField(
                 label: 'Phone',
@@ -219,11 +250,88 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
                 controller: _educationCtrl,
                 icon: Icons.school_outlined,
               ),
-              _buildField(
-                label: 'Experience',
-                controller: _experienceCtrl,
-                icon: Icons.work_outline,
-                maxLines: 2,
+              // _buildField(
+              //   label: 'Experience',
+              //   controller: _experienceCtrl,
+              //   icon: Icons.work_outline,
+              //   maxLines: 2,
+              // ),
+              const SizedBox(height: 12),
+
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Experiences',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              ...(widget.candidate?.experiences ?? []).map(
+                (e) => Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: const BorderSide(color: AppColors.border),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          e.position,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        Text(
+                          e.companyName,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          e.period,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textHint,
+                          ),
+                        ),
+
+                        if (e.description != null &&
+                            e.description!.trim().isNotEmpty) ...[
+                          const SizedBox(height: 10),
+
+                          Text(
+                            e.description!,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textPrimary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
               _buildField(
                 label: 'Desired Salary Min',
