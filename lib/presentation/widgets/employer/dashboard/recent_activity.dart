@@ -20,6 +20,7 @@ class RecentActivityList extends StatelessWidget {
         return Icons.calendar_today_outlined;
       default:
         return Icons.info_outline;
+
     }
   }
 
