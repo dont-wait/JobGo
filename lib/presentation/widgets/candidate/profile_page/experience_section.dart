@@ -386,6 +386,12 @@ class _AddExperienceDialogState extends State<_AddExperienceDialog> {
               );
               return;
             }
+            if (_endDate != null && _endDate!.isBefore(_startDate!)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('End date must be on or after start date')),
+             );
+              return;
+            }
             Navigator.pop(context, {
               'company': _companyCtrl.text.trim(),
               'position': _positionCtrl.text.trim(),

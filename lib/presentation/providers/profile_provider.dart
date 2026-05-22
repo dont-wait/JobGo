@@ -51,8 +51,8 @@ class ProfileProvider extends ChangeNotifier {
         .select('''
           *,
           users(u_email, u_role),
-          candidates_skill(cs_years, skill(sk_id, sk_name, sk_description)),
-          experiences(ex_id, ex_company_name, ex_position, ex_start_date, ex_end_date, ex_description, c_id)
+          candidates_skill!candidates_skill_c_id_fkey(cs_years, skill(sk_id, sk_name, sk_description)),
+          experiences!experiences_c_id_fkey(ex_id, ex_company_name, ex_position, ex_start_date, ex_end_date, ex_description, c_id)
         ''')
         .eq('u_id', uId)
         .maybeSingle();
