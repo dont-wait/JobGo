@@ -68,7 +68,7 @@ class CandidateRepository {
           )
         ''')
         .order('c_updated_at', ascending: false);
-    print('Raw response: $response');
+        print('Raw response: $response');
     final rows = response as List<dynamic>;
     return rows
         .map(
@@ -104,7 +104,7 @@ class CandidateRepository {
         ''')
         .eq('c_id', candidateId)
         .maybeSingle();
-        print('🔥 RAW RESPONSE: $response');      
+        print(' RAW RESPONSE: $response');      
         // if (response == null) {
       //   return null;
       // }

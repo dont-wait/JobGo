@@ -140,7 +140,7 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
   String? _selectedSkillName;
   int? _years;
   bool _isLoading = true;
-
+  String? _loadError;
   @override
   void initState() {
     super.initState();
@@ -160,7 +160,7 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
               ?.map((s) => s.skId)
               .toSet() ??
           {};
-
+      if (!mounted) return;
       setState(() {
         _availableSkills = (data as List)
             .map((e) => {'id': e['sk_id'] as int, 'name': e['sk_name'] as String})
@@ -169,7 +169,13 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
+      // if (!mounted) return;
+      // setState(() => _isLoading = false);
+      if (!mounted) return;
+        setState(() {
+          _isLoading = false;
+          _loadError = 'Failed to load skills';
+        });
     }
   }
 
@@ -182,6 +188,8 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
               height: 100,
               child: Center(child: CircularProgressIndicator()),
             )
+          : _loadError != null    
+            ? Text(_loadError!)  
           : _availableSkills.isEmpty
               ? const Text('Bạn đã thêm tất cả skills có sẵn!')
               : Column(

@@ -82,13 +82,17 @@ class CandidateSupabaseModel {
         ?.map((e) {
           final item = e as Map<String, dynamic>;
           final skillData = item['skill'] as Map<String, dynamic>?;
+          if (skillData == null) return null;
+          final name = (skillData['sk_name'] as String? ?? '').trim();
+          if (name.isEmpty) return null;
           return SkillModel(
-            skId: skillData?['sk_id'] as int? ?? 0,
-            skName: skillData?['sk_name'] as String? ?? '',
-            skDescription: skillData?['sk_description'] as String?,
+            skId: skillData['sk_id'] as int,
+            skName: name,
+            skDescription: skillData['sk_description'] as String?,
             csYears: item['cs_years'] as int?,
           );
         })
+        .whereType<SkillModel>()
         .toList(),
      
 
