@@ -71,10 +71,11 @@ class ExperienceItem extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-            onPressed: onDelete, 
-            icon: const Icon(Icons.delete),
-            ),
+            if(onDelete != null)
+              IconButton(
+                onPressed: onDelete, 
+                icon: const Icon(Icons.delete),
+                ),
           ],
         ),
       ),
