@@ -531,7 +531,7 @@ final Map<String, String> vietStrings = {
   'noExperienceYet': 'Chưa có kinh nghiệm.\nNhấn Thêm để bắt đầu.',
   'deleteExperience': 'Xóa kinh nghiệm',
   'deleteExperienceConfirm': 'Bạn có chắc muốn xóa kinh nghiệm này?',
-  'add': 'Add',
+  'add': 'Thêm',
   'skillLabel': 'Kỹ năng',
-  'skillSearchHint': 'Gõ để tìm skill...',
+  'skillSearchHint': 'Gõ để tìm kỹ năng...',
 };
