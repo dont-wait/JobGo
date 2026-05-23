@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/main.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
@@ -8,11 +9,17 @@ import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile
 
 class ApplicantCard extends StatelessWidget {
   final JobApplicantModel application;
+  final AiCvAnalysisModel? analysis;
+  final VoidCallback? onAnalyze;
+  final bool isAnalyzing;
   final VoidCallback? onApplicationChanged;
 
   const ApplicantCard({
     super.key,
     required this.application,
+    this.analysis,
+    this.onAnalyze,
+    this.isAnalyzing = false,
     this.onApplicationChanged,
   });
 
@@ -106,8 +113,33 @@ class ApplicantCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          application.matchLabel,
+                          analysis != null
+                              ? '${analysis!.matchScore}% AI Match'
+                              : application.matchLabel,
                           style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const Spacer(),
+                        TextButton.icon(
+                          onPressed: isAnalyzing ? null : onAnalyze,
+                          icon: isAnalyzing
+                              ? const SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.auto_awesome_rounded,
+                                  size: 14,
+                                ),
+                          label: Text(
+                            analysis == null ? 'Analyze' : 'Re-analyze',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                          ),
                         ),
                       ],
                     ),
@@ -128,6 +160,7 @@ class ApplicantCard extends StatelessWidget {
                         builder: (_) => CandidateProfilePage(
                           candidate: candidate,
                           application: application,
+                          initialAiAnalysis: analysis,
                         ),
                       ),
                      

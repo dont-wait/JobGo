@@ -1,19 +1,24 @@
-  import 'package:flutter/material.dart';
-  import 'package:flutter/services.dart';
-  import 'package:jobgo/core/configs/theme/app_colors.dart';
-  import 'package:jobgo/data/models/candidate_supabase_model.dart';
-  import 'package:jobgo/data/models/job_applicant_model.dart';
-import 'package:jobgo/data/repositories/job_application_repository.dart';
-import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
+import 'package:jobgo/data/models/candidate_supabase_model.dart';
+import 'package:jobgo/data/models/job_applicant_model.dart';
+import 'package:jobgo/data/repositories/ai_cv_analysis_repository.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
+import 'package:jobgo/data/repositories/job_application_repository.dart';
+import 'package:jobgo/data/services/gemini_cv_analysis_service.dart';
+import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
   class CandidateProfilePage extends StatefulWidget {
     final CandidateSupabaseModel candidate;
     final JobApplicantModel? application;
+    final AiCvAnalysisModel? initialAiAnalysis;
 
     const CandidateProfilePage({
       super.key,
       required this.candidate,
       this.application,
+      this.initialAiAnalysis,
     });
 
     @override
@@ -24,6 +29,11 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
     int _currentTab = 0;
     final List<String> _tabs = ['About', 'Experience', 'Skills', 'Resume'];
     CandidateSupabaseModel? _fullCandidate;
+    final AiCvAnalysisRepository _analysisRepository = AiCvAnalysisRepository();
+    final GeminiCvAnalysisService _geminiService = GeminiCvAnalysisService();
+    AiCvAnalysisModel? _aiAnalysis;
+    bool _isAnalyzing = false;
+    String? _analysisError;
     String? get _resumeUrl {
       final candidateResume = widget.candidate.resume?.trim() ?? '';
       if (candidateResume.isNotEmpty) {
@@ -36,24 +46,88 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
     @override
     void initState() {
       super.initState();
+      _aiAnalysis = widget.initialAiAnalysis;
       _loadFullCandidate();
+      _loadCachedAnalysis();
     }
 
     Future<void> _loadFullCandidate() async {
       final repo = CandidateRepository();
-      print('🔄 Fetching candidate ID: ${widget.candidate.cId}');
       final full = await repo.fetchCandidateById(widget.candidate.cId);
-      print('Full candidate: $full');
-      print('Experiences: ${full?.experiences}');
-      print('Skills: ${full?.skills}');
-      // if (mounted && full != null) {
-      //   setState(() => _fullCandidate = full);
-      // }
       if (mounted && full != null) {
         setState(() => _fullCandidate = full);
       } else {
         // Fallback: dùng widget.candidate luôn dù không có join data
         if (mounted) setState(() => _fullCandidate = widget.candidate);
+      }
+    }
+
+    Future<void> _loadCachedAnalysis() async {
+      final application = widget.application;
+      if (application == null) return;
+
+      final cached = await _analysisRepository.fetchCachedAnalysis(
+        applicationId: application.applicationId,
+        jobId: application.jobId,
+        cvUrl: application.cvUrl,
+      );
+      if (!mounted || cached == null) return;
+
+      setState(() {
+        _aiAnalysis = cached;
+      });
+    }
+
+    Future<void> _analyzeApplication() async {
+      final application = widget.application;
+      if (application == null) return;
+      if (_isAnalyzing) return;
+
+      final cvUrl = application.cvUrl.trim();
+      if (!GeminiCvAnalysisService.isPdfUrl(cvUrl)) {
+        setState(() {
+          _analysisError = 'AI analysis supports PDF only for now.';
+        });
+        return;
+      }
+
+      final job = application.job;
+      if (job == null) {
+        setState(() {
+          _analysisError = 'Missing job details for AI analysis.';
+        });
+        return;
+      }
+
+      setState(() {
+        _isAnalyzing = true;
+        _analysisError = null;
+      });
+
+      try {
+        final result = await _geminiService.analyzeCv(
+          applicationId: application.applicationId,
+          jobId: application.jobId,
+          candidateId: application.candidateId,
+          cvUrl: application.cvUrl,
+          job: job,
+          candidate: _candidate,
+          coverLetter: application.coverLetter,
+        );
+        final saved = await _analysisRepository.saveAnalysis(result);
+        if (!mounted) return;
+        setState(() {
+          _aiAnalysis = saved ?? result;
+        });
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _analysisError = e.toString().replaceFirst('Exception: ', '');
+        });
+      } finally {
+        if (mounted) {
+          setState(() => _isAnalyzing = false);
+        }
       }
     }
     CandidateSupabaseModel get _candidate => _fullCandidate ?? widget.candidate;
@@ -258,6 +332,8 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
+              _buildAiInsightCard(),
             ],
 
           ],
@@ -325,6 +401,115 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
                   ),
                 ),
               ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget _buildAiInsightCard() {
+      final analysis = _aiAnalysis;
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  Icons.auto_awesome_rounded,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'AI Insight',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const Spacer(),
+                if (analysis != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${analysis.matchScore}/100',
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (_analysisError != null) ...[
+              Text(
+                _analysisError!,
+                style: const TextStyle(color: AppColors.error, fontSize: 12),
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (analysis == null)
+              const Text(
+                'No AI analysis yet. Run analysis to get fit score and interview insights.',
+                style: TextStyle(color: AppColors.textSecondary, height: 1.4),
+              )
+            else ...[
+              Text(
+                analysis.summary,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (analysis.gaps.isNotEmpty)
+                Text(
+                  'Missing skills: ${analysis.gaps.take(3).join(' • ')}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              if (analysis.riskFlags.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  'Interview checks: ${analysis.riskFlags.take(3).join(' • ')}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ],
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 40,
+              child: ElevatedButton.icon(
+                onPressed: _isAnalyzing ? null : _analyzeApplication,
+                icon: _isAnalyzing
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.auto_fix_high_rounded, size: 16),
+                label: Text(analysis == null ? 'Analyze' : 'Re-analyze'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
+              ),
             ),
           ],
         ),
@@ -650,7 +835,7 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.work, color: AppColors.primary),
@@ -1071,11 +1256,5 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
         context,
         MaterialPageRoute(builder: (_) => const InterviewSchedulePage()),
       );
-    }
-
-    void _showSnackBar(String message) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }

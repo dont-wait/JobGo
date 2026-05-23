@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
+import 'package:jobgo/data/repositories/ai_cv_analysis_repository.dart';
 import 'package:jobgo/data/repositories/job_application_repository.dart';
+import 'package:jobgo/data/services/gemini_cv_analysis_service.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/applicant_card.dart';
 
 class JobApplicantsPage extends StatefulWidget {
@@ -23,11 +26,16 @@ class JobApplicantsPage extends StatefulWidget {
 class _JobApplicantsPageState extends State<JobApplicantsPage> {
   final TextEditingController _searchController = TextEditingController();
   final JobApplicationRepository _repository = JobApplicationRepository();
+  final AiCvAnalysisRepository _analysisRepository = AiCvAnalysisRepository();
+  final GeminiCvAnalysisService _geminiService = GeminiCvAnalysisService();
 
   List<JobApplicantModel> _allApplications = [];
   List<JobApplicantModel> _filteredApplications = [];
+  Map<int, AiCvAnalysisModel> _analysisByApplicationId = {};
+  final Set<int> _analyzingApplicationIds = {};
   bool _isLoading = true;
   String? _errorMessage;
+  String _sortBy = 'newest';
 
   @override
   void initState() {
@@ -64,6 +72,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
         _allApplications = applications;
         _errorMessage = null;
       });
+      await _loadCachedAnalyses();
       _filterApplicants(_searchController.text);
     } catch (e) {
       if (!mounted) return;
@@ -87,17 +96,92 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
   void _filterApplicants(String query) {
     final lowerQuery = query.trim().toLowerCase();
+    final filtered = _allApplications.where((application) {
+      if (lowerQuery.isEmpty) return true;
+      return application.searchableText.contains(lowerQuery);
+    }).toList();
+
+    filtered.sort((a, b) {
+      if (_sortBy == 'ai_desc') {
+        final aScore = _analysisByApplicationId[a.applicationId]?.matchScore ?? -1;
+        final bScore = _analysisByApplicationId[b.applicationId]?.matchScore ?? -1;
+        return bScore.compareTo(aScore);
+      }
+      if (_sortBy == 'ai_asc') {
+        final aScore = _analysisByApplicationId[a.applicationId]?.matchScore ?? 101;
+        final bScore = _analysisByApplicationId[b.applicationId]?.matchScore ?? 101;
+        return aScore.compareTo(bScore);
+      }
+      final aDate = a.appliedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bDate = b.appliedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bDate.compareTo(aDate);
+    });
+
     setState(() {
-      _filteredApplications = _allApplications.where((application) {
-        if (lowerQuery.isEmpty) return true;
-        return application.searchableText.contains(lowerQuery);
-      }).toList();
+      _filteredApplications = filtered;
     });
   }
 
   void _clearSearch() {
     _searchController.clear();
     _filterApplicants('');
+  }
+
+  Future<void> _loadCachedAnalyses() async {
+    final ids = _allApplications.map((e) => e.applicationId).toList();
+    final cached = await _analysisRepository.fetchByApplicationIds(ids);
+    if (!mounted) return;
+    setState(() {
+      _analysisByApplicationId = cached;
+    });
+  }
+
+  Future<void> _analyzeApplicant(JobApplicantModel application) async {
+    final appId = application.applicationId;
+    if (_analyzingApplicationIds.contains(appId)) return;
+    final cvUrl = application.cvUrl.trim();
+    if (!GeminiCvAnalysisService.isPdfUrl(cvUrl)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('AI analysis supports PDF only for now.')),
+      );
+      return;
+    }
+
+    final job = application.job;
+    if (job == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Missing job details for AI analysis.')),
+      );
+      return;
+    }
+
+    setState(() => _analyzingApplicationIds.add(appId));
+    try {
+      final result = await _geminiService.analyzeCv(
+        applicationId: appId,
+        jobId: application.jobId,
+        candidateId: application.candidateId,
+        cvUrl: cvUrl,
+        job: job,
+        candidate: application.candidate,
+        coverLetter: application.coverLetter,
+      );
+      final saved = await _analysisRepository.saveAnalysis(result);
+      if (!mounted) return;
+      setState(() {
+        _analysisByApplicationId[appId] = saved ?? result;
+      });
+      _filterApplicants(_searchController.text);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Analyze failed: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _analyzingApplicationIds.remove(appId));
+      }
+    }
   }
 
   @override
@@ -145,25 +229,62 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _filterApplicants,
-              decoration: InputDecoration(
-                hintText: 'Search candidates...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.trim().isEmpty
-                    ? const Icon(Icons.filter_list)
-                    : IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: _clearSearch,
-                      ),
-                filled: true,
-                fillColor: AppColors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+            child: Column(
+              children: [
+                TextField(
+                  controller: _searchController,
+                  onChanged: _filterApplicants,
+                  decoration: InputDecoration(
+                    hintText: 'Search candidates...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.trim().isEmpty
+                        ? const Icon(Icons.filter_list)
+                        : IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: _clearSearch,
+                          ),
+                    filled: true,
+                    fillColor: AppColors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Text(
+                      'Sort:',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                    const SizedBox(width: 8),
+                    DropdownButton<String>(
+                      value: _sortBy,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'newest',
+                          child: Text('Newest'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'ai_desc',
+                          child: Text('AI score high'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'ai_asc',
+                          child: Text('AI score low'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _sortBy = value);
+                        _filterApplicants(_searchController.text);
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -242,10 +363,18 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: _filteredApplications.length,
-      itemBuilder: (context, index) => ApplicantCard(
-        application: _filteredApplications[index],
-        onApplicationChanged: () => _loadApplicants(refresh: true),
-      ),
+      itemBuilder: (context, index) {
+        final application = _filteredApplications[index];
+        return ApplicantCard(
+          application: application,
+          analysis: _analysisByApplicationId[application.applicationId],
+          isAnalyzing: _analyzingApplicationIds.contains(
+            application.applicationId,
+          ),
+          onAnalyze: () => _analyzeApplicant(application),
+          onApplicationChanged: () => _loadApplicants(refresh: true),
+        );
+      },
     );
   }
 }
