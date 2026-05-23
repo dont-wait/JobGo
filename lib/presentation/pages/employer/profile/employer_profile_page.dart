@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/utils/app_logger.dart';
 import 'package:jobgo/presentation/pages/employer/company/company_profile_page.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
@@ -233,7 +234,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                 bottom: 0,
                 right: 0,
                 child: GestureDetector(
-                onTap: provider.isLoading ? null : _pickAndUploadLogo,
+                  onTap: provider.isLoading ? null : _pickAndUploadLogo,
                   child: Container(
                     width: 28,
                     height: 28,
@@ -416,6 +417,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
 
   Future<void> _pickAndUploadLogo() async {
     try {
+      final loc = AppLocalizations.of(context);
       final ImageSource? source = await showModalBottomSheet<ImageSource>(
         context: context,
         backgroundColor: Colors.white,
@@ -427,9 +429,9 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Chọn ảnh đại diện',
-                style: TextStyle(
+              Text(
+                loc.chooseProfileImage,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -443,10 +445,12 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded,
-                      color: AppColors.primary),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: AppColors.primary,
+                  ),
                 ),
-                title: const Text('Chụp ảnh mới'),
+                title: Text(loc.takeNewPhoto),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
               ),
               ListTile(
@@ -456,10 +460,12 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.photo_library_rounded,
-                      color: AppColors.primary),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.primary,
+                  ),
                 ),
-                title: const Text('Chọn từ thư viện'),
+                title: Text(loc.chooseFromLibrary),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
               ),
               const SizedBox(height: 10),
@@ -531,8 +537,6 @@ class _SettingsItem {
 void _navigateToCompanyProfile(BuildContext context) {
   Navigator.push(
     context,
-    MaterialPageRoute(
-      builder: (_) => const CompanyProfilePage(),
-    ),
+    MaterialPageRoute(builder: (_) => const CompanyProfilePage()),
   );
 }

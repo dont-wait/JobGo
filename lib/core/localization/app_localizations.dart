@@ -216,6 +216,9 @@ class AppLocalizations {
   String get refreshFailed => translate('refreshFailed');
   String get viewProfile => translate('viewProfile');
   String get message => translate('message');
+  String get chooseProfileImage => translate('chooseProfileImage');
+  String get takeNewPhoto => translate('takeNewPhoto');
+  String get chooseFromLibrary => translate('chooseFromLibrary');
   String get cancelButton => translate('cancelButton');
   String get selectCV => translate('selectCV');
   String get chooseResumeForApplication =>
