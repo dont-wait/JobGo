@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/data/repositories/ai_cv_analysis_repository.dart';
@@ -37,6 +38,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
   String? _errorMessage;
   String _sortBy = 'newest';
   String? _currentLanguageCode;
+  int _analysisRequestToken = 0;
 
   @override
   void didChangeDependencies() {
@@ -44,9 +46,17 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
     final languageCode = Localizations.localeOf(context).languageCode;
     if (_currentLanguageCode == languageCode) return;
     _currentLanguageCode = languageCode;
+    _analysisRequestToken++;
+
+    if (_analyzingApplicationIds.isNotEmpty) {
+      setState(() => _analyzingApplicationIds.clear());
+    }
 
     if (_allApplications.isNotEmpty) {
-      _loadCachedAnalyses(languageCode: languageCode).then((_) {
+      _loadCachedAnalyses(
+        languageCode: languageCode,
+        requestToken: _analysisRequestToken,
+      ).then((_) {
         if (mounted) {
           _filterApplicants(_searchController.text);
         }
@@ -67,7 +77,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Job không hợp lệ.';
+        _errorMessage = 'Invalid job identifier.';
         _allApplications = [];
         _filteredApplications = [];
       });
@@ -89,9 +99,12 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
         _allApplications = applications;
         _errorMessage = null;
       });
+      final requestToken = _analysisRequestToken;
       await _loadCachedAnalyses(
         languageCode:
-            _currentLanguageCode ?? Localizations.localeOf(context).languageCode,
+            _currentLanguageCode ??
+            Localizations.localeOf(context).languageCode,
+        requestToken: requestToken,
       );
       _filterApplicants(_searchController.text);
     } catch (e) {
@@ -99,13 +112,13 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
       if (_allApplications.isEmpty) {
         setState(() {
-          _errorMessage = 'Không tải được danh sách ứng viên.';
+          _errorMessage = 'Failed to refresh applicants.';
           _filteredApplications = [];
         });
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Refresh thất bại: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to refresh applicants: $e')),
+        );
       }
     } finally {
       if (mounted) {
@@ -123,13 +136,17 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
     filtered.sort((a, b) {
       if (_sortBy == 'ai_desc') {
-        final aScore = _analysisByApplicationId[a.applicationId]?.matchScore ?? -1;
-        final bScore = _analysisByApplicationId[b.applicationId]?.matchScore ?? -1;
+        final aScore =
+            _analysisByApplicationId[a.applicationId]?.matchScore ?? -1;
+        final bScore =
+            _analysisByApplicationId[b.applicationId]?.matchScore ?? -1;
         return bScore.compareTo(aScore);
       }
       if (_sortBy == 'ai_asc') {
-        final aScore = _analysisByApplicationId[a.applicationId]?.matchScore ?? 101;
-        final bScore = _analysisByApplicationId[b.applicationId]?.matchScore ?? 101;
+        final aScore =
+            _analysisByApplicationId[a.applicationId]?.matchScore ?? 101;
+        final bScore =
+            _analysisByApplicationId[b.applicationId]?.matchScore ?? 101;
         return aScore.compareTo(bScore);
       }
       final aDate = a.appliedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -149,13 +166,18 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
   Future<void> _loadCachedAnalyses({
     required String languageCode,
+    required int requestToken,
   }) async {
     final ids = _allApplications.map((e) => e.applicationId).toList();
     final cached = await _analysisRepository.fetchByApplicationIds(
       ids,
       languageCode,
     );
-    if (!mounted) return;
+    if (!mounted ||
+        requestToken != _analysisRequestToken ||
+        _currentLanguageCode != languageCode) {
+      return;
+    }
     setState(() {
       _analysisByApplicationId = cached;
     });
@@ -164,22 +186,24 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
   Future<void> _analyzeApplicant(JobApplicantModel application) async {
     final appId = application.applicationId;
     if (_analyzingApplicationIds.contains(appId)) return;
+    final loc = AppLocalizations.of(context);
     final cvUrl = application.cvUrl.trim();
     if (!GeminiCvAnalysisService.isPdfUrl(cvUrl)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('AI analysis supports PDF only for now.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.aiAnalysisSupportsPdfOnly)));
       return;
     }
 
     final job = application.job;
     if (job == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Missing job details for AI analysis.')),
+        SnackBar(content: Text(loc.missingJobDetailsForAiAnalysis)),
       );
       return;
     }
     final languageCode = Localizations.localeOf(context).languageCode;
+    final requestToken = ++_analysisRequestToken;
 
     setState(() => _analyzingApplicationIds.add(appId));
     try {
@@ -194,18 +218,22 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
         languageCode: languageCode,
       );
       final saved = await _analysisRepository.saveAnalysis(result);
-      if (!mounted) return;
+      if (!mounted ||
+          requestToken != _analysisRequestToken ||
+          _currentLanguageCode != languageCode) {
+        return;
+      }
       setState(() {
         _analysisByApplicationId[appId] = saved ?? result;
       });
       _filterApplicants(_searchController.text);
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || requestToken != _analysisRequestToken) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Analyze failed: $e')));
+      ).showSnackBar(SnackBar(content: Text('${loc.analyzeFailed}: $e')));
     } finally {
-      if (mounted) {
+      if (mounted && requestToken == _analysisRequestToken) {
         setState(() => _analyzingApplicationIds.remove(appId));
       }
     }

@@ -27,6 +27,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   String? _analysisError;
   AiCvAnalysisModel? _analysis;
   String? _lastLanguageCode;
+  int _analysisRequestToken = 0;
 
   @override
   void didChangeDependencies() {
@@ -34,11 +35,13 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
     final languageCode = Localizations.localeOf(context).languageCode;
     if (_lastLanguageCode == languageCode) return;
     _lastLanguageCode = languageCode;
+    _analysisRequestToken++;
 
-    if (_analysis != null || _analysisError != null) {
+    if (_analysis != null || _analysisError != null || _isAnalyzingCv) {
       setState(() {
         _analysis = null;
         _analysisError = null;
+        _isAnalyzingCv = false;
       });
     }
   }
@@ -98,13 +101,14 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
     if (profile == null) return;
     final resumes = profile.resumes ?? [];
     if (resumes.isEmpty) return;
+    final loc = AppLocalizations.of(context);
     final languageCode = Localizations.localeOf(context).languageCode;
 
     final selectedCvUrl = resumes[_selectedCvIndex];
     if (!GeminiCvAnalysisService.isPdfUrl(selectedCvUrl)) {
       setState(() {
         _analysis = null;
-        _analysisError = 'AI analysis supports PDF only for now.';
+        _analysisError = loc.aiAnalysisSupportsPdfOnly;
       });
       return;
     }
@@ -113,11 +117,12 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
     if (jobId == null) {
       setState(() {
         _analysis = null;
-        _analysisError = 'Invalid job identifier.';
+        _analysisError = loc.invalidJobIdentifier;
       });
       return;
     }
 
+    final requestToken = ++_analysisRequestToken;
     setState(() {
       _isAnalyzingCv = true;
       _analysisError = null;
@@ -136,18 +141,19 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
         languageCode: languageCode,
       );
 
-      if (!mounted) return;
+      if (!mounted || requestToken != _analysisRequestToken) return;
       setState(() {
         _analysis = result;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || requestToken != _analysisRequestToken) return;
       setState(() {
         _analysis = null;
-        _analysisError = e.toString().replaceFirst('Exception: ', '');
+        _analysisError =
+            '${loc.analyzeFailed}: ${e.toString().replaceFirst('Exception: ', '')}';
       });
     } finally {
-      if (mounted) {
+      if (mounted && requestToken == _analysisRequestToken) {
         setState(() => _isAnalyzingCv = false);
       }
     }
@@ -666,7 +672,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
           ),
 
           const SizedBox(height: 20),
-          _buildAiCvPanel(selectedCvUrl),
+          _buildAiCvPanel(selectedCvUrl, loc),
 
           const SizedBox(height: 10),
 
@@ -762,7 +768,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
     );
   }
 
-  Widget _buildAiCvPanel(String selectedCvUrl) {
+  Widget _buildAiCvPanel(String selectedCvUrl, AppLocalizations loc) {
     final isPdf = GeminiCvAnalysisService.isPdfUrl(selectedCvUrl);
     final score = _analysis?.matchScore;
 
@@ -785,9 +791,12 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                 color: AppColors.primary,
               ),
               const SizedBox(width: 8),
-              const Text(
-                'AI CV Fit',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              Text(
+                loc.aiCvFit,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Spacer(),
               if (score != null)
@@ -812,9 +821,12 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
           ),
           const SizedBox(height: 10),
           if (!isPdf)
-            const Text(
-              'AI analysis supports PDF only for now.',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            Text(
+              loc.aiAnalysisSupportsPdfOnly,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
             )
           else ...[
             if (_analysisError != null) ...[
@@ -835,14 +847,14 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
               if (_analysis!.suggestions.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Suggestions: ${_analysis!.suggestions.take(2).join(' • ')}',
+                  '${loc.suggestionsLabel} ${_analysis!.suggestions.take(2).join(' • ')}',
                   style: const TextStyle(fontSize: 12),
                 ),
               ],
               if (_analysis!.coverLetterTips.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Text(
-                  'Cover letter: ${_analysis!.coverLetterTips.take(2).join(' • ')}',
+                  '${loc.coverLetterTipsLabel} ${_analysis!.coverLetterTips.take(2).join(' • ')}',
                   style: const TextStyle(fontSize: 12),
                 ),
               ],
@@ -862,7 +874,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                         ),
                       )
                     : const Icon(Icons.auto_fix_high_rounded, size: 16),
-                label: Text(_analysis == null ? 'Analyze CV' : 'Re-analyze'),
+                label: Text(_analysis == null ? loc.analyzeCv : loc.reanalyze),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

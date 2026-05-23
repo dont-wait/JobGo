@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/main.dart';
@@ -46,6 +47,7 @@ class ApplicantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final candidate = application.candidate;
 
     return Container(
@@ -114,7 +116,7 @@ class ApplicantCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           analysis != null
-                              ? '${analysis!.matchScore}% AI Match'
+                              ? '${analysis!.matchScore}% ${loc.aiMatch}'
                               : application.matchLabel,
                           style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
@@ -134,7 +136,7 @@ class ApplicantCard extends StatelessWidget {
                                   size: 14,
                                 ),
                           label: Text(
-                            analysis == null ? 'Analyze' : 'Re-analyze',
+                            analysis == null ? loc.analyze : loc.reanalyze,
                             style: const TextStyle(fontSize: 12),
                           ),
                           style: TextButton.styleFrom(
@@ -163,13 +165,12 @@ class ApplicantCard extends StatelessWidget {
                           initialAiAnalysis: analysis,
                         ),
                       ),
-                     
                     );
                     if (updated == true) {
                       onApplicationChanged?.call();
                     }
                   },
-                  child: const Text('View Profile'),
+                  child: Text(loc.viewProfile),
                 ),
               ),
               const SizedBox(width: 12),
@@ -195,7 +196,7 @@ class ApplicantCard extends StatelessWidget {
                     });
                   },
                   icon: const Icon(Icons.message, size: 18),
-                  label: const Text('Message'),
+                  label: Text(loc.message),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                   ),

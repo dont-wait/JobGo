@@ -48,5 +48,6 @@ void main() {
     expect(model.id, 1);
     expect(model.matchScore, 88);
     expect(model.coverLetterTips, ['Keep it concise']);
+    expect(model.languageCode, 'vi');
   });
 }
