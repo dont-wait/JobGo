@@ -3,6 +3,8 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
+import 'package:jobgo/presentation/providers/chat_provider.dart';
+import 'package:jobgo/presentation/providers/notification_provider.dart';
 
 // ── Candidate pages ──
 import 'package:jobgo/presentation/pages/candidate/home/home_page.dart';
@@ -211,6 +213,18 @@ class _AppShellState extends State<AppShell> {
   Widget _buildNavItem(IconData icon, int index) {
     final isSelected = _currentIndex == index;
 
+    // Determine badge count based on tab index and role
+    int badgeCount = 0;
+    if (widget.role != UserRole.admin) {
+      if (index == 3) {
+        // Messages tab
+        badgeCount = context.watch<ChatProvider>().totalUnread;
+      } else if (index == 4) {
+        // Notifications tab
+        badgeCount = context.watch<NotificationProvider>().unreadCount;
+      }
+    }
+
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _currentIndex = index),
@@ -218,10 +232,38 @@ class _AppShellState extends State<AppShell> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 24,
-              color: isSelected ? AppColors.primary : AppColors.textHint,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
+                  color: isSelected ? AppColors.primary : AppColors.textHint,
+                ),
+                if (badgeCount > 0)
+                  Positioned(
+                    right: -8,
+                    top: -4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.error,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: const BoxConstraints(minWidth: 16),
+                      child: Text(
+                        badgeCount > 99 ? '99+' : '$badgeCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 4),
           ],

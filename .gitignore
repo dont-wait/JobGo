@@ -50,3 +50,5 @@ flake.lock
 .vscode
 .docs
 .agents
+.gemini
+.skillkit

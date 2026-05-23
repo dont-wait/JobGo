@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/notification_model.dart';
-import 'package:jobgo/data/repositories/notification_repository.dart';
+import 'package:jobgo/presentation/providers/notification_provider.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
-/// Employer Notifications page — thông báo tuyển dụng, ứng viên, phản hồi, hệ thống.
+/// Employer Notifications page — realtime qua NotificationProvider.
 class EmployerNotificationsPage extends StatefulWidget {
   const EmployerNotificationsPage({super.key});
 
@@ -17,14 +18,11 @@ class EmployerNotificationsPage extends StatefulWidget {
 class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final NotificationRepository _notificationRepo = NotificationRepository();
-  late Future<List<NotificationModel>> _notificationsFuture;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    _notificationsFuture = _notificationRepo.fetchNotificationsForCurrentUser();
   }
 
   @override
@@ -51,9 +49,22 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             fontWeight: FontWeight.w700,
           ),
         ),
-        actions: const [
-          ProfileAvatar(role: UserRole.employer),
-          SizedBox(width: 4),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
+            tooltip: 'Mark all as read',
+            onPressed: () {
+              context.read<NotificationProvider>().markAllAsRead();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('All notifications marked as read'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+          ),
+          const ProfileAvatar(role: UserRole.employer),
+          const SizedBox(width: 4),
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -86,24 +97,24 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
   }
 
   Widget _buildNotificationTab(_NType type) {
-    return FutureBuilder<List<NotificationModel>>(
-      future: _notificationsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer<NotificationProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (snapshot.hasError) {
-          return _buildErrorState(snapshot.error.toString());
+        if (provider.error != null && provider.notifications.isEmpty) {
+          return _buildErrorState(provider.error!);
         }
 
-        final models = snapshot.data ?? [];
-        final items = models.map(_toNotificationItem).toList();
+        final items = provider.notifications
+            .map(_toNotificationItem)
+            .toList();
         final filtered = type == _NType.all
             ? items
             : items.where((item) => item.type == type).toList();
 
-        return _buildNotificationList(filtered);
+        return _buildNotificationList(filtered, provider);
       },
     );
   }
@@ -130,15 +141,13 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             const SizedBox(height: 6),
             Text(
               message,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textHint,
-              ),
+              style: const TextStyle(fontSize: 12, color: AppColors.textHint),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _refreshNotifications,
+              onPressed: () =>
+                  context.read<NotificationProvider>().loadNotifications(),
               child: const Text('Retry'),
             ),
           ],
@@ -147,10 +156,13 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     );
   }
 
-  Widget _buildNotificationList(List<_NotificationItem> items) {
+  Widget _buildNotificationList(
+    List<_NotificationItem> items,
+    NotificationProvider provider,
+  ) {
     if (items.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _refreshNotifications,
+        onRefresh: () => provider.loadNotifications(),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
@@ -182,18 +194,22 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     }
 
     return RefreshIndicator(
-      onRefresh: _refreshNotifications,
+      onRefresh: () => provider.loadNotifications(),
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: items.length,
         separatorBuilder: (_, __) =>
             const Divider(height: 1, indent: 72, endIndent: 16),
-        itemBuilder: (context, index) => _buildNotificationTile(items[index]),
+        itemBuilder: (context, index) =>
+            _buildNotificationTile(items[index], provider),
       ),
     );
   }
 
-  Widget _buildNotificationTile(_NotificationItem item) {
+  Widget _buildNotificationTile(
+    _NotificationItem item,
+    NotificationProvider provider,
+  ) {
     return Container(
       color: item.isRead ? Colors.white : const Color(0xFFF0F7FF),
       child: ListTile(
@@ -235,22 +251,20 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
                   shape: BoxShape.circle,
                 ),
               ),
-        onTap: () {},
+        onTap: () {
+          if (!item.isRead) {
+            provider.markAsRead(item.id);
+          }
+        },
       ),
     );
-  }
-
-  Future<void> _refreshNotifications() async {
-    setState(() {
-      _notificationsFuture = _notificationRepo.fetchNotificationsForCurrentUser();
-    });
-    await _notificationsFuture;
   }
 
   _NotificationItem _toNotificationItem(NotificationModel model) {
     final type = _mapType(model.type);
     final visual = _resolveVisual(type, model.type);
     return _NotificationItem(
+      id: model.id,
       title: model.content,
       time: _formatTimeAgo(model.createdAt),
       icon: visual.icon,
@@ -339,7 +353,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
   }
 }
 
-// ── Mock data ──
+// ── Data classes ──
 
 enum _NType { all, applicant, response, system }
 
@@ -356,6 +370,7 @@ class _NotificationVisual {
 }
 
 class _NotificationItem {
+  final int id;
   final String title;
   final String time;
   final IconData icon;
@@ -365,6 +380,7 @@ class _NotificationItem {
   final bool isRead;
 
   const _NotificationItem({
+    required this.id,
     required this.title,
     required this.time,
     required this.icon,
@@ -374,4 +390,3 @@ class _NotificationItem {
     this.isRead = false,
   });
 }
-
