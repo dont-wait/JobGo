@@ -532,6 +532,9 @@ final Map<String, String> englishStrings = {
   'noExperienceYet': 'No experience added yet.\nTap Add to get started.',
   'deleteExperience': 'Delete Experience',
   'deleteExperienceConfirm': 'Are you sure you want to delete this experience?',
+  'add': 'Add',
+  'skillLabel': 'Skill',
+  'skillSearchHint': 'Type to search skill...',
 };
 
 

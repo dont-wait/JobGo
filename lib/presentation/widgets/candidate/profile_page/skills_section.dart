@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
@@ -231,12 +232,22 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
                         });
                       },
                       fieldViewBuilder: (context, controller, focusNode, onSubmitted) {
+                        final l = AppLocalizations.of(context);
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,
-                          decoration: const InputDecoration(
-                            labelText: 'Skill *',
-                            hintText: 'Gõ để tìm skill...',
+                          onChanged: (value) {
+                            // Clear selection nếu text không khớp với skill đã chọn
+                            if (_selectedSkillName != null && value != _selectedSkillName) {
+                              setState(() {
+                                _selectedSkillId = null;
+                                _selectedSkillName = null;
+                              });
+                            }
+                          },
+                          decoration:  InputDecoration(
+                            labelText: '${l.skillLabel} *',
+                            hintText: l.skillSearchHint,
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.search),
                           ),

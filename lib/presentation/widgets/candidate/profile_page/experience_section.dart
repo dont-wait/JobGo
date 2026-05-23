@@ -22,25 +22,24 @@ class ExperienceSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Work Experience',
+            Text(AppLocalizations.of(context).workExperience,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             TextButton.icon(
               onPressed: () => _showAddExperienceDialog(context),
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              label: Text(AppLocalizations.of(context).add),
             ),
           ],
         ),
         const SizedBox(height: 12),
 
         if (experiences == null || experiences!.isEmpty)
-          const Center(
+           Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 32),
               child: Text(
-                'No experience added yet.\nTap Add to get started.',
+                AppLocalizations.of(context).noExperienceYet,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey),
               ),

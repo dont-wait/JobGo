@@ -509,6 +509,9 @@ class AppLocalizations {
   String get noExperienceYet => translate('noExperienceYet');
   String get deleteExperience => translate('deleteExperience');
   String get deleteExperienceConfirm => translate('deleteExperienceConfirm');
+  String get add => translate('add');
+  String get skillLabel => translate('skillLabel');
+  String get skillSearchHint => translate('skillSearchHint');
   }
 
 class _AppLocalizationsDelegate
