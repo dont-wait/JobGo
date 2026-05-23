@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
@@ -196,24 +197,85 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Dropdown chọn skill
-                    DropdownButtonFormField<int>(
-                      value: _selectedSkillId,
-                      hint: const Text('Chọn skill'),
-                      items: _availableSkills.map((s) {
-                        return DropdownMenuItem<int>(
-                          value: s['id'] as int,
-                          child: Text(s['name'] as String),
+                    // DropdownButtonFormField<int>(
+                    //   value: _selectedSkillId,
+                    //   hint: const Text('Chọn skill'),
+                    //   items: _availableSkills.map((s) {
+                    //     return DropdownMenuItem<int>(
+                    //       value: s['id'] as int,
+                    //       child: Text(s['name'] as String),
+                    //     );
+                    //   }).toList(),
+                    //   onChanged: (v) => setState(() {
+                    //     _selectedSkillId = v;
+                    //     _selectedSkillName = _availableSkills
+                    //         .firstWhere((s) => s['id'] == v)['name'] as String;
+                    //   }),
+                    //   decoration: const InputDecoration(
+                    //     labelText: 'Skill *',
+                    //     border: OutlineInputBorder(),
+                    //   ),
+                    // ),
+                    Autocomplete<Map<String, dynamic>>(
+                      optionsBuilder: (textEditingValue) {
+                        if (textEditingValue.text.isEmpty) return const []; 
+                        return _availableSkills.where((s) =>
+                            (s['name'] as String)
+                                .toLowerCase()
+                                .contains(textEditingValue.text.toLowerCase())); 
+                      },
+                      displayStringForOption: (s) => s['name'] as String,
+                      onSelected: (s) {
+                        setState(() {
+                          _selectedSkillId = s['id'] as int;
+                          _selectedSkillName = s['name'] as String;
+                        });
+                      },
+                      fieldViewBuilder: (context, controller, focusNode, onSubmitted) {
+                        final l = AppLocalizations.of(context);
+                        return TextFormField(
+                          controller: controller,
+                          focusNode: focusNode,
+                          onChanged: (value) {
+                            // Clear selection nếu text không khớp với skill đã chọn
+                            if (_selectedSkillName != null && value != _selectedSkillName) {
+                              setState(() {
+                                _selectedSkillId = null;
+                                _selectedSkillName = null;
+                              });
+                            }
+                          },
+                          decoration:  InputDecoration(
+                            labelText: '${l.skillLabel} *',
+                            hintText: l.skillSearchHint,
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.search),
+                          ),
                         );
-                      }).toList(),
-                      onChanged: (v) => setState(() {
-                        _selectedSkillId = v;
-                        _selectedSkillName = _availableSkills
-                            .firstWhere((s) => s['id'] == v)['name'] as String;
-                      }),
-                      decoration: const InputDecoration(
-                        labelText: 'Skill *',
-                        border: OutlineInputBorder(),
-                      ),
+                      },
+                      optionsViewBuilder: (context, onSelected, options) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 4,
+                            borderRadius: BorderRadius.circular(8),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 200),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: options.length,
+                                itemBuilder: (context, index) {
+                                  final skill = options.elementAt(index);
+                                  return ListTile(
+                                    title: Text(skill['name'] as String),
+                                    onTap: () => onSelected(skill),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 16),

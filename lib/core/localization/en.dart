@@ -515,4 +515,26 @@ final Map<String, String> englishStrings = {
   'accountTrashTitle': 'Account Trash',
   'emptyTrash': 'Trash is empty',
   'rolePrefix': 'Role:',
+
+  //kinh nghiệm - kĩ năng
+  'addExperience': 'Add Experience',
+  'companyName': 'Company Name',
+  'companyNameHint': 'e.g. Google',
+  'position': 'Position',
+  'positionHint': 'e.g. Flutter Developer',
+  'startDate': 'Start Date',
+  'endDate': 'End Date',
+  'endDateHint': 'Leave empty if current job',
+  'describeRole': 'Describe your role...',
+  'fillRequiredFields': 'Please fill in all required fields',
+  'endDateBeforeStart': 'End date must be after start date',
+  'workExperience': 'Work Experience',
+  'noExperienceYet': 'No experience added yet.\nTap Add to get started.',
+  'deleteExperience': 'Delete Experience',
+  'deleteExperienceConfirm': 'Are you sure you want to delete this experience?',
+  'add': 'Add',
+  'skillLabel': 'Skill',
+  'skillSearchHint': 'Type to search skill...',
 };
+
+
