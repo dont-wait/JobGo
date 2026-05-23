@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
 import 'package:jobgo/data/models/job_model.dart';
+import 'package:jobgo/data/services/gemini_cv_analysis_service.dart';
 import 'package:jobgo/presentation/providers/application_provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,28 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   int _selectedCvIndex = 0;
   final _coverLetterController = TextEditingController();
   bool _isSubmitting = false;
+  bool _isAnalyzingCv = false;
+  String? _analysisError;
+  AiCvAnalysisModel? _analysis;
+  String? _lastLanguageCode;
+  int _analysisRequestToken = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final languageCode = Localizations.localeOf(context).languageCode;
+    if (_lastLanguageCode == languageCode) return;
+    _lastLanguageCode = languageCode;
+    _analysisRequestToken++;
+
+    if (_analysis != null || _analysisError != null || _isAnalyzingCv) {
+      setState(() {
+        _analysis = null;
+        _analysisError = null;
+        _isAnalyzingCv = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -58,6 +82,8 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
       cvUrl: resumes[_selectedCvIndex],
     );
 
+    if (!mounted) return;
+
     setState(() => _isSubmitting = false);
 
     if (success) {
@@ -67,6 +93,69 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(loc.applicationFailed)));
+    }
+  }
+
+  Future<void> _analyzeCvFit() async {
+    final profile = context.read<ProfileProvider>().candidate;
+    if (profile == null) return;
+    final resumes = profile.resumes ?? [];
+    if (resumes.isEmpty) return;
+    final loc = AppLocalizations.of(context);
+    final languageCode = Localizations.localeOf(context).languageCode;
+
+    final selectedCvUrl = resumes[_selectedCvIndex];
+    if (!GeminiCvAnalysisService.isPdfUrl(selectedCvUrl)) {
+      setState(() {
+        _analysis = null;
+        _analysisError = loc.aiAnalysisSupportsPdfOnly;
+      });
+      return;
+    }
+
+    final jobId = int.tryParse(widget.job.id);
+    if (jobId == null) {
+      setState(() {
+        _analysis = null;
+        _analysisError = loc.invalidJobIdentifier;
+      });
+      return;
+    }
+
+    final requestToken = ++_analysisRequestToken;
+    setState(() {
+      _isAnalyzingCv = true;
+      _analysisError = null;
+    });
+
+    try {
+      final service = GeminiCvAnalysisService();
+      final result = await service.analyzeCv(
+        applicationId: null,
+        jobId: jobId,
+        candidateId: profile.cId,
+        cvUrl: selectedCvUrl,
+        job: widget.job,
+        candidate: profile,
+        coverLetter: _coverLetterController.text,
+        languageCode: languageCode,
+      );
+
+      if (!mounted || requestToken != _analysisRequestToken) return;
+      setState(() {
+        _analysis = result;
+      });
+    } catch (e) {
+      if (!mounted || requestToken != _analysisRequestToken) return;
+      setState(() {
+        _analysis = null;
+        _analysisError =
+            '${loc.analyzeFailed}: ${e.toString().replaceFirst('Exception: ', '')}';
+      });
+    } finally {
+      if (mounted && requestToken == _analysisRequestToken) {
+        setState(() => _isAnalyzingCv = false);
+      }
     }
   }
 
@@ -270,7 +359,11 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: GestureDetector(
-                    onTap: () => setState(() => _selectedCvIndex = index),
+                    onTap: () => setState(() {
+                      _selectedCvIndex = index;
+                      _analysis = null;
+                      _analysisError = null;
+                    }),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.all(16),
@@ -471,6 +564,13 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
               controller: _coverLetterController,
               maxLines: 6,
               maxLength: 500,
+              onChanged: (_) {
+                if (_analysis == null && _analysisError == null) return;
+                setState(() {
+                  _analysis = null;
+                  _analysisError = null;
+                });
+              },
               decoration: InputDecoration(
                 hintText: loc.coverLetterPlaceholder,
                 hintStyle: const TextStyle(
@@ -571,6 +671,9 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
             ),
           ),
 
+          const SizedBox(height: 20),
+          _buildAiCvPanel(selectedCvUrl, loc),
+
           const SizedBox(height: 10),
 
           // Change CV
@@ -660,6 +763,126 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAiCvPanel(String selectedCvUrl, AppLocalizations loc) {
+    final isPdf = GeminiCvAnalysisService.isPdfUrl(selectedCvUrl);
+    final score = _analysis?.matchScore;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.auto_awesome_rounded,
+                size: 18,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                loc.aiCvFit,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              if (score != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$score/100',
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (!isPdf)
+            Text(
+              loc.aiAnalysisSupportsPdfOnly,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
+            )
+          else ...[
+            if (_analysisError != null) ...[
+              Text(
+                _analysisError!,
+                style: const TextStyle(color: AppColors.error, fontSize: 12),
+              ),
+              const SizedBox(height: 8),
+            ],
+            if (_analysis?.summary.isNotEmpty == true) ...[
+              Text(
+                _analysis!.summary,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+              if (_analysis!.suggestions.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  '${loc.suggestionsLabel} ${_analysis!.suggestions.take(2).join(' • ')}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+              if (_analysis!.coverLetterTips.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  '${loc.coverLetterTipsLabel} ${_analysis!.coverLetterTips.take(2).join(' • ')}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+              const SizedBox(height: 10),
+            ],
+            SizedBox(
+              height: 40,
+              child: ElevatedButton.icon(
+                onPressed: _isAnalyzingCv ? null : _analyzeCvFit,
+                icon: _isAnalyzingCv
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.auto_fix_high_rounded, size: 16),
+                label: Text(_analysis == null ? loc.analyzeCv : loc.reanalyze),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

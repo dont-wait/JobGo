@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 import 'package:jobgo/presentation/pages/employer/company/company_profile_page.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
 import 'package:jobgo/presentation/pages/employer/profile/employer_edit_profile_page.dart';
@@ -17,6 +21,8 @@ class EmployerProfilePage extends StatefulWidget {
 }
 
 class _EmployerProfilePageState extends State<EmployerProfilePage> {
+  final ImagePicker _picker = ImagePicker();
+
   @override
   void initState() {
     super.initState();
@@ -228,7 +234,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                 bottom: 0,
                 right: 0,
                 child: GestureDetector(
-                  onTap: () => _navigateToEdit(context),
+                  onTap: provider.isLoading ? null : _pickAndUploadLogo,
                   child: Container(
                     width: 28,
                     height: 28,
@@ -408,6 +414,100 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
       MaterialPageRoute(builder: (_) => const EmployerEditProfilePage()),
     );
   }
+
+  Future<void> _pickAndUploadLogo() async {
+    try {
+      final loc = AppLocalizations.of(context);
+      final ImageSource? source = await showModalBottomSheet<ImageSource>(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                loc.chooseProfileImage,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: AppColors.primary,
+                  ),
+                ),
+                title: Text(loc.takeNewPhoto),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.primary,
+                  ),
+                ),
+                title: Text(loc.chooseFromLibrary),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      );
+
+      if (source == null) return;
+
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+
+      if (image != null && mounted) {
+        final success = await context
+            .read<EmployerProvider>()
+            .uploadAndChangeLogo(File(image.path));
+
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Logo uploaded successfully!'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to upload logo. Please try again.'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
+    } catch (e, st) {
+      AppLogger.error('Error picking image', error: e, stackTrace: st);
+    }
+  }
 }
 
 class _SettingsItem {
@@ -437,8 +537,6 @@ class _SettingsItem {
 void _navigateToCompanyProfile(BuildContext context) {
   Navigator.push(
     context,
-    MaterialPageRoute(
-      builder: (_) => const CompanyProfilePage(),
-    ),
+    MaterialPageRoute(builder: (_) => const CompanyProfilePage()),
   );
 }
