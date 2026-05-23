@@ -1,168 +1,6 @@
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:jobgo/data/models/experience_model.dart';
-// import 'package:jobgo/presentation/providers/profile_provider.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
-// import 'experience_item.dart';
-
-// class ExperienceSection extends StatelessWidget {
-//   final List<ExperienceModel>? experience;
-//   final int? cId;
-
-
-//   const ExperienceSection({super.key, this.experience, this.cId});
-//   // List<String> get _experienceList {
-//   //   if (experience == null || experience!.trim().isEmpty) return [];
-//   //   return experience!
-//   //       .split(',')
-//   //       .map((e) => e.trim())
-//   //       .where((e) => e.isNotEmpty)
-//   //       .toList();
-//   // }
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//      final experiences = _experienceList;
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: [
-//             const Text(
-//               'Work Experience',
-//               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//             ),
-//             // TextButton.icon(
-//             //   onPressed: () {},
-//             //   icon: const Icon(Icons.add, size: 18),
-//             //   label: const Text('Add'),
-//             // ),
-//           ],
-//         ),
-//         const SizedBox(height: 12),
-
-//         // Hiển thị data thật hoặc thông báo trống
-//         if (experience == null || experience!.trim().isEmpty)
-//           const Center(
-//             child: Padding(
-//               padding: EdgeInsets.symmetric(vertical: 32),
-//               child: Text(
-//                 'No experience added yet.\nTap Add to get started.',
-//                 textAlign: TextAlign.center,
-//                 style: TextStyle(color: Colors.grey),
-//               ),
-//             ),
-//           )
-//         else
-//           // ExperienceItem(
-//           //   title: 'Experience',
-//           //   company: '',
-//           //   time: '',
-//           //   description: experience!,
-//           // ),
-//           Column(
-//             children: experiences.map((exp) {
-//               return ExperienceItem(
-//                 title: 'Experience',
-//                 company: '',
-//                 time: '',
-//                 description: exp,
-//               );
-//             }).toList(),
-//           ),
-
-
-//         const SizedBox(height: 12),
-//         // OutlinedButton.icon(
-//         //   onPressed: () {},
-//         //   icon: const Icon(Icons.add),
-//         //   label: const Text('Add New Experience'),
-//         // ),
-//         OutlinedButton.icon(
-//           onPressed: () async {
-//             final newExp = await showDialog<String>(
-//               context: context,
-//               builder: (_) => _AddExperienceDialog(),
-//             );
-
-//             if (newExp != null && newExp.trim().isNotEmpty) {
-//               final supabase = Supabase.instance.client;
-//               final authUser = supabase.auth.currentUser;
-//               if (authUser == null) return;
-
-//               // Lấy u_id
-//               final userRow = await supabase
-//                   .from('users')
-//                   .select('u_id')
-//                   .eq('auth_uid', authUser.id)
-//                   .maybeSingle();
-
-//               if (userRow == null) return;
-//               final uId = userRow['u_id'] as int;
-
-//               // Lấy c_experience hiện tại
-//               final candidateRow = await supabase
-//                   .from('candidates')
-//                   .select('c_experience')
-//                   .eq('u_id', uId)
-//                   .maybeSingle();
-
-//               final currentExp = candidateRow?['c_experience'] ?? '';
-//               final updatedExp = currentExp.isEmpty
-//                   ? newExp
-//                   : '$currentExp, $newExp';
-
-//               // Update lại
-//               await supabase
-//                   .from('candidates')
-//                   .update({'c_experience': updatedExp})
-//                   .eq('u_id', uId);
-
-//               // Reload profile
-//               context.read<ProfileProvider>().reloadProfile();
-//             }
-//           },
-//           icon: const Icon(Icons.add),
-//           label: const Text('Add New Experience'),
-//         ),
-//       ],
-//     );
-//   }
-// }
-// class _AddExperienceDialog extends StatefulWidget {
-//   @override
-//   State<_AddExperienceDialog> createState() => _AddExperienceDialogState();
-// }
-
-// class _AddExperienceDialogState extends State<_AddExperienceDialog> {
-//   final controller = TextEditingController();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       title: const Text('Add Experience'),
-//       content: TextField(
-//         controller: controller,
-//         decoration: const InputDecoration(hintText: 'Enter your experience'),
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () => Navigator.pop(context),
-//           child: const Text('Cancel'),
-//         ),
-//         ElevatedButton(
-//           onPressed: () => Navigator.pop(context, controller.text),
-//           child: const Text('Save'),
-//         ),
-//       ],
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
@@ -227,11 +65,12 @@ class ExperienceSection extends StatelessWidget {
   }
 
   Future<void> _showAddExperienceDialog(BuildContext context) async {
-    final result = await showDialog<Map<String, dynamic>>(
-      context: context,
-      builder: (_) => const _AddExperienceDialog(),
-    );
-
+     final result = await showModalBottomSheet<Map<String, dynamic>>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => const _AddExperienceSheet(),
+      );
     if (result == null || cId == null) return;
 
     try {
@@ -275,14 +114,16 @@ class ExperienceSection extends StatelessWidget {
   }
 }
 
-class _AddExperienceDialog extends StatefulWidget {
-  const _AddExperienceDialog();
 
+
+
+class _AddExperienceSheet extends StatefulWidget {
+  const _AddExperienceSheet();
   @override
-  State<_AddExperienceDialog> createState() => _AddExperienceDialogState();
+  State<_AddExperienceSheet> createState() => _AddExperienceSheetState();
 }
 
-class _AddExperienceDialogState extends State<_AddExperienceDialog> {
+class _AddExperienceSheetState extends State<_AddExperienceSheet> {
   final _companyCtrl = TextEditingController();
   final _positionCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -299,110 +140,239 @@ class _AddExperienceDialogState extends State<_AddExperienceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Add Experience'),
-      content: SingleChildScrollView(
+    final l = AppLocalizations.of(context);
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      maxChildSize: 0.95,
+      minChildSize: 0.5,
+      builder: (_, scrollController) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: _companyCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Company Name *',
-                hintText: 'e.g. Google',
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _positionCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Position *',
-                hintText: 'e.g. Flutter Developer',
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Text(l.addExperience,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            // Start Date
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today, color: AppColors.primary),
-              title: Text(
-                _startDate == null
-                    ? 'Start Date *'
-                    : '${_startDate!.month}/${_startDate!.year}',
-              ),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime.now(),
-                  initialDate: DateTime.now(),
-                );
-                if (picked != null) setState(() => _startDate = picked);
-              },
-            ),
-            // End Date
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.calendar_today_outlined, color: AppColors.primary),
-              title: Text(
-                _endDate == null
-                    ? 'End Date (leave empty if current)'
-                    : '${_endDate!.month}/${_endDate!.year}',
-              ),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2100),
-                  initialDate: DateTime.now(),
-                );
-                if (picked != null) setState(() => _endDate = picked);
-              },
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _descCtrl,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                hintText: 'Describe your role...',
+            const Divider(),
+            // Form
+            Expanded(
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _buildField(
+                    icon: Icons.business,
+                    label: l.companyName,
+                    controller: _companyCtrl,
+                    hint: l.companyNameHint,
+                    required: true,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildField(
+                    icon: Icons.work_outline,
+                    label: l.position,
+                    controller: _positionCtrl,
+                    hint: l.positionHint,
+                    required: true,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(child: _buildDatePicker(
+                        label: l.startDate,
+                        date: _startDate,
+                        icon: Icons.calendar_today,
+                        required: true,
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime.now(),
+                            initialDate: DateTime.now(),
+                          );
+                          if (picked != null) setState(() => _startDate = picked);
+                        },
+                      )),
+                      const SizedBox(width: 12),
+                      Expanded(child: _buildDatePicker(
+                        label: l.endDate,
+                        date: _endDate,
+                        icon: Icons.calendar_today_outlined,
+                        hint: l.endDateHint,
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                            initialDate: DateTime.now(),
+                          );
+                          if (picked != null) setState(() => _endDate = picked);
+                        },
+                      )),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildField(
+                    icon: Icons.notes,
+                    label: l.description,
+                    controller: _descCtrl,
+                    hint: l.describeRole,
+                    maxLines: 4,
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(l.save,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (_companyCtrl.text.trim().isEmpty ||
-                _positionCtrl.text.trim().isEmpty ||
-                _startDate == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin bắt buộc')),
-              );
-              return;
-            }
-            if (_endDate != null && _endDate!.isBefore(_startDate!)) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('End date must be on or after start date')),
-             );
-              return;
-            }
-            Navigator.pop(context, {
-              'company': _companyCtrl.text.trim(),
-              'position': _positionCtrl.text.trim(),
-              'startDate': _startDate!.toIso8601String(),
-              'endDate': _endDate?.toIso8601String(),
-              'description': _descCtrl.text.trim(),
-            });
-          },
-          child: const Text('Save'),
+    );
+  }
+
+  Widget _buildField({
+    required IconData icon,
+    required String label,
+    required TextEditingController controller,
+    String? hint,
+    int maxLines = 1,
+    bool required = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(children: [
+          Icon(icon, size: 16, color: AppColors.primary),
+          const SizedBox(width: 6),
+          Text('$label${required ? ' *' : ''}',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+        ]),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor: Colors.grey[50],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          ),
         ),
       ],
     );
+  }
+
+  Widget _buildDatePicker({
+    required String label,
+    required DateTime? date,
+    required IconData icon,
+    required VoidCallback onTap,
+    String? hint,
+    bool required = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [
+              Icon(icon, size: 14, color: AppColors.primary),
+              const SizedBox(width: 4),
+              Text('$label${required ? ' *' : ''}',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+            ]),
+            const SizedBox(height: 6),
+            Text(
+              date != null
+                  ? '${date.month}/${date.year}'
+                  : (hint ?? '—'),
+              style: TextStyle(
+                fontSize: 13,
+                color: date != null ? AppColors.textPrimary : Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _submit() {
+    final l = AppLocalizations.of(context);
+    if (_companyCtrl.text.trim().isEmpty ||
+        _positionCtrl.text.trim().isEmpty ||
+        _startDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.fillRequiredFields)));
+      return;
+    }
+    if (_endDate != null && _endDate!.isBefore(_startDate!)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.endDateBeforeStart)));
+      return;
+    }
+    Navigator.pop(context, {
+      'company': _companyCtrl.text.trim(),
+      'position': _positionCtrl.text.trim(),
+      'startDate': _startDate!.toIso8601String(),
+      'endDate': _endDate?.toIso8601String(),
+      'description': _descCtrl.text.trim(),
+    });
   }
 }

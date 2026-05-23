@@ -513,4 +513,22 @@ final Map<String, String> vietStrings = {
   'accountTrashTitle': 'Thùng rác tài khoản',
   'emptyTrash': 'Thùng rác trống',
   'rolePrefix': 'Vai trò:',
+
+
+  // kinh nghiệm + kĩ năng
+  'addExperience': 'Thêm kinh nghiệm',
+  'companyName': 'Tên công ty',
+  'companyNameHint': 'VD: Google',
+  'position': 'Vị trí',
+  'positionHint': 'VD: Flutter Developer',
+  'startDate': 'Ngày bắt đầu',
+  'endDate': 'Ngày kết thúc',
+  'endDateHint': 'Để trống nếu đang làm',
+  'describeRole': 'Mô tả công việc của bạn...',
+  'fillRequiredFields': 'Vui lòng điền đầy đủ thông tin bắt buộc',
+  'endDateBeforeStart': 'Ngày kết thúc phải sau ngày bắt đầu',
+  'workExperience': 'Kinh nghiệm làm việc',
+  'noExperienceYet': 'Chưa có kinh nghiệm.\nNhấn Thêm để bắt đầu.',
+  'deleteExperience': 'Xóa kinh nghiệm',
+  'deleteExperienceConfirm': 'Bạn có chắc muốn xóa kinh nghiệm này?',
 };

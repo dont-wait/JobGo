@@ -492,7 +492,24 @@ class AppLocalizations {
   String get accountTrashTitle => translate('accountTrashTitle');
   String get emptyTrash => translate('emptyTrash');
   String get rolePrefix => translate('rolePrefix');
-}
+
+  // kinh nghiệm
+  String get addExperience => translate('addExperience');
+  String get companyName => translate('companyName');
+  String get companyNameHint => translate('companyNameHint');
+  String get position => translate('position');
+  String get positionHint => translate('positionHint');
+  String get startDate => translate('startDate');
+  String get endDate => translate('endDate');
+  String get endDateHint => translate('endDateHint');
+  String get describeRole => translate('describeRole');
+  String get fillRequiredFields => translate('fillRequiredFields');
+  String get endDateBeforeStart => translate('endDateBeforeStart');
+  String get workExperience => translate('workExperience');
+  String get noExperienceYet => translate('noExperienceYet');
+  String get deleteExperience => translate('deleteExperience');
+  String get deleteExperienceConfirm => translate('deleteExperienceConfirm');
+  }
 
 class _AppLocalizationsDelegate
     extends LocalizationsDelegate<AppLocalizations> {
