@@ -26,6 +26,22 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   bool _isAnalyzingCv = false;
   String? _analysisError;
   AiCvAnalysisModel? _analysis;
+  String? _lastLanguageCode;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final languageCode = Localizations.localeOf(context).languageCode;
+    if (_lastLanguageCode == languageCode) return;
+    _lastLanguageCode = languageCode;
+
+    if (_analysis != null || _analysisError != null) {
+      setState(() {
+        _analysis = null;
+        _analysisError = null;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -82,6 +98,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
     if (profile == null) return;
     final resumes = profile.resumes ?? [];
     if (resumes.isEmpty) return;
+    final languageCode = Localizations.localeOf(context).languageCode;
 
     final selectedCvUrl = resumes[_selectedCvIndex];
     if (!GeminiCvAnalysisService.isPdfUrl(selectedCvUrl)) {
@@ -116,6 +133,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
         job: widget.job,
         candidate: profile,
         coverLetter: _coverLetterController.text,
+        languageCode: languageCode,
       );
 
       if (!mounted) return;

@@ -11,13 +11,18 @@ create table if not exists public.application_ai_analysis (
   suggestions jsonb not null default '[]'::jsonb,
   cover_letter_tips jsonb not null default '[]'::jsonb,
   risk_flags jsonb not null default '[]'::jsonb,
+  language_code text not null default 'vi',
   model text not null default 'gemini-2.5-flash',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
+alter table public.application_ai_analysis
+  add column if not exists language_code text not null default 'vi';
+
+drop index if exists public.application_ai_analysis_unique_cache_key;
 create unique index if not exists application_ai_analysis_unique_cache_key
-  on public.application_ai_analysis (application_id, job_id, cv_url);
+  on public.application_ai_analysis (application_id, job_id, cv_url, language_code);
 
 create index if not exists application_ai_analysis_job_id_idx
   on public.application_ai_analysis (job_id);

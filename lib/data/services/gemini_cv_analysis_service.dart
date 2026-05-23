@@ -25,12 +25,14 @@ class GeminiCvAnalysisService {
     required JobModel job,
     required CandidateSupabaseModel candidate,
     required String coverLetter,
+    String languageCode = 'vi',
   }) async {
     final apiKey = dotenv.env['GEMINI_API_KEY']?.trim() ?? '';
     final model =
         (dotenv.env['GEMINI_MODEL']?.trim().isNotEmpty ?? false)
         ? dotenv.env['GEMINI_MODEL']!.trim()
         : _defaultModel;
+    final normalizedLanguageCode = _normalizeLanguageCode(languageCode);
 
     if (apiKey.isEmpty) {
       throw StateError('Missing GEMINI_API_KEY in .env');
@@ -40,7 +42,12 @@ class GeminiCvAnalysisService {
     }
 
     final pdfBytes = await _downloadPdf(cvUrl);
-    final prompt = _buildPrompt(job, candidate, coverLetter);
+    final prompt = _buildPrompt(
+      job,
+      candidate,
+      coverLetter,
+      normalizedLanguageCode,
+    );
 
     final uri = Uri.parse(
       'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent',
@@ -95,6 +102,7 @@ class GeminiCvAnalysisService {
       jobId: jobId,
       candidateId: candidateId,
       cvUrl: cvUrl,
+      languageCode: normalizedLanguageCode,
       model: model,
     );
   }
@@ -149,10 +157,17 @@ class GeminiCvAnalysisService {
     return text.trim();
   }
 
+  String _normalizeLanguageCode(String languageCode) {
+    final code = languageCode.trim().toLowerCase();
+    if (code.startsWith('vi')) return 'vi';
+    return 'en';
+  }
+
   String _buildPrompt(
     JobModel job,
     CandidateSupabaseModel candidate,
     String coverLetter,
+    String languageCode,
   ) {
     final profileSkills = candidate.skillList.join(', ');
     final profileExperiences =
@@ -160,6 +175,42 @@ class GeminiCvAnalysisService {
             ?.map((e) => '${e.position} at ${e.companyName} (${e.period})')
             .join('; ') ??
         '';
+
+    if (languageCode == 'en') {
+      return '''
+You are an AI hiring assistant.
+Analyze the attached PDF CV against the target job.
+Return valid JSON only, matching the schema exactly. Do not add any text outside the JSON.
+Keep the JSON field names in English as specified, but write all text values naturally in English.
+
+Target Job:
+- Title: ${job.title}
+- Company: ${job.company}
+- Location: ${job.location}
+- Job type: ${job.type}
+- Salary: ${job.formattedSalary}
+- Description: ${job.description ?? ''}
+- Requirements: ${(job.requirements ?? const <String>[]).join('; ')}
+- Tags: ${(job.tags ?? const <String>[]).join(', ')}
+
+Candidate Profile:
+- Name: ${candidate.displayName}
+- Headline: ${candidate.displayHeadline}
+- Summary: ${candidate.displaySummary}
+- Skills: $profileSkills
+- Experience: $profileExperiences
+- Education: ${candidate.displayEducation}
+- Cover letter: $coverLetter
+
+Scoring rules:
+- matchScore must be an integer from 0 to 100.
+- strengths: evidence from the CV relevant to the job.
+- gaps: missing skills or experience relative to the requirements.
+- suggestions: concrete CV improvements tailored to this job.
+- coverLetterTips: 3-5 specific improvement tips.
+- riskFlags: concerns the recruiter should verify in interview.
+''';
+    }
 
     return '''
 Bạn là một trợ lý tuyển dụng AI.

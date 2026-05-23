@@ -17,6 +17,7 @@ void main() {
       jobId: 20,
       candidateId: 30,
       cvUrl: 'https://example.com/cv.pdf',
+      languageCode: 'vi',
       model: 'gemini-2.5-flash',
     );
 
@@ -40,6 +41,7 @@ void main() {
       'suggestions': ['Add AWS projects'],
       'cover_letter_tips': ['Keep it concise'],
       'risk_flags': ['Needs validation'],
+      'language_code': 'vi',
       'model': 'gemini-2.5-flash',
     });
 

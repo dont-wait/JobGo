@@ -11,6 +11,7 @@ class AiCvAnalysisModel {
   final List<String> suggestions;
   final List<String> coverLetterTips;
   final List<String> riskFlags;
+  final String languageCode;
   final String model;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -28,6 +29,7 @@ class AiCvAnalysisModel {
     required this.suggestions,
     required this.coverLetterTips,
     required this.riskFlags,
+    required this.languageCode,
     required this.model,
     this.createdAt,
     this.updatedAt,
@@ -39,6 +41,7 @@ class AiCvAnalysisModel {
     required int jobId,
     required int candidateId,
     required String cvUrl,
+    required String languageCode,
     required String model,
   }) {
     return AiCvAnalysisModel(
@@ -53,6 +56,7 @@ class AiCvAnalysisModel {
       suggestions: _toStringList(json['suggestions']),
       coverLetterTips: _toStringList(json['coverLetterTips']),
       riskFlags: _toStringList(json['riskFlags']),
+      languageCode: languageCode,
       model: model,
     );
   }
@@ -71,6 +75,7 @@ class AiCvAnalysisModel {
       suggestions: _toStringList(json['suggestions']),
       coverLetterTips: _toStringList(json['cover_letter_tips']),
       riskFlags: _toStringList(json['risk_flags']),
+      languageCode: _toText(json['language_code'], fallback: 'vi'),
       model: _toText(json['model'], fallback: 'gemini-2.5-flash'),
       createdAt: _toDateTime(json['created_at']),
       updatedAt: _toDateTime(json['updated_at']),
@@ -90,6 +95,7 @@ class AiCvAnalysisModel {
       'suggestions': suggestions,
       'cover_letter_tips': coverLetterTips,
       'risk_flags': riskFlags,
+      'language_code': languageCode,
       'model': model,
     };
   }
@@ -107,6 +113,7 @@ class AiCvAnalysisModel {
     List<String>? suggestions,
     List<String>? coverLetterTips,
     List<String>? riskFlags,
+    String? languageCode,
     String? model,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -124,6 +131,7 @@ class AiCvAnalysisModel {
       suggestions: suggestions ?? this.suggestions,
       coverLetterTips: coverLetterTips ?? this.coverLetterTips,
       riskFlags: riskFlags ?? this.riskFlags,
+      languageCode: languageCode ?? this.languageCode,
       model: model ?? this.model,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

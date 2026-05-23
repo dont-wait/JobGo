@@ -36,6 +36,23 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
   bool _isLoading = true;
   String? _errorMessage;
   String _sortBy = 'newest';
+  String? _currentLanguageCode;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final languageCode = Localizations.localeOf(context).languageCode;
+    if (_currentLanguageCode == languageCode) return;
+    _currentLanguageCode = languageCode;
+
+    if (_allApplications.isNotEmpty) {
+      _loadCachedAnalyses(languageCode: languageCode).then((_) {
+        if (mounted) {
+          _filterApplicants(_searchController.text);
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -72,7 +89,10 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
         _allApplications = applications;
         _errorMessage = null;
       });
-      await _loadCachedAnalyses();
+      await _loadCachedAnalyses(
+        languageCode:
+            _currentLanguageCode ?? Localizations.localeOf(context).languageCode,
+      );
       _filterApplicants(_searchController.text);
     } catch (e) {
       if (!mounted) return;
@@ -127,9 +147,14 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
     _filterApplicants('');
   }
 
-  Future<void> _loadCachedAnalyses() async {
+  Future<void> _loadCachedAnalyses({
+    required String languageCode,
+  }) async {
     final ids = _allApplications.map((e) => e.applicationId).toList();
-    final cached = await _analysisRepository.fetchByApplicationIds(ids);
+    final cached = await _analysisRepository.fetchByApplicationIds(
+      ids,
+      languageCode,
+    );
     if (!mounted) return;
     setState(() {
       _analysisByApplicationId = cached;
@@ -154,6 +179,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
       );
       return;
     }
+    final languageCode = Localizations.localeOf(context).languageCode;
 
     setState(() => _analyzingApplicationIds.add(appId));
     try {
@@ -165,6 +191,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
         job: job,
         candidate: application.candidate,
         coverLetter: application.coverLetter,
+        languageCode: languageCode,
       );
       final saved = await _analysisRepository.saveAnalysis(result);
       if (!mounted) return;

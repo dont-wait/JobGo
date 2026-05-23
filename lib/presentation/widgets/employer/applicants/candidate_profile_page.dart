@@ -34,6 +34,7 @@ import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_s
     AiCvAnalysisModel? _aiAnalysis;
     bool _isAnalyzing = false;
     String? _analysisError;
+    String? _currentLanguageCode;
     String? get _resumeUrl {
       final candidateResume = widget.candidate.resume?.trim() ?? '';
       if (candidateResume.isNotEmpty) {
@@ -48,7 +49,27 @@ import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_s
       super.initState();
       _aiAnalysis = widget.initialAiAnalysis;
       _loadFullCandidate();
-      _loadCachedAnalysis();
+    }
+
+    @override
+    void didChangeDependencies() {
+      super.didChangeDependencies();
+      final languageCode = Localizations.localeOf(context).languageCode;
+      if (_currentLanguageCode == languageCode) return;
+      final isFirstLocale = _currentLanguageCode == null;
+      _currentLanguageCode = languageCode;
+
+      final application = widget.application;
+      if (application == null) return;
+
+      if (!isFirstLocale && (_analysisError != null || _aiAnalysis != null)) {
+        setState(() {
+          _analysisError = null;
+          _aiAnalysis = null;
+        });
+      }
+
+      _loadCachedAnalysis(languageCode: languageCode);
     }
 
     Future<void> _loadFullCandidate() async {
@@ -62,7 +83,9 @@ import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_s
       }
     }
 
-    Future<void> _loadCachedAnalysis() async {
+    Future<void> _loadCachedAnalysis({
+      required String languageCode,
+    }) async {
       final application = widget.application;
       if (application == null) return;
 
@@ -70,6 +93,7 @@ import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_s
         applicationId: application.applicationId,
         jobId: application.jobId,
         cvUrl: application.cvUrl,
+        languageCode: languageCode,
       );
       if (!mounted || cached == null) return;
 
@@ -113,6 +137,7 @@ import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_s
           job: job,
           candidate: _candidate,
           coverLetter: application.coverLetter,
+          languageCode: Localizations.localeOf(context).languageCode,
         );
         final saved = await _analysisRepository.saveAnalysis(result);
         if (!mounted) return;

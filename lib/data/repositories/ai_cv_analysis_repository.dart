@@ -11,6 +11,7 @@ class AiCvAnalysisRepository {
     required int applicationId,
     required int jobId,
     required String cvUrl,
+    required String languageCode,
   }) async {
     try {
       final response = await _supabase
@@ -19,7 +20,7 @@ class AiCvAnalysisRepository {
           .eq('application_id', applicationId)
           .eq('job_id', jobId)
           .eq('cv_url', cvUrl)
-          .order('updated_at', ascending: false)
+          .eq('language_code', languageCode)
           .maybeSingle();
 
       if (response == null) return null;
@@ -34,6 +35,7 @@ class AiCvAnalysisRepository {
 
   Future<Map<int, AiCvAnalysisModel>> fetchByApplicationIds(
     List<int> applicationIds,
+    String languageCode,
   ) async {
     if (applicationIds.isEmpty) return const {};
 
@@ -42,6 +44,7 @@ class AiCvAnalysisRepository {
           .from(_table)
           .select()
           .inFilter('application_id', applicationIds)
+          .eq('language_code', languageCode)
           .order('updated_at', ascending: false);
       final rows = (response as List<dynamic>)
           .map((e) => AiCvAnalysisModel.fromJson(Map<String, dynamic>.from(e)))
@@ -68,7 +71,7 @@ class AiCvAnalysisRepository {
           .from(_table)
           .upsert(
             payload,
-            onConflict: 'application_id,job_id,cv_url',
+            onConflict: 'application_id,job_id,cv_url,language_code',
           )
           .select()
           .maybeSingle();
