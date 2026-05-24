@@ -13,7 +13,9 @@ class JobApplicationRepository {
 
     final response = await _supabase
         .from('applications')
-        .select('*, candidates(*, users(u_email, u_role, u_name, u_phone))')
+        .select(
+          '*, candidates(*, users(u_email, u_role, u_name, u_phone)), jobs(*, employers(*))',
+        )
         .eq('j_id', parsedJobId)
         .order('a_applied_at', ascending: false);
 
@@ -33,7 +35,9 @@ class JobApplicationRepository {
     try {
       final response = await _supabase
           .from('applications')
-          .select('*, candidates(*, users(u_email, u_role, u_name, u_phone))')
+          .select(
+            '*, candidates(*, users(u_email, u_role, u_name, u_phone)), jobs(*, employers(*))',
+          )
           .eq('a_id', applicationId)
           .maybeSingle();
 
