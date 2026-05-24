@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // --- CẤU HÌNH VNPAY ---
 class VNPayConfig {
-  static const String tmnCode = 'AWRM7YZO';
-  static const String hashSecret = '0L7JJXCL0B73UYZHXA84A1ZRZL7W5YUP';
+  static String get tmnCode => dotenv.env['VNPAY_TMN_CODE'] ?? '';
+  static String get hashSecret => dotenv.env['VNPAY_HASH_SECRET'] ?? '';
   static const String url = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
   static const String returnUrl = 'jobgo://vnpay-return';
 }
@@ -58,7 +59,9 @@ class VNPayService {
 
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({Key? key}) : super(key: key);
+  final double amount;
+
+  const PaymentPage({Key? key, required this.amount}) : super(key: key);
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -72,7 +75,7 @@ class _PaymentPageState extends State<PaymentPage> {
   void initState() {
     super.initState();
     
-    final String url = VNPayService.generatePaymentUrl(amount: 50000);
+    final String url = VNPayService.generatePaymentUrl(amount: widget.amount);
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)

@@ -44,15 +44,32 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
     if (publish) {
       setState(() => _isSubmitting = true); // Đổi nút thành vòng xoay loading để ngăn bấm liên tục
 
-      await Navigator.push(
+      final paymentSuccess = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
-          builder: (_) => const PaymentPage(),
+          builder: (_) => const PaymentPage(amount: 50000.0),
         ),
       );
       
-      // Sau khi thanh toán (thành công hoặc thất bại), quay lại đây
-      setState(() => _isSubmitting = false);
+      if (paymentSuccess == true && mounted) {
+        try {
+          final success = await widget.onSubmit(true);
+          if (success && mounted) {
+            Navigator.pop(context, true);
+          }
+        } catch (_) {
+          if (mounted) {
+            final loc = AppLocalizations.of(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(loc.couldNotSaveJob)),
+            );
+          }
+        }
+      }
+
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
       return;
     }
 

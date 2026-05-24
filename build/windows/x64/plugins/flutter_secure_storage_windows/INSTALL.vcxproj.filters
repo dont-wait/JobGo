@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\ASUS\Desktop\New folder (4)\JobGo\build\windows\x64\CMakeFiles\66f3c6abe3d4f9a039137e6f1b819293\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{33AB685D-2C15-37F7-B8A0-EA01E661996E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
