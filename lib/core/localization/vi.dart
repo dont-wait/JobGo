@@ -119,7 +119,8 @@ final Map<String, String> vietStrings = {
   'privacyPolicy': 'Chính sách bảo mật',
   'termsOfService': 'Điều khoản dịch vụ',
   'helpCenter': 'Trung tâm trợ giúp',
-  'privacyPolicyContent': 'Chính sách bảo mật\n\n'
+  'privacyPolicyContent':
+      'Chính sách bảo mật\n\n'
       '1) Dữ liệu thu thập\n'
       '- Thông tin hồ sơ, liên hệ, và hoạt động trong ứng dụng.\n'
       '- Nhật ký sử dụng cơ bản để cải thiện trải nghiệm.\n\n'
@@ -133,7 +134,8 @@ final Map<String, String> vietStrings = {
       '4) Chia sẻ dữ liệu\n'
       '- Chỉ chia sẻ trong phạm vi chức năng tuyển dụng.\n'
       '- Không bán dữ liệu cho bên thứ ba.',
-  'termsOfServiceContent': 'Điều khoản dịch vụ\n\n'
+  'termsOfServiceContent':
+      'Điều khoản dịch vụ\n\n'
       '1) Tài khoản\n'
       '- Cung cấp thông tin chính xác và cập nhật.\n'
       '- Tự chịu trách nhiệm về bảo mật tài khoản.\n\n'
@@ -145,7 +147,8 @@ final Map<String, String> vietStrings = {
       '- Tấn công hoặc làm gián đoạn dịch vụ.\n\n'
       '4) Thay đổi điều khoản\n'
       '- Điều khoản có thể cập nhật và sẽ thông báo trong ứng dụng.',
-  'helpCenterContent': 'Trung tâm trợ giúp\n\n'
+  'helpCenterContent':
+      'Trung tâm trợ giúp\n\n'
       'Chúng tôi sẵn sàng hỗ trợ các vấn đề sau:\n'
       '- Không nhận được thông báo.\n'
       '- Lỗi đăng nhập hoặc xác minh email.\n'
@@ -155,7 +158,8 @@ final Map<String, String> vietStrings = {
       '2) Cập nhật ứng dụng lên phiên bản mới nhất.\n'
       '3) Đăng xuất và đăng nhập lại.\n\n'
       'Nếu vẫn gặp lỗi, hãy liên hệ với chúng tôi.',
-  'contactUsContent': 'Liên hệ với chúng tôi\n\n'
+  'contactUsContent':
+      'Liên hệ với chúng tôi\n\n'
       'Email: support@jobgo.vn\n'
       'Hotline: 1900 123 456 (08:30 - 18:00)\n'
       'Địa chỉ: 68 Nguyen Hue, Quan 1, TP. Ho Chi Minh\n\n'
@@ -237,6 +241,29 @@ final Map<String, String> vietStrings = {
   'mustAddCVBeforeApplying': 'Vui lòng thêm CV vào hồ sơ trước khi ứng tuyển',
 
   // Apply Job - Additional
+  'aiCvFit': 'Độ phù hợp AI',
+  'aiInsight': 'Phân tích AI',
+  'aiMatch': 'Phù hợp AI',
+  'analyze': 'Phân tích',
+  'analyzeCv': 'Phân tích CV',
+  'reanalyze': 'Phân tích lại',
+  'aiAnalysisSupportsPdfOnly': 'Phân tích AI hiện chỉ hỗ trợ PDF.',
+  'missingJobDetailsForAiAnalysis':
+      'Thiếu thông tin công việc để phân tích AI.',
+  'noAiAnalysisYet':
+      'Chưa có phân tích AI. Hãy chạy phân tích để xem điểm phù hợp và gợi ý phỏng vấn.',
+  'missingSkillsLabel': 'Kỹ năng còn thiếu:',
+  'interviewChecksLabel': 'Cần kiểm tra khi phỏng vấn:',
+  'suggestionsLabel': 'Gợi ý:',
+  'coverLetterTipsLabel': 'Gợi ý cover letter:',
+  'analyzeFailed': 'Phân tích thất bại',
+  'invalidJobIdentifier': 'Job không hợp lệ.',
+  'refreshFailed': 'Tải lại thất bại',
+  'viewProfile': 'Xem hồ sơ',
+  'message': 'Nhắn tin',
+  'chooseProfileImage': 'Chọn ảnh đại diện',
+  'takeNewPhoto': 'Chụp ảnh mới',
+  'chooseFromLibrary': 'Chọn từ thư viện',
   'cancelButton': 'Hủy',
   'readyToApplyStatus': 'Sẵn sàng ứng tuyển',
   'optionalLabel': 'Tùy chọn',
@@ -506,11 +533,32 @@ final Map<String, String> vietStrings = {
   'restoreError': 'Lỗi khi khôi phục.',
   'hardDeleteTitle': 'Xóa VĨNH VIỄN',
   'hardDeleteConfirm': 'CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn',
-  'hardDeleteUndone': 'khỏi cơ sở dữ liệu Supabase và không thể hoàn tác. Bạn có chắc chắn không?',
+  'hardDeleteUndone':
+      'khỏi cơ sở dữ liệu Supabase và không thể hoàn tác. Bạn có chắc chắn không?',
   'hardDeleteAction': 'Xóa vĩnh viễn',
   'hardDeleteSuccess': 'Đã xóa vĩnh viễn khỏi hệ thống.',
   'hardDeleteError': 'Lỗi khi xóa vĩnh viễn.',
   'accountTrashTitle': 'Thùng rác tài khoản',
   'emptyTrash': 'Thùng rác trống',
   'rolePrefix': 'Vai trò:',
+
+  // kinh nghiệm + kĩ năng
+  'addExperience': 'Thêm kinh nghiệm',
+  'companyName': 'Tên công ty',
+  'companyNameHint': 'VD: Google',
+  'position': 'Vị trí',
+  'positionHint': 'VD: Flutter Developer',
+  'startDate': 'Ngày bắt đầu',
+  'endDate': 'Ngày kết thúc',
+  'endDateHint': 'Để trống nếu đang làm',
+  'describeRole': 'Mô tả công việc của bạn...',
+  'fillRequiredFields': 'Vui lòng điền đầy đủ thông tin bắt buộc',
+  'endDateBeforeStart': 'Ngày kết thúc phải sau ngày bắt đầu',
+  'workExperience': 'Kinh nghiệm làm việc',
+  'noExperienceYet': 'Chưa có kinh nghiệm.\nNhấn Thêm để bắt đầu.',
+  'deleteExperience': 'Xóa kinh nghiệm',
+  'deleteExperienceConfirm': 'Bạn có chắc muốn xóa kinh nghiệm này?',
+  'add': 'Thêm',
+  'skillLabel': 'Kỹ năng',
+  'skillSearchHint': 'Gõ để tìm kỹ năng...',
 };

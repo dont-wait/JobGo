@@ -57,8 +57,62 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
 
   Future<void> _pickAndUploadLogo() async {
     try {
+      final ImageSource? source = await showModalBottomSheet<ImageSource>(
+        context: context,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Chọn ảnh đại diện',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.camera_alt_rounded,
+                      color: AppColors.primary),
+                ),
+                title: const Text('Chụp ảnh mới'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.photo_library_rounded,
+                      color: AppColors.primary),
+                ),
+                title: const Text('Chọn từ thư viện'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      );
+
+      if (source == null) return;
+
       final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         maxWidth: 512,
         maxHeight: 512,
         imageQuality: 85,
@@ -71,7 +125,10 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
 
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Logo uploaded successfully!')),
+            const SnackBar(
+              content: Text('Logo uploaded successfully!'),
+              backgroundColor: AppColors.success,
+            ),
           );
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -79,6 +136,7 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
               content: Text(
                 'Failed to upload logo. Please check Supabase Storage permissions.',
               ),
+              backgroundColor: AppColors.error,
             ),
           );
         }

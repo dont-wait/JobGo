@@ -3,87 +3,142 @@ PATH=${PATH:-}
 nix_saved_PATH="$PATH"
 XDG_DATA_DIRS=${XDG_DATA_DIRS:-}
 nix_saved_XDG_DATA_DIRS="$XDG_DATA_DIRS"
-ANDROID_SDK_ROOT='/nix/store/5p9y3qcf3pdi5rgifxxkpjpgm9hlycpm-androidsdk/libexec/android-sdk'
-export ANDROID_SDK_ROOT
 AR='ar'
 export AR
+AR_FOR_TARGET='ar'
+export AR_FOR_TARGET
 AS='as'
 export AS
-BASH='/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin/bash'
+AS_FOR_TARGET='as'
+export AS_FOR_TARGET
+BASH='/nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9/bin/bash'
 CC='gcc'
 export CC
+CC_FOR_TARGET='gcc'
+export CC_FOR_TARGET
 CLASSPATH=''
 export CLASSPATH
-CONFIG_SHELL='/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin/bash'
+CMAKE_INCLUDE_PATH='/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/include:/nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/include:/nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/include:/nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev/include:/nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev/include:/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/include:/nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev/include:/nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev/include:/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/include:/nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42/include:/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/include:/nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev/include:/nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/include:/nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev/include:/nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev/include:/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/include:/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/include:/nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev/include:/nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1/include:/nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev/include:/nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev/include:/nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev/include:/nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev/include:/nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/include:/nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev/include:/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/include:/nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev/include:/nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev/include:/nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/include:/nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev/include:/nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev/include:/nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev/include:/nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev/include:/nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev/include:/nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev/include:/nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev/include:/nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev/include:/nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev/include:/nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/include:/nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev/include:/nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev/include:/nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev/include:/nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev/include:/nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48/include:/nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev/include:/nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/include:/nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev/include:/nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev/include:/nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev/include:/nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev/include:/nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev/include:/nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev/include:/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/include:/nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev/include:/nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev/include:/nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/include:/nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/include:/nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev/include:/nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev/include:/nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev/include:/nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev/include:/nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev/include:/nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev/include:/nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev/include:/nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev/include:/nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev/include:/nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev/include:/nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev/include'
+export CMAKE_INCLUDE_PATH
+CMAKE_LIBRARY_PATH='/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/lib:/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/lib:/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2/lib:/nix/store/2zs4bbi72plfm8j6zxf1js4f3yc4yzwy-libffi-3.5.2/lib:/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/lib:/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1/lib:/nix/store/s3knizlhir254y56l6kdd85dq8pm8xb1-at-spi2-core-2.60.1/lib:/nix/store/3lnvi6r17y9kki4r9klzvavranaz3131-bzip2-1.0.8/lib:/nix/store/k1shjmzyzw8bf7vp8gyrqn4dn70xpdxx-brotli-1.2.0-lib/lib:/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56/lib:/nix/store/a9n3345hndg2z6iwbi7m59gvkwcd264j-freetype-2.14.2/lib:/nix/store/48krja1dqwpsa0i3yw9v47hbcxn7agrh-fontconfig-2.17.1-lib/lib:/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/lib:/nix/store/0nrv9x54jzw1pyqz8kd53a6zckhc1zhn-libxau-1.0.12/lib:/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7/lib:/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13/lib:/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12/lib:/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0/lib:/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4/lib:/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0/lib:/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16/lib:/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1/lib:/nix/store/j5pf7byjv0ahvxcnkd5jsw481i82d7ng-libjpeg-turbo-3.1.4/lib:/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/lib:/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2/lib:/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6/lib:/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2/lib:/nix/store/6c7mqpxbkkva5qrsiba10cicwvicgdh8-libxcomposite-0.4.7/lib:/nix/store/ljxnc3sy590a8rzf59rvclkxg8h71qdf-libxcursor-1.2.3/lib:/nix/store/f90x55z2nrpbssg1wlbfd8p54qvi5lvd-libxdamage-1.1.7/lib:/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2/lib:/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5/lib:/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14/lib:/nix/store/bd9nkv00cbnj19zc61rlqyrjvnlmq73j-harfbuzz-13.2.1/lib:/nix/store/h0gznr936rl16kl51d4xda1hhgcdrjfk-libxft-2.3.9/lib:/nix/store/2bnyj2q5if7xpbhsmw0ylxj9bwj98daf-pango-1.57.1/lib:/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0/lib:/nix/store/b89rbd2k8k3a8va6xkmh4nizgrpwv0y4-wayland-1.25.0/lib:/nix/store/ngfwdjhzzazmqms13lsl5hgi8h7h5h55-libxinerama-1.1.6/lib:/nix/store/y56aqb1m3y5davn6hsv4jfbml78qw4mv-gmp-with-cxx-6.3.0/lib:/nix/store/ax8m0gcfw5izxf8nx2qy4nj6vin1qfkj-cups-2.4.19-lib/lib:/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/lib:/nix/store/xzf15i29vcfinhyb2c7jg4x37lzmma0m-libcap-2.77-lib/lib:/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/lib:/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0/lib:/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/lib:/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3/lib:/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/lib:/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/lib:/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3/lib:/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6/lib:/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib/lib:/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39/lib:/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5/lib:/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/lib:/nix/store/604dn9dpp0r3g675y1cri7nw2nzkyqjf-libmd-1.1.0/lib:/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2/lib:/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133/lib:/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/lib:/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1/lib:/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1/lib:/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1/lib:/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2/lib:/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10/lib'
+export CMAKE_LIBRARY_PATH
+CONFIG_SHELL='/nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9/bin/bash'
 export CONFIG_SHELL
 CXX='g++'
 export CXX
+CXX_FOR_TARGET='g++'
+export CXX_FOR_TARGET
+GDK_PIXBUF_MODULE_FILE='/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache'
+export GDK_PIXBUF_MODULE_FILE
+GETTEXTDATADIRS='/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/share/gettext:/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1/share/gettext:/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/share/gettext'
+export GETTEXTDATADIRS
+GSETTINGS_SCHEMAS_PATH='/nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/share/gsettings-schemas/gsettings-desktop-schemas-50.1:/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/share/gsettings-schemas/gtk+3-3.24.52:/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/share/gsettings-schemas/pulseaudio-17.0'
+export GSETTINGS_SCHEMAS_PATH
 HOSTTYPE='x86_64'
-HOST_PATH='/nix/store/b4jwbp7qcjbi5q04d3pbqwl1kza3mnwn-flutter-wrapped-3.13.8-sdk-links/bin:/nix/store/5p9y3qcf3pdi5rgifxxkpjpgm9hlycpm-androidsdk/bin:/nix/store/ckd0kjvczrbmfxxzk4cbv5i0xk37d4zx-openjdk-17.0.7+7/bin:/nix/store/bblyj5b3ii8n6v4ra0nb37cmi3lf8rz9-coreutils-9.3/bin:/nix/store/l974pi8a5yqjrjlzmg6apk0jwjv81yqw-findutils-4.9.0/bin:/nix/store/8q25nyfirzsng6p57yp8hsaldqqbc7dg-diffutils-3.10/bin:/nix/store/9c5qm297qnvwcf7j0gm01qrslbiqz8rs-gnused-4.9/bin:/nix/store/rx2wig5yhpbwhnqxdy4z7qivj9ln7fab-gnugrep-3.11/bin:/nix/store/7wfya2k95zib8jl0jk5hnbn856sqcgfk-gawk-5.2.2/bin:/nix/store/xpidksbd07in3nd4sjx79ybwwy81b338-gnutar-1.35/bin:/nix/store/202iqv4bd7lh6f7fpy48p7q4d96lqdp7-gzip-1.13/bin:/nix/store/ik7jardq92dxw3fnz3vmlcgi9c8dwwdq-bzip2-1.0.8-bin/bin:/nix/store/v4iswb5kwj33l46dyh2zqh0nkxxlr3mz-gnumake-4.4.1/bin:/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin:/nix/store/cbj1ph7zi009m53hxs90idl1f5i9i941-patch-2.7.6/bin:/nix/store/76z4cjs7jj45ixk12yy6k5z2q2djk2jb-xz-5.4.4-bin/bin:/nix/store/qmfxld7qhk8qxlkx1cm4bkplg1gh6jgj-file-5.45/bin'
+HOST_PATH='/nix/store/fqcjikcpdcn123csd805bmg05jv75szj-flutter-wrapped-3.41.9-sdk-links/bin:/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/bin:/nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/bin:/nix/store/l4b9c5pdvv93yiqbmx016xi924bq06yr-androidsdk/bin:/nix/store/1m05k7xgfnw6jc21xxk5681ni3ar97wf-pkg-config-wrapper-0.29.2/bin:/nix/store/7a235m7crqbb4h49sak20fqxpw3n7hr0-ninja-1.13.2/bin:/nix/store/r9941n32g4wyvggz2703dlplbdq8a6rd-cmake-4.1.2/bin:/nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/bin:/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/bin:/nix/store/ai8mmqghspvnhv2jz12pfg6b6dqmg3b3-dbus-1.16.2/bin:/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/bin:/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/bin:/nix/store/flq8wn4dikbhn2nmqac31zbpv0lkii2w-glib-2.88.1-bin/bin:/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/bin:/nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/bin:/nix/store/3y3kzc5njlj7nwj1s78am0yzjnpicv9x-bzip2-1.0.8-bin/bin:/nix/store/hivfv7qwmfhd60qyn6ysva4ydwq3d008-brotli-1.2.0/bin:/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/bin:/nix/store/mif4x8xsy3lqjw29s4g77gc5wd3jxm25-fontconfig-2.17.1-bin/bin:/nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/bin:/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16/bin:/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/bin:/nix/store/rkhwg07szrjgn40cxfs94ysiyyvl6lw0-libtiff-4.7.1-bin/bin:/nix/store/37spv3blgj6zg85lrivlq93js6n22c34-libjpeg-turbo-3.1.4-bin/bin:/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/bin:/nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/bin:/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14/bin:/nix/store/7ijjkrrd10npc87akbv1wvgwwpddpr81-pango-1.57.1-bin/bin:/nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/bin:/nix/store/79yg09y5lg8bg6cin5rpj36p1d5n0c0p-cups-2.4.19/bin:/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/bin:/nix/store/874j5xydsj6nr6i1zdrjvhln5gmxvvrr-clang-wrapper-21.1.8/bin:/nix/store/drxcv33qq9ava7gdpik5xs9q2wfnhdb0-binutils-wrapper-2.46/bin:/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0/bin:/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46/bin:/nix/store/0z228a0xqnxpckhhwzrjh746mkr45qjm-libcap-2.77/bin:/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/bin:/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/bin:/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/bin:/nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/bin:/nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/bin:/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/bin:/nix/store/j4wzv8zmw157aim4qazyklhwn1zbcbph-libdrm-2.4.133-bin/bin:/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/bin:/nix/store/9ypz3flqsrl5xl495mm8h645gadjsxi1-coreutils-9.11/bin:/nix/store/c1cjgg6p8m8fssivzrc2p13mwwml3p3v-findutils-4.10.0/bin:/nix/store/ww555mznia5v7sz2w85lblg4amvhkhv1-diffutils-3.12/bin:/nix/store/kgxafhycw2kybbqih759ykc2043qyi5j-gnused-4.9/bin:/nix/store/gn94gpcp5q08x4v6g8mvw8v4r65rcjzk-gnugrep-3.12/bin:/nix/store/wp1cshqv98i8abs8rcx91s54igqgll0f-gawk-5.4.0/bin:/nix/store/k5akwnrn9x2afaj2va7g4a2zpdim8l43-gnutar-1.35/bin:/nix/store/ndpbjk6jhw0da5h272dqqnyxa35a9gmx-gzip-1.14/bin:/nix/store/3y3kzc5njlj7nwj1s78am0yzjnpicv9x-bzip2-1.0.8-bin/bin:/nix/store/vlq7nnw39j7rwk0pp68w1fcwzpxahm9h-gnumake-4.4.1/bin:/nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9/bin:/nix/store/wgvplwp0faqhqr92w0ma8bxaxk202ama-patch-2.8/bin:/nix/store/csra6zhdjw7rjzv98fycz7qjalyv55k2-xz-5.8.3-bin/bin:/nix/store/kyz3mm5snbb8998kbkm28jps1phk9509-file-5.47/bin'
 export HOST_PATH
 IFS=' 	
 '
 IN_NIX_SHELL='impure'
 export IN_NIX_SHELL
-JAVA_HOME='/nix/store/ckd0kjvczrbmfxxzk4cbv5i0xk37d4zx-openjdk-17.0.7+7/lib/openjdk'
+JAVA_HOME='/nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/lib/openjdk'
 export JAVA_HOME
 LD='ld'
 export LD
+LD_FOR_TARGET='ld'
+export LD_FOR_TARGET
 LINENO='79'
 MACHTYPE='x86_64-pc-linux-gnu'
-NIX_BINTOOLS='/nix/store/1alqjnr40dsk7cl15l5sn5y2zdxidc1v-binutils-wrapper-2.40'
+NIXPKGS_CMAKE_PREFIX_PATH='/nix/store/ilblcn1dkvzghcr2yk3av6jxn5rk1iqw-patchelf-0.15.2:/nix/store/xknj6c33cc197s60ry0i69vdkmaizrs1-update-autotools-gnu-config-scripts-hook:/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0:/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46:/nix/store/fqcjikcpdcn123csd805bmg05jv75szj-flutter-wrapped-3.41.9-sdk-links:/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4:/nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2:/nix/store/p7bz3z3fj7nl8qgbdmjyspq15rr73x4z-set-java-classpath-hook:/nix/store/l4b9c5pdvv93yiqbmx016xi924bq06yr-androidsdk:/nix/store/1m05k7xgfnw6jc21xxk5681ni3ar97wf-pkg-config-wrapper-0.29.2:/nix/store/7a235m7crqbb4h49sak20fqxpw3n7hr0-ninja-1.13.2:/nix/store/r9941n32g4wyvggz2703dlplbdq8a6rd-cmake-4.1.2:/nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev:/nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev:/nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev:/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib:/nix/store/ai8mmqghspvnhv2jz12pfg6b6dqmg3b3-dbus-1.16.2:/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev:/nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev:/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2:/nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev:/nix/store/2zs4bbi72plfm8j6zxf1js4f3yc4yzwy-libffi-3.5.2:/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0:/nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42:/nix/store/flq8wn4dikbhn2nmqac31zbpv0lkii2w-glib-2.88.1-bin:/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1:/nix/store/s3knizlhir254y56l6kdd85dq8pm8xb1-at-spi2-core-2.60.1:/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev:/nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev:/nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev:/nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev:/nix/store/3y3kzc5njlj7nwj1s78am0yzjnpicv9x-bzip2-1.0.8-bin:/nix/store/3lnvi6r17y9kki4r9klzvavranaz3131-bzip2-1.0.8:/nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev:/nix/store/k1shjmzyzw8bf7vp8gyrqn4dn70xpdxx-brotli-1.2.0-lib:/nix/store/hivfv7qwmfhd60qyn6ysva4ydwq3d008-brotli-1.2.0:/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev:/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56:/nix/store/a9n3345hndg2z6iwbi7m59gvkwcd264j-freetype-2.14.2:/nix/store/mif4x8xsy3lqjw29s4g77gc5wd3jxm25-fontconfig-2.17.1-bin:/nix/store/48krja1dqwpsa0i3yw9v47hbcxn7agrh-fontconfig-2.17.1-lib:/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4:/nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev:/nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1:/nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev:/nix/store/0nrv9x54jzw1pyqz8kd53a6zckhc1zhn-libxau-1.0.12:/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7:/nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev:/nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev:/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13:/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12:/nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev:/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0:/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4:/nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev:/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0:/nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev:/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16:/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev:/nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev:/nix/store/rkhwg07szrjgn40cxfs94ysiyyvl6lw0-libtiff-4.7.1-bin:/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1:/nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev:/nix/store/37spv3blgj6zg85lrivlq93js6n22c34-libjpeg-turbo-3.1.4-bin:/nix/store/j5pf7byjv0ahvxcnkd5jsw481i82d7ng-libjpeg-turbo-3.1.4:/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6:/nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1:/nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev:/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2:/nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev:/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6:/nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev:/nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev:/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2:/nix/store/6c7mqpxbkkva5qrsiba10cicwvicgdh8-libxcomposite-0.4.7:/nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev:/nix/store/ljxnc3sy590a8rzf59rvclkxg8h71qdf-libxcursor-1.2.3:/nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev:/nix/store/f90x55z2nrpbssg1wlbfd8p54qvi5lvd-libxdamage-1.1.7:/nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev:/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2:/nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev:/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5:/nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev:/nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev:/nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev:/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14:/nix/store/bd9nkv00cbnj19zc61rlqyrjvnlmq73j-harfbuzz-13.2.1:/nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev:/nix/store/h0gznr936rl16kl51d4xda1hhgcdrjfk-libxft-2.3.9:/nix/store/7ijjkrrd10npc87akbv1wvgwwpddpr81-pango-1.57.1-bin:/nix/store/2bnyj2q5if7xpbhsmw0ylxj9bwj98daf-pango-1.57.1:/nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev:/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0:/nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev:/nix/store/b89rbd2k8k3a8va6xkmh4nizgrpwv0y4-wayland-1.25.0:/nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48:/nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev:/nix/store/ngfwdjhzzazmqms13lsl5hgi8h7h5h55-libxinerama-1.1.6:/nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev:/nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev:/nix/store/y56aqb1m3y5davn6hsv4jfbml78qw4mv-gmp-with-cxx-6.3.0:/nix/store/ax8m0gcfw5izxf8nx2qy4nj6vin1qfkj-cups-2.4.19-lib:/nix/store/79yg09y5lg8bg6cin5rpj36p1d5n0c0p-cups-2.4.19:/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52:/nix/store/874j5xydsj6nr6i1zdrjvhln5gmxvvrr-clang-wrapper-21.1.8:/nix/store/drxcv33qq9ava7gdpik5xs9q2wfnhdb0-binutils-wrapper-2.46:/nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev:/nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev:/nix/store/xzf15i29vcfinhyb2c7jg4x37lzmma0m-libcap-2.77-lib:/nix/store/0z228a0xqnxpckhhwzrjh746mkr45qjm-libcap-2.77:/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0:/nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev:/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0:/nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev:/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3:/nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev:/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3:/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1:/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5:/nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev:/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3:/nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev:/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6:/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib:/nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev:/nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev:/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39:/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5:/nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev:/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1:/nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev:/nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev:/nix/store/604dn9dpp0r3g675y1cri7nw2nzkyqjf-libmd-1.1.0:/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2:/nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev:/nix/store/j4wzv8zmw157aim4qazyklhwn1zbcbph-libdrm-2.4.133-bin:/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133:/nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev:/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1:/nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev:/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1:/nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev:/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1:/nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev:/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1:/nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev:/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2:/nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev:/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10:/nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev:/nix/store/jg984hgvy0m3h9xycqlddhllyxlwfm8y-compiler-rt-libc-21.1.8'
+export NIXPKGS_CMAKE_PREFIX_PATH
+NIX_BINTOOLS='/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46'
 export NIX_BINTOOLS
+NIX_BINTOOLS_FOR_TARGET='/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46'
+export NIX_BINTOOLS_FOR_TARGET
 NIX_BINTOOLS_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu='1'
 export NIX_BINTOOLS_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu
+NIX_BINTOOLS_WRAPPER_TARGET_TARGET_x86_64_unknown_linux_gnu='1'
+export NIX_BINTOOLS_WRAPPER_TARGET_TARGET_x86_64_unknown_linux_gnu
 NIX_BUILD_CORES='12'
 export NIX_BUILD_CORES
-NIX_CC='/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0'
+NIX_CC='/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0'
 export NIX_CC
+NIX_CC_FOR_TARGET='/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0'
+export NIX_CC_FOR_TARGET
 NIX_CC_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu='1'
 export NIX_CC_WRAPPER_TARGET_HOST_x86_64_unknown_linux_gnu
-NIX_CFLAGS_COMPILE=' -frandom-seed=d64w4kbzis -isystem /nix/store/ckd0kjvczrbmfxxzk4cbv5i0xk37d4zx-openjdk-17.0.7+7/include -isystem /nix/store/ckd0kjvczrbmfxxzk4cbv5i0xk37d4zx-openjdk-17.0.7+7/include'
+NIX_CC_WRAPPER_TARGET_TARGET_x86_64_unknown_linux_gnu='1'
+export NIX_CC_WRAPPER_TARGET_TARGET_x86_64_unknown_linux_gnu
+NIX_CFLAGS_COMPILE=' -frandom-seed=rv83jnl535 -isystem /nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/include -isystem /nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/include -isystem /nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/include -isystem /nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev/include -isystem /nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev/include -isystem /nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/include -isystem /nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev/include -isystem /nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev/include -isystem /nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/include -isystem /nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42/include -isystem /nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/include -isystem /nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev/include -isystem /nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/include -isystem /nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev/include -isystem /nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev/include -isystem /nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/include -isystem /nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/include -isystem /nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev/include -isystem /nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1/include -isystem /nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev/include -isystem /nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev/include -isystem /nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev/include -isystem /nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev/include -isystem /nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/include -isystem /nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev/include -isystem /nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/include -isystem /nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev/include -isystem /nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev/include -isystem /nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/include -isystem /nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev/include -isystem /nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev/include -isystem /nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev/include -isystem /nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev/include -isystem /nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev/include -isystem /nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev/include -isystem /nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev/include -isystem /nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev/include -isystem /nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev/include -isystem /nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/include -isystem /nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev/include -isystem /nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev/include -isystem /nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev/include -isystem /nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev/include -isystem /nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48/include -isystem /nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev/include -isystem /nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/include -isystem /nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev/include -isystem /nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev/include -isystem /nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev/include -isystem /nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev/include -isystem /nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev/include -isystem /nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev/include -isystem /nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/include -isystem /nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev/include -isystem /nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev/include -isystem /nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/include -isystem /nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/include -isystem /nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev/include -isystem /nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev/include -isystem /nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev/include -isystem /nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev/include -isystem /nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev/include -isystem /nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev/include -isystem /nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev/include -isystem /nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev/include -isystem /nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev/include -isystem /nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev/include -isystem /nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev/include -isystem /nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/include -isystem /nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/include -isystem /nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/include -isystem /nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev/include -isystem /nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev/include -isystem /nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/include -isystem /nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev/include -isystem /nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev/include -isystem /nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/include -isystem /nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42/include -isystem /nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/include -isystem /nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev/include -isystem /nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/include -isystem /nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev/include -isystem /nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev/include -isystem /nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/include -isystem /nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/include -isystem /nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev/include -isystem /nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1/include -isystem /nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev/include -isystem /nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev/include -isystem /nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev/include -isystem /nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev/include -isystem /nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/include -isystem /nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev/include -isystem /nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/include -isystem /nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev/include -isystem /nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev/include -isystem /nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/include -isystem /nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev/include -isystem /nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev/include -isystem /nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev/include -isystem /nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev/include -isystem /nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev/include -isystem /nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev/include -isystem /nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev/include -isystem /nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev/include -isystem /nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev/include -isystem /nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/include -isystem /nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev/include -isystem /nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev/include -isystem /nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev/include -isystem /nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev/include -isystem /nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48/include -isystem /nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev/include -isystem /nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/include -isystem /nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev/include -isystem /nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev/include -isystem /nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev/include -isystem /nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev/include -isystem /nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev/include -isystem /nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev/include -isystem /nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/include -isystem /nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev/include -isystem /nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev/include -isystem /nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/include -isystem /nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/include -isystem /nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev/include -isystem /nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev/include -isystem /nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev/include -isystem /nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev/include -isystem /nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev/include -isystem /nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev/include -isystem /nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev/include -isystem /nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev/include -isystem /nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev/include -isystem /nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev/include -isystem /nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev/include'
 export NIX_CFLAGS_COMPILE
+NIX_CFLAGS_COMPILE_FOR_TARGET=' -isystem /nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/include -isystem /nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/include -isystem /nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/include -isystem /nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/include -isystem /nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/include -isystem /nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/include -isystem /nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev/include -isystem /nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev/include -isystem /nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev/include -isystem /nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev/include -isystem /nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/include -isystem /nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/include -isystem /nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev/include -isystem /nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev/include -isystem /nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev/include -isystem /nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev/include -isystem /nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/include -isystem /nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/include -isystem /nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42/include -isystem /nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42/include -isystem /nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/include -isystem /nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/include -isystem /nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev/include -isystem /nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev/include -isystem /nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/include -isystem /nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/include -isystem /nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev/include -isystem /nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev/include -isystem /nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev/include -isystem /nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev/include -isystem /nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/include -isystem /nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/include -isystem /nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/include -isystem /nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/include -isystem /nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev/include -isystem /nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev/include -isystem /nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1/include -isystem /nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1/include -isystem /nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev/include -isystem /nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev/include -isystem /nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev/include -isystem /nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev/include -isystem /nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev/include -isystem /nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev/include -isystem /nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev/include -isystem /nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev/include -isystem /nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/include -isystem /nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/include -isystem /nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev/include -isystem /nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev/include -isystem /nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/include -isystem /nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/include -isystem /nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev/include -isystem /nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev/include -isystem /nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev/include -isystem /nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev/include -isystem /nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/include -isystem /nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/include -isystem /nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev/include -isystem /nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev/include -isystem /nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev/include -isystem /nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev/include -isystem /nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev/include -isystem /nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev/include -isystem /nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev/include -isystem /nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev/include -isystem /nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev/include -isystem /nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev/include -isystem /nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev/include -isystem /nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev/include -isystem /nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev/include -isystem /nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev/include -isystem /nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev/include -isystem /nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev/include -isystem /nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev/include -isystem /nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev/include -isystem /nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/include -isystem /nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/include -isystem /nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev/include -isystem /nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev/include -isystem /nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev/include -isystem /nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev/include -isystem /nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev/include -isystem /nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev/include -isystem /nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev/include -isystem /nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev/include -isystem /nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48/include -isystem /nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48/include -isystem /nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev/include -isystem /nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev/include -isystem /nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/include -isystem /nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/include -isystem /nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev/include -isystem /nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev/include -isystem /nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev/include -isystem /nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev/include -isystem /nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev/include -isystem /nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev/include -isystem /nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev/include -isystem /nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev/include -isystem /nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev/include -isystem /nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev/include -isystem /nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev/include -isystem /nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev/include -isystem /nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/include -isystem /nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/include -isystem /nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev/include -isystem /nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev/include -isystem /nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev/include -isystem /nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev/include -isystem /nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/include -isystem /nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/include -isystem /nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/include -isystem /nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/include -isystem /nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev/include -isystem /nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev/include -isystem /nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev/include -isystem /nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev/include -isystem /nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev/include -isystem /nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev/include -isystem /nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev/include -isystem /nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev/include -isystem /nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev/include -isystem /nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev/include -isystem /nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev/include -isystem /nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev/include -isystem /nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev/include -isystem /nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev/include -isystem /nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev/include -isystem /nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev/include -isystem /nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev/include -isystem /nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev/include -isystem /nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev/include -isystem /nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev/include -isystem /nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev/include -isystem /nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev/include'
+export NIX_CFLAGS_COMPILE_FOR_TARGET
 NIX_ENFORCE_NO_NATIVE='1'
 export NIX_ENFORCE_NO_NATIVE
-NIX_HARDENING_ENABLE='fortify fortify3 stackprotector pic strictoverflow format relro bindnow'
+NIX_HARDENING_ENABLE='bindnow format fortify fortify3 libcxxhardeningfast pic relro stackclashprotection stackprotector strictflexarrays1 strictoverflow zerocallusedregs'
 export NIX_HARDENING_ENABLE
-NIX_LDFLAGS='-rpath /home/dontwait/Documents/git/jobgo/outputs/out/lib '
+NIX_LDFLAGS='-rpath /home/dontwait/Documents/git/jobgo/outputs/out/lib  -L/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/lib -L/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/lib -L/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2/lib -L/nix/store/2zs4bbi72plfm8j6zxf1js4f3yc4yzwy-libffi-3.5.2/lib -L/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/lib -L/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1/lib -L/nix/store/s3knizlhir254y56l6kdd85dq8pm8xb1-at-spi2-core-2.60.1/lib -L/nix/store/3lnvi6r17y9kki4r9klzvavranaz3131-bzip2-1.0.8/lib -L/nix/store/k1shjmzyzw8bf7vp8gyrqn4dn70xpdxx-brotli-1.2.0-lib/lib -L/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56/lib -L/nix/store/a9n3345hndg2z6iwbi7m59gvkwcd264j-freetype-2.14.2/lib -L/nix/store/48krja1dqwpsa0i3yw9v47hbcxn7agrh-fontconfig-2.17.1-lib/lib -L/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/lib -L/nix/store/0nrv9x54jzw1pyqz8kd53a6zckhc1zhn-libxau-1.0.12/lib -L/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7/lib -L/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13/lib -L/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12/lib -L/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0/lib -L/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4/lib -L/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0/lib -L/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16/lib -L/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1/lib -L/nix/store/j5pf7byjv0ahvxcnkd5jsw481i82d7ng-libjpeg-turbo-3.1.4/lib -L/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/lib -L/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2/lib -L/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6/lib -L/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2/lib -L/nix/store/6c7mqpxbkkva5qrsiba10cicwvicgdh8-libxcomposite-0.4.7/lib -L/nix/store/ljxnc3sy590a8rzf59rvclkxg8h71qdf-libxcursor-1.2.3/lib -L/nix/store/f90x55z2nrpbssg1wlbfd8p54qvi5lvd-libxdamage-1.1.7/lib -L/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2/lib -L/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5/lib -L/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14/lib -L/nix/store/bd9nkv00cbnj19zc61rlqyrjvnlmq73j-harfbuzz-13.2.1/lib -L/nix/store/h0gznr936rl16kl51d4xda1hhgcdrjfk-libxft-2.3.9/lib -L/nix/store/2bnyj2q5if7xpbhsmw0ylxj9bwj98daf-pango-1.57.1/lib -L/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0/lib -L/nix/store/b89rbd2k8k3a8va6xkmh4nizgrpwv0y4-wayland-1.25.0/lib -L/nix/store/ngfwdjhzzazmqms13lsl5hgi8h7h5h55-libxinerama-1.1.6/lib -L/nix/store/y56aqb1m3y5davn6hsv4jfbml78qw4mv-gmp-with-cxx-6.3.0/lib -L/nix/store/ax8m0gcfw5izxf8nx2qy4nj6vin1qfkj-cups-2.4.19-lib/lib -L/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/lib -L/nix/store/xzf15i29vcfinhyb2c7jg4x37lzmma0m-libcap-2.77-lib/lib -L/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/lib -L/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0/lib -L/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/lib -L/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3/lib -L/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/lib -L/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/lib -L/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3/lib -L/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6/lib -L/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib/lib -L/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39/lib -L/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5/lib -L/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/lib -L/nix/store/604dn9dpp0r3g675y1cri7nw2nzkyqjf-libmd-1.1.0/lib -L/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2/lib -L/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133/lib -L/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/lib -L/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1/lib -L/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1/lib -L/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1/lib -L/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2/lib -L/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10/lib -L/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/lib -L/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/lib -L/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2/lib -L/nix/store/2zs4bbi72plfm8j6zxf1js4f3yc4yzwy-libffi-3.5.2/lib -L/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/lib -L/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1/lib -L/nix/store/s3knizlhir254y56l6kdd85dq8pm8xb1-at-spi2-core-2.60.1/lib -L/nix/store/3lnvi6r17y9kki4r9klzvavranaz3131-bzip2-1.0.8/lib -L/nix/store/k1shjmzyzw8bf7vp8gyrqn4dn70xpdxx-brotli-1.2.0-lib/lib -L/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56/lib -L/nix/store/a9n3345hndg2z6iwbi7m59gvkwcd264j-freetype-2.14.2/lib -L/nix/store/48krja1dqwpsa0i3yw9v47hbcxn7agrh-fontconfig-2.17.1-lib/lib -L/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/lib -L/nix/store/0nrv9x54jzw1pyqz8kd53a6zckhc1zhn-libxau-1.0.12/lib -L/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7/lib -L/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13/lib -L/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12/lib -L/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0/lib -L/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4/lib -L/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0/lib -L/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16/lib -L/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1/lib -L/nix/store/j5pf7byjv0ahvxcnkd5jsw481i82d7ng-libjpeg-turbo-3.1.4/lib -L/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/lib -L/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2/lib -L/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6/lib -L/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2/lib -L/nix/store/6c7mqpxbkkva5qrsiba10cicwvicgdh8-libxcomposite-0.4.7/lib -L/nix/store/ljxnc3sy590a8rzf59rvclkxg8h71qdf-libxcursor-1.2.3/lib -L/nix/store/f90x55z2nrpbssg1wlbfd8p54qvi5lvd-libxdamage-1.1.7/lib -L/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2/lib -L/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5/lib -L/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14/lib -L/nix/store/bd9nkv00cbnj19zc61rlqyrjvnlmq73j-harfbuzz-13.2.1/lib -L/nix/store/h0gznr936rl16kl51d4xda1hhgcdrjfk-libxft-2.3.9/lib -L/nix/store/2bnyj2q5if7xpbhsmw0ylxj9bwj98daf-pango-1.57.1/lib -L/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0/lib -L/nix/store/b89rbd2k8k3a8va6xkmh4nizgrpwv0y4-wayland-1.25.0/lib -L/nix/store/ngfwdjhzzazmqms13lsl5hgi8h7h5h55-libxinerama-1.1.6/lib -L/nix/store/y56aqb1m3y5davn6hsv4jfbml78qw4mv-gmp-with-cxx-6.3.0/lib -L/nix/store/ax8m0gcfw5izxf8nx2qy4nj6vin1qfkj-cups-2.4.19-lib/lib -L/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/lib -L/nix/store/xzf15i29vcfinhyb2c7jg4x37lzmma0m-libcap-2.77-lib/lib -L/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/lib -L/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0/lib -L/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/lib -L/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3/lib -L/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/lib -L/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/lib -L/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3/lib -L/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6/lib -L/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib/lib -L/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39/lib -L/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5/lib -L/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/lib -L/nix/store/604dn9dpp0r3g675y1cri7nw2nzkyqjf-libmd-1.1.0/lib -L/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2/lib -L/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133/lib -L/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/lib -L/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1/lib -L/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1/lib -L/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1/lib -L/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2/lib -L/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10/lib'
 export NIX_LDFLAGS
+NIX_LDFLAGS_FOR_TARGET=' -L/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/lib -L/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/lib -L/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/lib -L/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/lib -L/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2/lib -L/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2/lib -L/nix/store/2zs4bbi72plfm8j6zxf1js4f3yc4yzwy-libffi-3.5.2/lib -L/nix/store/2zs4bbi72plfm8j6zxf1js4f3yc4yzwy-libffi-3.5.2/lib -L/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/lib -L/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/lib -L/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1/lib -L/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1/lib -L/nix/store/s3knizlhir254y56l6kdd85dq8pm8xb1-at-spi2-core-2.60.1/lib -L/nix/store/s3knizlhir254y56l6kdd85dq8pm8xb1-at-spi2-core-2.60.1/lib -L/nix/store/3lnvi6r17y9kki4r9klzvavranaz3131-bzip2-1.0.8/lib -L/nix/store/3lnvi6r17y9kki4r9klzvavranaz3131-bzip2-1.0.8/lib -L/nix/store/k1shjmzyzw8bf7vp8gyrqn4dn70xpdxx-brotli-1.2.0-lib/lib -L/nix/store/k1shjmzyzw8bf7vp8gyrqn4dn70xpdxx-brotli-1.2.0-lib/lib -L/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56/lib -L/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56/lib -L/nix/store/a9n3345hndg2z6iwbi7m59gvkwcd264j-freetype-2.14.2/lib -L/nix/store/a9n3345hndg2z6iwbi7m59gvkwcd264j-freetype-2.14.2/lib -L/nix/store/48krja1dqwpsa0i3yw9v47hbcxn7agrh-fontconfig-2.17.1-lib/lib -L/nix/store/48krja1dqwpsa0i3yw9v47hbcxn7agrh-fontconfig-2.17.1-lib/lib -L/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/lib -L/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/lib -L/nix/store/0nrv9x54jzw1pyqz8kd53a6zckhc1zhn-libxau-1.0.12/lib -L/nix/store/0nrv9x54jzw1pyqz8kd53a6zckhc1zhn-libxau-1.0.12/lib -L/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7/lib -L/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7/lib -L/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13/lib -L/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13/lib -L/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12/lib -L/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12/lib -L/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0/lib -L/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0/lib -L/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4/lib -L/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4/lib -L/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0/lib -L/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0/lib -L/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16/lib -L/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16/lib -L/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1/lib -L/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1/lib -L/nix/store/j5pf7byjv0ahvxcnkd5jsw481i82d7ng-libjpeg-turbo-3.1.4/lib -L/nix/store/j5pf7byjv0ahvxcnkd5jsw481i82d7ng-libjpeg-turbo-3.1.4/lib -L/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/lib -L/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/lib -L/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2/lib -L/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2/lib -L/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6/lib -L/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6/lib -L/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2/lib -L/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2/lib -L/nix/store/6c7mqpxbkkva5qrsiba10cicwvicgdh8-libxcomposite-0.4.7/lib -L/nix/store/6c7mqpxbkkva5qrsiba10cicwvicgdh8-libxcomposite-0.4.7/lib -L/nix/store/ljxnc3sy590a8rzf59rvclkxg8h71qdf-libxcursor-1.2.3/lib -L/nix/store/ljxnc3sy590a8rzf59rvclkxg8h71qdf-libxcursor-1.2.3/lib -L/nix/store/f90x55z2nrpbssg1wlbfd8p54qvi5lvd-libxdamage-1.1.7/lib -L/nix/store/f90x55z2nrpbssg1wlbfd8p54qvi5lvd-libxdamage-1.1.7/lib -L/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2/lib -L/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2/lib -L/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5/lib -L/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5/lib -L/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14/lib -L/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14/lib -L/nix/store/bd9nkv00cbnj19zc61rlqyrjvnlmq73j-harfbuzz-13.2.1/lib -L/nix/store/bd9nkv00cbnj19zc61rlqyrjvnlmq73j-harfbuzz-13.2.1/lib -L/nix/store/h0gznr936rl16kl51d4xda1hhgcdrjfk-libxft-2.3.9/lib -L/nix/store/h0gznr936rl16kl51d4xda1hhgcdrjfk-libxft-2.3.9/lib -L/nix/store/2bnyj2q5if7xpbhsmw0ylxj9bwj98daf-pango-1.57.1/lib -L/nix/store/2bnyj2q5if7xpbhsmw0ylxj9bwj98daf-pango-1.57.1/lib -L/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0/lib -L/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0/lib -L/nix/store/b89rbd2k8k3a8va6xkmh4nizgrpwv0y4-wayland-1.25.0/lib -L/nix/store/b89rbd2k8k3a8va6xkmh4nizgrpwv0y4-wayland-1.25.0/lib -L/nix/store/ngfwdjhzzazmqms13lsl5hgi8h7h5h55-libxinerama-1.1.6/lib -L/nix/store/ngfwdjhzzazmqms13lsl5hgi8h7h5h55-libxinerama-1.1.6/lib -L/nix/store/y56aqb1m3y5davn6hsv4jfbml78qw4mv-gmp-with-cxx-6.3.0/lib -L/nix/store/y56aqb1m3y5davn6hsv4jfbml78qw4mv-gmp-with-cxx-6.3.0/lib -L/nix/store/ax8m0gcfw5izxf8nx2qy4nj6vin1qfkj-cups-2.4.19-lib/lib -L/nix/store/ax8m0gcfw5izxf8nx2qy4nj6vin1qfkj-cups-2.4.19-lib/lib -L/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/lib -L/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/lib -L/nix/store/xzf15i29vcfinhyb2c7jg4x37lzmma0m-libcap-2.77-lib/lib -L/nix/store/xzf15i29vcfinhyb2c7jg4x37lzmma0m-libcap-2.77-lib/lib -L/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/lib -L/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/lib -L/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0/lib -L/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0/lib -L/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/lib -L/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/lib -L/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3/lib -L/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3/lib -L/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/lib -L/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/lib -L/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/lib -L/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/lib -L/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3/lib -L/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3/lib -L/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6/lib -L/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6/lib -L/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib/lib -L/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib/lib -L/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39/lib -L/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39/lib -L/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5/lib -L/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5/lib -L/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/lib -L/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/lib -L/nix/store/604dn9dpp0r3g675y1cri7nw2nzkyqjf-libmd-1.1.0/lib -L/nix/store/604dn9dpp0r3g675y1cri7nw2nzkyqjf-libmd-1.1.0/lib -L/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2/lib -L/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2/lib -L/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133/lib -L/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133/lib -L/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/lib -L/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/lib -L/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1/lib -L/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1/lib -L/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1/lib -L/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1/lib -L/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1/lib -L/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1/lib -L/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2/lib -L/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2/lib -L/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10/lib -L/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10/lib'
+export NIX_LDFLAGS_FOR_TARGET
 NIX_NO_SELF_RPATH='1'
+NIX_PKG_CONFIG_WRAPPER_TARGET_TARGET_x86_64_unknown_linux_gnu='1'
+export NIX_PKG_CONFIG_WRAPPER_TARGET_TARGET_x86_64_unknown_linux_gnu
 NIX_STORE='/nix/store'
 export NIX_STORE
 NM='nm'
 export NM
+NM_FOR_TARGET='nm'
+export NM_FOR_TARGET
 OBJCOPY='objcopy'
 export OBJCOPY
+OBJCOPY_FOR_TARGET='objcopy'
+export OBJCOPY_FOR_TARGET
 OBJDUMP='objdump'
 export OBJDUMP
+OBJDUMP_FOR_TARGET='objdump'
+export OBJDUMP_FOR_TARGET
 OLDPWD=''
 export OLDPWD
 OPTERR='1'
 OSTYPE='linux-gnu'
-PATH='/nix/store/85jldj870vzcl72yz03labc93bwvqayx-patchelf-0.15.0/bin:/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin:/nix/store/hf2gy3km07d5m0p1lwmja0rg9wlnmyr7-gcc-12.3.0/bin:/nix/store/cx01qk0qyylvkgisbwc7d3pk8sliccgh-glibc-2.38-27-bin/bin:/nix/store/bblyj5b3ii8n6v4ra0nb37cmi3lf8rz9-coreutils-9.3/bin:/nix/store/1alqjnr40dsk7cl15l5sn5y2zdxidc1v-binutils-wrapper-2.40/bin:/nix/store/1fn92b0783crypjcxvdv6ycmvi27by0j-binutils-2.40/bin:/nix/store/b4jwbp7qcjbi5q04d3pbqwl1kza3mnwn-flutter-wrapped-3.13.8-sdk-links/bin:/nix/store/5p9y3qcf3pdi5rgifxxkpjpgm9hlycpm-androidsdk/bin:/nix/store/ckd0kjvczrbmfxxzk4cbv5i0xk37d4zx-openjdk-17.0.7+7/bin:/nix/store/bblyj5b3ii8n6v4ra0nb37cmi3lf8rz9-coreutils-9.3/bin:/nix/store/l974pi8a5yqjrjlzmg6apk0jwjv81yqw-findutils-4.9.0/bin:/nix/store/8q25nyfirzsng6p57yp8hsaldqqbc7dg-diffutils-3.10/bin:/nix/store/9c5qm297qnvwcf7j0gm01qrslbiqz8rs-gnused-4.9/bin:/nix/store/rx2wig5yhpbwhnqxdy4z7qivj9ln7fab-gnugrep-3.11/bin:/nix/store/7wfya2k95zib8jl0jk5hnbn856sqcgfk-gawk-5.2.2/bin:/nix/store/xpidksbd07in3nd4sjx79ybwwy81b338-gnutar-1.35/bin:/nix/store/202iqv4bd7lh6f7fpy48p7q4d96lqdp7-gzip-1.13/bin:/nix/store/ik7jardq92dxw3fnz3vmlcgi9c8dwwdq-bzip2-1.0.8-bin/bin:/nix/store/v4iswb5kwj33l46dyh2zqh0nkxxlr3mz-gnumake-4.4.1/bin:/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin:/nix/store/cbj1ph7zi009m53hxs90idl1f5i9i941-patch-2.7.6/bin:/nix/store/76z4cjs7jj45ixk12yy6k5z2q2djk2jb-xz-5.4.4-bin/bin:/nix/store/qmfxld7qhk8qxlkx1cm4bkplg1gh6jgj-file-5.45/bin'
+PATH='/nix/store/ilblcn1dkvzghcr2yk3av6jxn5rk1iqw-patchelf-0.15.2/bin:/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0/bin:/nix/store/qxaq7jz61a6zkr2mq49i0zvqip2m2jj8-gcc-15.2.0/bin:/nix/store/bsh7n2nx8ndmm1mmww6v2h4851nalj13-glibc-2.42-61-bin/bin:/nix/store/9ypz3flqsrl5xl495mm8h645gadjsxi1-coreutils-9.11/bin:/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46/bin:/nix/store/s2946bl9ciwzhafd66jhansrmxq9xhqm-binutils-2.46/bin:/nix/store/fqcjikcpdcn123csd805bmg05jv75szj-flutter-wrapped-3.41.9-sdk-links/bin:/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4/bin:/nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/bin:/nix/store/l4b9c5pdvv93yiqbmx016xi924bq06yr-androidsdk/bin:/nix/store/1m05k7xgfnw6jc21xxk5681ni3ar97wf-pkg-config-wrapper-0.29.2/bin:/nix/store/7a235m7crqbb4h49sak20fqxpw3n7hr0-ninja-1.13.2/bin:/nix/store/r9941n32g4wyvggz2703dlplbdq8a6rd-cmake-4.1.2/bin:/nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/bin:/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/bin:/nix/store/ai8mmqghspvnhv2jz12pfg6b6dqmg3b3-dbus-1.16.2/bin:/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/bin:/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0/bin:/nix/store/flq8wn4dikbhn2nmqac31zbpv0lkii2w-glib-2.88.1-bin/bin:/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/bin:/nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/bin:/nix/store/3y3kzc5njlj7nwj1s78am0yzjnpicv9x-bzip2-1.0.8-bin/bin:/nix/store/hivfv7qwmfhd60qyn6ysva4ydwq3d008-brotli-1.2.0/bin:/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/bin:/nix/store/mif4x8xsy3lqjw29s4g77gc5wd3jxm25-fontconfig-2.17.1-bin/bin:/nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/bin:/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16/bin:/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/bin:/nix/store/rkhwg07szrjgn40cxfs94ysiyyvl6lw0-libtiff-4.7.1-bin/bin:/nix/store/37spv3blgj6zg85lrivlq93js6n22c34-libjpeg-turbo-3.1.4-bin/bin:/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6/bin:/nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/bin:/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14/bin:/nix/store/7ijjkrrd10npc87akbv1wvgwwpddpr81-pango-1.57.1-bin/bin:/nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/bin:/nix/store/79yg09y5lg8bg6cin5rpj36p1d5n0c0p-cups-2.4.19/bin:/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52/bin:/nix/store/874j5xydsj6nr6i1zdrjvhln5gmxvvrr-clang-wrapper-21.1.8/bin:/nix/store/wcwr4iq7c8f4ygn8bd1q0k3i51lmhz35-clang-21.1.8/bin:/nix/store/drxcv33qq9ava7gdpik5xs9q2wfnhdb0-binutils-wrapper-2.46/bin:/nix/store/0z228a0xqnxpckhhwzrjh746mkr45qjm-libcap-2.77/bin:/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/bin:/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/bin:/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/bin:/nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/bin:/nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/bin:/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/bin:/nix/store/j4wzv8zmw157aim4qazyklhwn1zbcbph-libdrm-2.4.133-bin/bin:/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/bin:/nix/store/jg984hgvy0m3h9xycqlddhllyxlwfm8y-compiler-rt-libc-21.1.8/bin:/nix/store/9ypz3flqsrl5xl495mm8h645gadjsxi1-coreutils-9.11/bin:/nix/store/c1cjgg6p8m8fssivzrc2p13mwwml3p3v-findutils-4.10.0/bin:/nix/store/ww555mznia5v7sz2w85lblg4amvhkhv1-diffutils-3.12/bin:/nix/store/kgxafhycw2kybbqih759ykc2043qyi5j-gnused-4.9/bin:/nix/store/gn94gpcp5q08x4v6g8mvw8v4r65rcjzk-gnugrep-3.12/bin:/nix/store/wp1cshqv98i8abs8rcx91s54igqgll0f-gawk-5.4.0/bin:/nix/store/k5akwnrn9x2afaj2va7g4a2zpdim8l43-gnutar-1.35/bin:/nix/store/ndpbjk6jhw0da5h272dqqnyxa35a9gmx-gzip-1.14/bin:/nix/store/3y3kzc5njlj7nwj1s78am0yzjnpicv9x-bzip2-1.0.8-bin/bin:/nix/store/vlq7nnw39j7rwk0pp68w1fcwzpxahm9h-gnumake-4.4.1/bin:/nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9/bin:/nix/store/wgvplwp0faqhqr92w0ma8bxaxk202ama-patch-2.8/bin:/nix/store/csra6zhdjw7rjzv98fycz7qjalyv55k2-xz-5.8.3-bin/bin:/nix/store/kyz3mm5snbb8998kbkm28jps1phk9509-file-5.47/bin'
 export PATH
+PKG_CONFIG_FOR_TARGET='pkg-config'
+export PKG_CONFIG_FOR_TARGET
+PKG_CONFIG_PATH_FOR_TARGET='/nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev/lib/pkgconfig:/nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev/lib/pkgconfig:/nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev/lib/pkgconfig:/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev/lib/pkgconfig:/nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev/share/pkgconfig:/nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev/lib/pkgconfig:/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev/lib/pkgconfig:/nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev/lib/pkgconfig:/nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev/lib/pkgconfig:/nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev/lib/pkgconfig:/nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev/lib/pkgconfig:/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev/lib/pkgconfig:/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4/lib/pkgconfig:/nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev/lib/pkgconfig:/nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1/share/pkgconfig:/nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev/lib/pkgconfig:/nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev/lib/pkgconfig:/nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev/lib/pkgconfig:/nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev/lib/pkgconfig:/nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev/lib/pkgconfig:/nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev/lib/pkgconfig:/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev/lib/pkgconfig:/nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev/lib/pkgconfig:/nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev/lib/pkgconfig:/nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1/share/pkgconfig:/nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev/lib/pkgconfig:/nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev/lib/pkgconfig:/nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev/lib/pkgconfig:/nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev/lib/pkgconfig:/nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev/lib/pkgconfig:/nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev/lib/pkgconfig:/nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev/lib/pkgconfig:/nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev/lib/pkgconfig:/nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev/lib/pkgconfig:/nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev/lib/pkgconfig:/nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev/lib/pkgconfig:/nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev/lib/pkgconfig:/nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev/lib/pkgconfig:/nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev/lib/pkgconfig:/nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48/share/pkgconfig:/nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev/lib/pkgconfig:/nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev/lib/pkgconfig:/nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev/lib/pkgconfig:/nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev/lib/pkgconfig:/nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev/lib/pkgconfig:/nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev/lib/pkgconfig:/nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev/lib/pkgconfig:/nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev/lib/pkgconfig:/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/lib/pkgconfig:/nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev/lib/pkgconfig:/nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev/lib/pkgconfig:/nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev/lib/pkgconfig:/nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev/lib/pkgconfig:/nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev/lib/pkgconfig:/nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev/share/pkgconfig:/nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev/lib/pkgconfig:/nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev/lib/pkgconfig:/nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev/lib/pkgconfig:/nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev/lib/pkgconfig:/nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev/lib/pkgconfig:/nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev/lib/pkgconfig:/nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev/lib/pkgconfig:/nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev/lib/pkgconfig:/nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev/lib/pkgconfig'
+export PKG_CONFIG_PATH_FOR_TARGET
 PS4='+ '
 RANLIB='ranlib'
 export RANLIB
+RANLIB_FOR_TARGET='ranlib'
+export RANLIB_FOR_TARGET
 READELF='readelf'
 export READELF
-SHELL='/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin/bash'
+READELF_FOR_TARGET='readelf'
+export READELF_FOR_TARGET
+SHELL='/nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9/bin/bash'
 export SHELL
 SIZE='size'
 export SIZE
+SIZE_FOR_TARGET='size'
+export SIZE_FOR_TARGET
 SOURCE_DATE_EPOCH='315532800'
 export SOURCE_DATE_EPOCH
 STRINGS='strings'
 export STRINGS
+STRINGS_FOR_TARGET='strings'
+export STRINGS_FOR_TARGET
 STRIP='strip'
 export STRIP
-XDG_DATA_DIRS='/nix/store/85jldj870vzcl72yz03labc93bwvqayx-patchelf-0.15.0/share'
+STRIP_FOR_TARGET='strip'
+export STRIP_FOR_TARGET
+XDG_DATA_DIRS='/nix/store/ilblcn1dkvzghcr2yk3av6jxn5rk1iqw-patchelf-0.15.2/share'
 export XDG_DATA_DIRS
 __structuredAttrs=''
 export __structuredAttrs
-buildInputs='/nix/store/b4jwbp7qcjbi5q04d3pbqwl1kza3mnwn-flutter-wrapped-3.13.8-sdk-links /nix/store/5p9y3qcf3pdi5rgifxxkpjpgm9hlycpm-androidsdk /nix/store/ckd0kjvczrbmfxxzk4cbv5i0xk37d4zx-openjdk-17.0.7+7'
+_substituteStream_has_warned_replace_deprecation='false'
+buildInputs='/nix/store/fqcjikcpdcn123csd805bmg05jv75szj-flutter-wrapped-3.41.9-sdk-links /nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4 /nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2 /nix/store/l4b9c5pdvv93yiqbmx016xi924bq06yr-androidsdk /nix/store/1m05k7xgfnw6jc21xxk5681ni3ar97wf-pkg-config-wrapper-0.29.2 /nix/store/7a235m7crqbb4h49sak20fqxpw3n7hr0-ninja-1.13.2 /nix/store/r9941n32g4wyvggz2703dlplbdq8a6rd-cmake-4.1.2 /nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev /nix/store/874j5xydsj6nr6i1zdrjvhln5gmxvvrr-clang-wrapper-21.1.8 /nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0 /nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev /nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev /nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev /nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev /nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev /nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev /nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1 /nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev /nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev /nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev /nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev /nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev /nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5 /nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev /nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev /nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev /nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev /nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev /nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib /nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev /nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev /nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev /nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev /nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev /nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev /nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev /nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev /nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev /nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev /nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev /nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev /nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev /nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev /nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev /nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev /nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev /nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev /nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev'
 export buildInputs
 buildPhase='{ echo "------------------------------------------------------------";
   echo " WARNING: the existence of this path is not guaranteed.";
@@ -95,14 +150,16 @@ buildPhase='{ echo "------------------------------------------------------------
 } >> "$out"
 '
 export buildPhase
-builder='/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin/bash'
+builder='/nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9/bin/bash'
 export builder
+checkPhase='ninjaCheckPhase'
 cmakeFlags=''
 export cmakeFlags
 configureFlags=''
 export configureFlags
+configurePhase='cmakeConfigurePhase'
 defaultBuildInputs=''
-defaultNativeBuildInputs='/nix/store/85jldj870vzcl72yz03labc93bwvqayx-patchelf-0.15.0 /nix/store/9vk5fqaik9zx14zpfxipg7lxkdk8c5g9-update-autotools-gnu-config-scripts-hook /nix/store/h9lc1dpi14z7is86ffhl3ld569138595-audit-tmpdir.sh /nix/store/m54bmrhj6fqz8nds5zcj97w9s9bckc9v-compress-man-pages.sh /nix/store/wgrbkkaldkrlrni33ccvm3b6vbxzb656-make-symlinks-relative.sh /nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh /nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh /nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh /nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh /nix/store/jivxp510zxakaaic7qkrb7v1dd2rdbw9-multiple-outputs.sh /nix/store/wzdsbnv2ba3nj91aql8jjdddfmkkdh7h-patch-shebangs.sh /nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh /nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh /nix/store/ngg1cv31c8c7bcm2n8ww4g06nq7s4zhm-set-source-date-epoch-to-latest.sh /nix/store/wmknncrif06fqxa16hpdldhixk95nds0-strip.sh /nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0'
+defaultNativeBuildInputs='/nix/store/ilblcn1dkvzghcr2yk3av6jxn5rk1iqw-patchelf-0.15.2 /nix/store/xknj6c33cc197s60ry0i69vdkmaizrs1-update-autotools-gnu-config-scripts-hook /nix/store/0y5xmdb7qfvimjwbq7ibg1xdgkgjwqng-no-broken-symlinks.sh /nix/store/cv1d7p48379km6a85h4zp6kr86brh32q-audit-tmpdir.sh /nix/store/85clx3b0xkdf58jn161iy80y5223ilbi-compress-man-pages.sh /nix/store/p3l1a5y7nllfyrjn2krlwgcc3z0cd3fq-make-symlinks-relative.sh /nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh /nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh /nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh /nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh /nix/store/cmzya9irvxzlkh7lfy6i82gbp0saxqj3-multiple-outputs.sh /nix/store/x8c40nfigps493a07sdr2pm5s9j1cdc0-patch-shebangs.sh /nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh /nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh /nix/store/z7k98578dfzi6l3hsvbivzm7hfqlk0zc-set-source-date-epoch-to-latest.sh /nix/store/pilsssjjdxvdphlg2h19p0bfx5q0jzkn-strip.sh /nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0'
 depsBuildBuild=''
 export depsBuildBuild
 depsBuildBuildPropagated=''
@@ -128,11 +185,16 @@ export dontAddDisableDepTrack
 declare -a envBuildBuildHooks=()
 declare -a envBuildHostHooks=()
 declare -a envBuildTargetHooks=()
-declare -a envHostHostHooks=('ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' )
-declare -a envHostTargetHooks=('ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' )
-declare -a envTargetTargetHooks=('addPkgToClassPath' )
-declare -a fixupOutputHooks=('if [ -z "${dontPatchELF-}" ]; then patchELF "$prefix"; fi' 'if [[ -z "${noAuditTmpdir-}" && -e "$prefix" ]]; then auditTmpdir "$prefix"; fi' 'if [ -z "${dontGzipMan-}" ]; then compressManPages "$prefix"; fi' '_moveLib64' '_moveSbin' '_moveSystemdUserUnits' 'patchShebangsAuto' '_pruneLibtoolFiles' '_doStrip' )
-initialPath='/nix/store/bblyj5b3ii8n6v4ra0nb37cmi3lf8rz9-coreutils-9.3 /nix/store/l974pi8a5yqjrjlzmg6apk0jwjv81yqw-findutils-4.9.0 /nix/store/8q25nyfirzsng6p57yp8hsaldqqbc7dg-diffutils-3.10 /nix/store/9c5qm297qnvwcf7j0gm01qrslbiqz8rs-gnused-4.9 /nix/store/rx2wig5yhpbwhnqxdy4z7qivj9ln7fab-gnugrep-3.11 /nix/store/7wfya2k95zib8jl0jk5hnbn856sqcgfk-gawk-5.2.2 /nix/store/xpidksbd07in3nd4sjx79ybwwy81b338-gnutar-1.35 /nix/store/202iqv4bd7lh6f7fpy48p7q4d96lqdp7-gzip-1.13 /nix/store/ik7jardq92dxw3fnz3vmlcgi9c8dwwdq-bzip2-1.0.8-bin /nix/store/v4iswb5kwj33l46dyh2zqh0nkxxlr3mz-gnumake-4.4.1 /nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15 /nix/store/cbj1ph7zi009m53hxs90idl1f5i9i941-patch-2.7.6 /nix/store/76z4cjs7jj45ixk12yy6k5z2q2djk2jb-xz-5.4.4-bin /nix/store/qmfxld7qhk8qxlkx1cm4bkplg1gh6jgj-file-5.45'
+declare -a envHostHostHooks=('ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' 'gettextDataDirsHook' )
+declare -a envHostTargetHooks=('ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' 'gettextDataDirsHook' )
+declare -a envTargetTargetHooks=('addPkgToClassPath' 'pkgConfigWrapper_addPkgConfigPath' 'addCMakeParams' 'make_glib_find_gsettings_schemas' 'findGdkPixbufLoaders' 'ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' 'ccWrapper_addCVars' 'bintoolsWrapper_addLDVars' )
+declare -a fixupOutputHooks=('if [ -z "${dontPatchELF-}" ]; then patchELF "$prefix"; fi' 'if [[ -z "${noAuditTmpdir-}" && -e "$prefix" ]]; then auditTmpdir "$prefix"; fi' 'if [ -z "${dontGzipMan-}" ]; then compressManPages "$prefix"; fi' '_moveLib64' '_moveSbin' '_moveSystemdUserUnits' 'patchShebangsAuto' '_pruneLibtoolFiles' '_doStrip' '_gtkCleanImmodulesCache' )
+flag='-L/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10/lib'
+iframework_seen=''
+initialPath='/nix/store/9ypz3flqsrl5xl495mm8h645gadjsxi1-coreutils-9.11 /nix/store/c1cjgg6p8m8fssivzrc2p13mwwml3p3v-findutils-4.10.0 /nix/store/ww555mznia5v7sz2w85lblg4amvhkhv1-diffutils-3.12 /nix/store/kgxafhycw2kybbqih759ykc2043qyi5j-gnused-4.9 /nix/store/gn94gpcp5q08x4v6g8mvw8v4r65rcjzk-gnugrep-3.12 /nix/store/wp1cshqv98i8abs8rcx91s54igqgll0f-gawk-5.4.0 /nix/store/k5akwnrn9x2afaj2va7g4a2zpdim8l43-gnutar-1.35 /nix/store/ndpbjk6jhw0da5h272dqqnyxa35a9gmx-gzip-1.14 /nix/store/3y3kzc5njlj7nwj1s78am0yzjnpicv9x-bzip2-1.0.8-bin /nix/store/vlq7nnw39j7rwk0pp68w1fcwzpxahm9h-gnumake-4.4.1 /nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9 /nix/store/wgvplwp0faqhqr92w0ma8bxaxk202ama-patch-2.8 /nix/store/csra6zhdjw7rjzv98fycz7qjalyv55k2-xz-5.8.3-bin /nix/store/kyz3mm5snbb8998kbkm28jps1phk9509-file-5.47'
+installPhase='ninjaInstallPhase'
+isystem_seen=''
+maybe_dir='/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/share/gsettings-schemas/pulseaudio-17.0'
 mesonFlags=''
 export mesonFlags
 name='nix-shell-env'
@@ -156,18 +218,22 @@ patches=''
 export patches
 phases='buildPhase'
 export phases
-pkg='/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0'
+pkg='/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0'
 declare -a pkgsBuildBuild=()
-declare -a pkgsBuildHost=('/nix/store/85jldj870vzcl72yz03labc93bwvqayx-patchelf-0.15.0' '/nix/store/9vk5fqaik9zx14zpfxipg7lxkdk8c5g9-update-autotools-gnu-config-scripts-hook' '/nix/store/h9lc1dpi14z7is86ffhl3ld569138595-audit-tmpdir.sh' '/nix/store/m54bmrhj6fqz8nds5zcj97w9s9bckc9v-compress-man-pages.sh' '/nix/store/wgrbkkaldkrlrni33ccvm3b6vbxzb656-make-symlinks-relative.sh' '/nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh' '/nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh' '/nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh' '/nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh' '/nix/store/jivxp510zxakaaic7qkrb7v1dd2rdbw9-multiple-outputs.sh' '/nix/store/wzdsbnv2ba3nj91aql8jjdddfmkkdh7h-patch-shebangs.sh' '/nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh' '/nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh' '/nix/store/ngg1cv31c8c7bcm2n8ww4g06nq7s4zhm-set-source-date-epoch-to-latest.sh' '/nix/store/wmknncrif06fqxa16hpdldhixk95nds0-strip.sh' '/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0' '/nix/store/1alqjnr40dsk7cl15l5sn5y2zdxidc1v-binutils-wrapper-2.40' )
+declare -a pkgsBuildHost=('/nix/store/ilblcn1dkvzghcr2yk3av6jxn5rk1iqw-patchelf-0.15.2' '/nix/store/xknj6c33cc197s60ry0i69vdkmaizrs1-update-autotools-gnu-config-scripts-hook' '/nix/store/0y5xmdb7qfvimjwbq7ibg1xdgkgjwqng-no-broken-symlinks.sh' '/nix/store/cv1d7p48379km6a85h4zp6kr86brh32q-audit-tmpdir.sh' '/nix/store/85clx3b0xkdf58jn161iy80y5223ilbi-compress-man-pages.sh' '/nix/store/p3l1a5y7nllfyrjn2krlwgcc3z0cd3fq-make-symlinks-relative.sh' '/nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh' '/nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh' '/nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh' '/nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh' '/nix/store/cmzya9irvxzlkh7lfy6i82gbp0saxqj3-multiple-outputs.sh' '/nix/store/x8c40nfigps493a07sdr2pm5s9j1cdc0-patch-shebangs.sh' '/nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh' '/nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh' '/nix/store/z7k98578dfzi6l3hsvbivzm7hfqlk0zc-set-source-date-epoch-to-latest.sh' '/nix/store/pilsssjjdxvdphlg2h19p0bfx5q0jzkn-strip.sh' '/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0' '/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46' )
 declare -a pkgsBuildTarget=()
 declare -a pkgsHostHost=()
-declare -a pkgsHostTarget=('/nix/store/b4jwbp7qcjbi5q04d3pbqwl1kza3mnwn-flutter-wrapped-3.13.8-sdk-links' '/nix/store/5p9y3qcf3pdi5rgifxxkpjpgm9hlycpm-androidsdk' '/nix/store/ckd0kjvczrbmfxxzk4cbv5i0xk37d4zx-openjdk-17.0.7+7' '/nix/store/h8mnsiwag50575aimgs4553cdqqbzq8s-set-java-classpath-hook' )
-declare -a pkgsTargetTarget=()
-declare -a postFixupHooks=('_makeSymlinksRelativeInAllOutputs' '_multioutPropagateDev' )
+declare -a pkgsHostTarget=('/nix/store/fqcjikcpdcn123csd805bmg05jv75szj-flutter-wrapped-3.41.9-sdk-links' '/nix/store/nrclsvvi88n5nkiaz6fa1g6zak9fswf4-dart-3.11.4' '/nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2' '/nix/store/p7bz3z3fj7nl8qgbdmjyspq15rr73x4z-set-java-classpath-hook' '/nix/store/l4b9c5pdvv93yiqbmx016xi924bq06yr-androidsdk' '/nix/store/1m05k7xgfnw6jc21xxk5681ni3ar97wf-pkg-config-wrapper-0.29.2' '/nix/store/7a235m7crqbb4h49sak20fqxpw3n7hr0-ninja-1.13.2' '/nix/store/r9941n32g4wyvggz2703dlplbdq8a6rd-cmake-4.1.2' '/nix/store/3pnmwhvzcvjgpppj6x0lvxxib0dfqkkx-gtk+3-3.24.52-dev' '/nix/store/12ikmgmdb2yi7ybl75flb57a6vcdgrda-at-spi2-core-2.60.1-dev' '/nix/store/bzaiwbfwgmrx04rm96vb4j0v2n90270z-dbus-1.16.2-dev' '/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib' '/nix/store/ai8mmqghspvnhv2jz12pfg6b6dqmg3b3-dbus-1.16.2' '/nix/store/q9ksx8c79jfj1cawwwzmpq3qapvpvab7-glib-2.88.1-dev' '/nix/store/h7ik0g1xxayy0z8h27zbvrgmac63irgs-zlib-1.3.2-dev' '/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2' '/nix/store/aj7zqrfxvg96ldyph7fly6qgprcm2krv-libffi-3.5.2-dev' '/nix/store/2zs4bbi72plfm8j6zxf1js4f3yc4yzwy-libffi-3.5.2' '/nix/store/rb8rna9gkhs0ybl6z2p904myslh8llg8-gettext-1.0' '/nix/store/lmhbvfwrg837bkq46ild4rngand4mhn5-glibc-iconv-2.42' '/nix/store/flq8wn4dikbhn2nmqac31zbpv0lkii2w-glib-2.88.1-bin' '/nix/store/jlyahda14aya375lv7k9fsin2zk90nxz-glib-2.88.1' '/nix/store/s3knizlhir254y56l6kdd85dq8pm8xb1-at-spi2-core-2.60.1' '/nix/store/rjadd507fdm0mxb5gy8xbygnszg22mg8-cairo-1.18.4-dev' '/nix/store/kbhcqcysbclabk7vwmbn2ffi1xnnxbxi-fontconfig-2.17.1-dev' '/nix/store/xxvp72sjvk902yd2z59gw3fmg6z4rcbm-freetype-2.14.2-dev' '/nix/store/1c21gkkskq662x2xw6dbqflkjr2xp946-bzip2-1.0.8-dev' '/nix/store/3y3kzc5njlj7nwj1s78am0yzjnpicv9x-bzip2-1.0.8-bin' '/nix/store/3lnvi6r17y9kki4r9klzvavranaz3131-bzip2-1.0.8' '/nix/store/3r1z17iah1fb7qncbpjcy3bm6mh4idbw-brotli-1.2.0-dev' '/nix/store/k1shjmzyzw8bf7vp8gyrqn4dn70xpdxx-brotli-1.2.0-lib' '/nix/store/hivfv7qwmfhd60qyn6ysva4ydwq3d008-brotli-1.2.0' '/nix/store/qd3gla6sn63is90462qdfqwsvppkrhby-libpng-apng-1.6.56-dev' '/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56' '/nix/store/a9n3345hndg2z6iwbi7m59gvkwcd264j-freetype-2.14.2' '/nix/store/mif4x8xsy3lqjw29s4g77gc5wd3jxm25-fontconfig-2.17.1-bin' '/nix/store/48krja1dqwpsa0i3yw9v47hbcxn7agrh-fontconfig-2.17.1-lib' '/nix/store/hm1ms40h2srvff9kznnj9rj40cc6qcax-pixman-0.46.4' '/nix/store/nzgfvz491qhgx0dwj0pm7ajy58pcnpml-libxext-1.3.7-dev' '/nix/store/h11h9pq0d23c8n2k0pd162mgzg1z4jca-xorgproto-2025.1' '/nix/store/3wwd9vqjrs1ak4dg1vqaa9p52c91d2g6-libxau-1.0.12-dev' '/nix/store/0nrv9x54jzw1pyqz8kd53a6zckhc1zhn-libxau-1.0.12' '/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7' '/nix/store/dbffnayyadn311f7027iyw4lsbywgcvd-libxrender-0.9.12-dev' '/nix/store/1rhchilgcirwrwmq4h8xqldkn8lx209x-libx11-1.8.13-dev' '/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13' '/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12' '/nix/store/6fbkwxv11i13lsgq8w1lzlaxm4c2a90b-libxcb-1.17.0-dev' '/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0' '/nix/store/dydyb18hkw3aqmap8apa3708ws440nxd-cairo-1.18.4' '/nix/store/nhl6l0mxarafm0g1mk4yd2xzcws4qz7d-expat-2.8.0-dev' '/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0' '/nix/store/0bl6ygm0mvpkvmyqzfynx0czpisxchgz-fribidi-1.0.16-dev' '/nix/store/srn27ymz85mv7nbwkv1lyhi7g91cvyh7-fribidi-1.0.16' '/nix/store/s8666p9giz8ckcvc5jf9nch0cwlybw4n-gdk-pixbuf-2.44.6-dev' '/nix/store/xlfg33vwfqrybcxicqsph52ssbrcz9zs-libtiff-4.7.1-dev' '/nix/store/rkhwg07szrjgn40cxfs94ysiyyvl6lw0-libtiff-4.7.1-bin' '/nix/store/jjp9vc7vfrflxnliwkwblzadnyyw2zj2-libtiff-4.7.1' '/nix/store/61jvh6afdc5l8c4m7zkpim1nbk5wwwjs-libjpeg-turbo-3.1.4-dev' '/nix/store/37spv3blgj6zg85lrivlq93js6n22c34-libjpeg-turbo-3.1.4-bin' '/nix/store/j5pf7byjv0ahvxcnkd5jsw481i82d7ng-libjpeg-turbo-3.1.4' '/nix/store/5d5gq4hcclz3mwikka3ykh924p610bdr-gdk-pixbuf-2.44.6' '/nix/store/k8a44404day9i86sxkjm0gq5ymlvyh06-gsettings-desktop-schemas-50.1' '/nix/store/d79hb4xkb7xshviv2na82r9min25c83z-libice-1.1.2-dev' '/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2' '/nix/store/3q6lx81jqd4zdgdc10vvgqw7m2llaf5x-libsm-1.2.6-dev' '/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6' '/nix/store/9hjr0kacjjdi67my3wh024254viz6b66-libxcomposite-0.4.7-dev' '/nix/store/48wf4gqdr4w5xccz708ccw94ks5nfjzn-libxfixes-6.0.2-dev' '/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2' '/nix/store/6c7mqpxbkkva5qrsiba10cicwvicgdh8-libxcomposite-0.4.7' '/nix/store/pyi5c1mczx35x4v0spvpana14f06dj4j-libxcursor-1.2.3-dev' '/nix/store/ljxnc3sy590a8rzf59rvclkxg8h71qdf-libxcursor-1.2.3' '/nix/store/k0yinrk5njc137yavj9sjaxzbs8m7zax-libxdamage-1.1.7-dev' '/nix/store/f90x55z2nrpbssg1wlbfd8p54qvi5lvd-libxdamage-1.1.7' '/nix/store/m519bha4z5yag8znigfijp97q84h08sk-libxi-1.8.2-dev' '/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2' '/nix/store/f1m58kxjpxp77k0f39hga0jiihgxnk0i-libxrandr-1.5.5-dev' '/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5' '/nix/store/nz7v24xpw0zrw0k2lq5mql6zvpv9hcif-pango-1.57.1-dev' '/nix/store/fkkiw87rdlmw7dzqbnn908gkzp3ix6md-harfbuzz-13.2.1-dev' '/nix/store/k4dzp550i6gwh718dmvsqihym6q78sqf-graphite2-1.3.14-dev' '/nix/store/5fn8yh764qsrd3hq7zfsy1y1qdifwj79-graphite2-1.3.14' '/nix/store/bd9nkv00cbnj19zc61rlqyrjvnlmq73j-harfbuzz-13.2.1' '/nix/store/bgdx7vags1klk9gkhh23czj6kv68vqcz-libxft-2.3.9-dev' '/nix/store/h0gznr936rl16kl51d4xda1hhgcdrjfk-libxft-2.3.9' '/nix/store/7ijjkrrd10npc87akbv1wvgwwpddpr81-pango-1.57.1-bin' '/nix/store/2bnyj2q5if7xpbhsmw0ylxj9bwj98daf-pango-1.57.1' '/nix/store/0jngqd8asdfjk44si8yalhrrzvyk6azh-libglvnd-1.7.0-dev' '/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0' '/nix/store/v3jm5z02mx668hx7gwd9kwxqxpfyd62i-wayland-1.25.0-dev' '/nix/store/b89rbd2k8k3a8va6xkmh4nizgrpwv0y4-wayland-1.25.0' '/nix/store/fgq3g4mnlwdll7gmhd5gcgyx10103zxx-wayland-protocols-1.48' '/nix/store/vclzvs8w5zyj1lnjjay7dwxgpww8jv3j-libxinerama-1.1.6-dev' '/nix/store/ngfwdjhzzazmqms13lsl5hgi8h7h5h55-libxinerama-1.1.6' '/nix/store/9s2xlr3pcpknm97v39a49mm79ka256vh-cups-2.4.19-dev' '/nix/store/ijf9xvmiwb4i0nzjhl52chdlls9ypzh4-gmp-with-cxx-6.3.0-dev' '/nix/store/y56aqb1m3y5davn6hsv4jfbml78qw4mv-gmp-with-cxx-6.3.0' '/nix/store/ax8m0gcfw5izxf8nx2qy4nj6vin1qfkj-cups-2.4.19-lib' '/nix/store/79yg09y5lg8bg6cin5rpj36p1d5n0c0p-cups-2.4.19' '/nix/store/v7fvwaf6j1hwvb9dmwfa97nzmrlshqai-gtk+3-3.24.52' '/nix/store/874j5xydsj6nr6i1zdrjvhln5gmxvvrr-clang-wrapper-21.1.8' '/nix/store/drxcv33qq9ava7gdpik5xs9q2wfnhdb0-binutils-wrapper-2.46' '/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0' '/nix/store/mbyy19mdwnfvfwmdi0gqgggx0njvpl1w-binutils-wrapper-2.46' '/nix/store/1l4sfjmfwd7nbx24ww3dj7dv7gc71chk-pulseaudio-17.0-dev' '/nix/store/0sd75igd0wi36axv3kzc6k2ih35fphh8-libcap-2.77-dev' '/nix/store/xzf15i29vcfinhyb2c7jg4x37lzmma0m-libcap-2.77-lib' '/nix/store/0z228a0xqnxpckhhwzrjh746mkr45qjm-libcap-2.77' '/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0' '/nix/store/x4zyfsx65j9m2lx5r2jd7fck0vkkf3rx-libpulseaudio-17.0-dev' '/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0' '/nix/store/p8hlxg73dkxaznhql8pdkgrvf0xsy68y-alsa-lib-1.2.15.3-dev' '/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3' '/nix/store/sb4a7rh4zcqxrrw7v2zdc5966i64827p-glu-9.0.3-dev' '/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3' '/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1' '/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5' '/nix/store/5fw9zk366xhaxj0wy6i8q0s6mvzs3pi2-libxkbfile-1.1.3-dev' '/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3' '/nix/store/cz6499qhg3j4liqfqwy9hw9p4aa4pdrz-libxcb-cursor-0.1.6-dev' '/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6' '/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib' '/nix/store/4czzb0nl76dyhginvxiw0jymm7n4hrhq-nss-3.112.5-dev' '/nix/store/l958ajh8ym4dwj27f903fk12ky94bcqc-nspr-4.39-dev' '/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39' '/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5' '/nix/store/5bzj9sg79pjq1nlj5b3ddx531dy76agr-systemd-260.1-dev' '/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1' '/nix/store/p9bfbl6labpl78gskl4lqkxj1rkl6ggd-libbsd-0.12.2-dev' '/nix/store/4g3x66kq5nqnipdfj37kwx5mxx9h287d-libmd-1.1.0-dev' '/nix/store/604dn9dpp0r3g675y1cri7nw2nzkyqjf-libmd-1.1.0' '/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2' '/nix/store/3i890jzxi73yrw268g2glpbqqgzgrv3p-libdrm-2.4.133-dev' '/nix/store/j4wzv8zmw157aim4qazyklhwn1zbcbph-libdrm-2.4.133-bin' '/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133' '/nix/store/rlzm88ay9s27biynqbypdsjb64lypacy-libxkbcommon-1.13.1-dev' '/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1' '/nix/store/m8qggd894q628lx9i7ndb6x53hn81lq5-libxcb-util-0.4.1-dev' '/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1' '/nix/store/4skg978d99p9g8lfl8r27g30hh6aa1jc-libxcb-image-0.4.1-dev' '/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1' '/nix/store/klwvlfslzlmsbkk7smzyrxxwri7znly4-libxcb-keysyms-0.4.1-dev' '/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1' '/nix/store/d1ifwrvdbmlbaf5bdwbx5b2yh9c58sjk-libxcb-wm-0.4.2-dev' '/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2' '/nix/store/x4029780mwyh2jn7hgajafr5z6l8wja7-libxcb-render-util-0.3.10-dev' '/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10' )
+declare -a pkgsTargetTarget=('/nix/store/0balwgpf53vhjycd97mq1bkmz45nc1ks-compiler-rt-libc-21.1.8-dev' '/nix/store/jg984hgvy0m3h9xycqlddhllyxlwfm8y-compiler-rt-libc-21.1.8' )
+declare -a postFixupHooks=('noBrokenSymlinksInAllOutputs' '_makeSymlinksRelative' '_multioutPropagateDev' 'cmakePcfileCheckPhase' )
+declare -a postHooks=('makeCmakeFindLibs' )
+declare -a postInstallHooks=('glibPostInstallHook' )
 declare -a postUnpackHooks=('_updateSourceDateEpochFromSourceRoot' )
 declare -a preConfigureHooks=('_multioutConfig' )
 preConfigurePhases=' updateAutotoolsGnuConfigScriptsPhase'
 declare -a preFixupHooks=('_moveToShare' '_multioutDocs' '_multioutDevs' )
+preFixupPhases=' dropIconThemeCache'
+preInstallPhases=' glibPreInstallPhase'
 preferLocalBuild='1'
 export preferLocalBuild
 prefix='/home/dontwait/Documents/git/jobgo/outputs/out'
@@ -178,42 +244,44 @@ declare -a propagatedHostDepFiles=('propagated-host-host-deps' 'propagated-build
 propagatedNativeBuildInputs=''
 export propagatedNativeBuildInputs
 declare -a propagatedTargetDepFiles=('propagated-target-target-deps' )
-shell='/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin/bash'
+role_post=''
+setOutputFlags=''
+shell='/nix/store/gik3rh1vz2jlgnifb9dh6vc6sxwwz9jj-bash-5.3p9/bin/bash'
 export shell
-shellHook=''
+shellHook='export JAVA_HOME="/nix/store/glifx04kfvxkcfbi953siw3lazpc5m51-openjdk-17.0.20+2/lib/openjdk"
+export ANDROID_HOME="/nix/store/l4b9c5pdvv93yiqbmx016xi924bq06yr-androidsdk/libexec/android-sdk"
+export ANDROID_SDK_ROOT="$ANDROID_HOME"
+
+# Shim cho cmdline-tools
+mkdir -p .android-sdk-shim/cmdline-tools/latest
+ln -sfT "$ANDROID_HOME/cmdline-tools/bin".android-sdk-shim/cmdline-tools/latest/bin
+ln -sfT "$ANDROID_HOME/cmdline-tools/lib".android-sdk-shim/cmdline-tools/latest/lib
+ln -sfT "$ANDROID_HOME/cmdline-tools/source.properties" .android-sdk-shim/cmdline-tools/latest/source.properties
+
+export PATH="$PWD/.android-sdk-shim/cmdline-tools/latest/bin:$PATH"
+export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
+
+export LD_LIBRARY_PATH="\
+$HOME/Downloads/emulator:\
+$HOME/Downloads/emulator/lib64:\
+$HOME/Downloads/emulator/lib64/qt/libs:\
+$HOME/Downloads/emulator/lib64/qt/plugins/platforms:\
+/nix/store/4wvhj1qsjgs6zdip59qc6z0xir9m0m56-pulseaudio-17.0/lib:/nix/store/7fnjx0b7a7f80055i43v9pwbx25lwh0v-libpulseaudio-17.0/lib:/nix/store/3zqm4hxrxarx85cxd03gj5yvxkzialqj-alsa-lib-1.2.15.3/lib:/nix/store/dpi7sgi4dmnddwjwdi57d8x06sx49vkn-libglvnd-1.7.0/lib:/nix/store/y3cx711jnb68bb1zbvzimd3r7lj8ghl8-glu-9.0.3/lib:/nix/store/bfkyl4qgipm1vpfls2cqr3kv0afgpbya-mesa-26.1.1/lib:/nix/store/7gwd2kvkx1s369cwiv5z4x2xjxbppav6-libx11-1.8.13/lib:/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0/lib:/nix/store/l1im0bii1ld332kcgg0gr72k6xla2dq1-libxext-1.3.7/lib:/nix/store/miig9y3gfv5ykavp6zva2jg1c1sq2qc3-libxrender-0.9.12/lib:/nix/store/m5ippjl54sgjxg4zy1dq2vs2w3yqxy7s-libxi-1.8.2/lib:/nix/store/5q04vvbkfvs2bs4x7pkkrblslflkgv5i-libxtst-1.2.5/lib:/nix/store/0kx9jb9qcvh9kg9qi8kxwxymbvbpykdj-libxrandr-1.5.5/lib:/nix/store/f9yj1bxn989y7fdrb4jaxd7kjrm3ajbk-libxfixes-6.0.2/lib:/nix/store/mb41raibp8z7dvbiy9y2iqc02rpclhfm-libxkbfile-1.1.3/lib:/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6/lib:/nix/store/61a1nwx3w6rqyaisj5rn1sal1981apm7-zlib-1.3.2/lib:/nix/store/chqq8mpmpyfi9kgsngya71akv5xicn03-gcc-15.2.0-lib/lib:/nix/store/b9g4yz7mrcvrc9vcp0kr4fjvx6fb7vch-nss-3.112.5/lib:/nix/store/8q3pkmbl7c02chrfwr9hk2jpq6k1xm3v-nspr-4.39/lib:/nix/store/ndadbpc4s7b5j2l9vsm2jw8pzfyn8r0v-dbus-1.16.2-lib/lib:/nix/store/d8927sznk6qnqln6hl9p4d42h8pq49vg-expat-2.8.0/lib:/nix/store/a8avqfxd649rfgfpqldja6v38ljb8fj5-systemd-260.1/lib:/nix/store/vqyqaaar0dvcdbmzsap60r96n1va0idd-libpng-apng-1.6.56/lib:/nix/store/kk6s0v0jhgqh88ckq0dycfi94lfsdyn6-libbsd-0.12.2/lib:/nix/store/8fbsxg75a01nm3ivxg8kl3zxd7wx34p2-libdrm-2.4.133/lib:/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/lib:/nix/store/jj27mc075js673vkgd8fy6xxr34n8n9i-libxcb-1.17.0/lib:/nix/store/pdy4va4m24xl8f0c792jzfz00g1knai4-libxcb-util-0.4.1/lib:/nix/store/2mvdayy6h2s5z6cwq7c5spiaqnjbax4n-libxcb-image-0.4.1/lib:/nix/store/51g7j72f4b65ywijai10sch1fb50bqmv-libxcb-keysyms-0.4.1/lib:/nix/store/q9vsn98rfa2dggzk5rqjfkc9q857vnqi-libxcb-wm-0.4.2/lib:/nix/store/v0cly226c5wvk44q5vvq6hp9hzv3w487-libxcb-cursor-0.1.6/lib:/nix/store/rrfpqm2fy9yick5qh72ph0x0wp932w59-libxcb-render-util-0.3.10/lib:/nix/store/wrrvwiwj135f5fw210d2zywp1zg99m0m-libsm-1.2.6/lib:/nix/store/dnp8glhrjly9kg6b6iw0w2a7w40vgfrj-libice-1.1.2/lib:/nix/store/x0gx9xj0xdg5n9vixwn4p5awi2h613r6-libxkbcommon-1.13.1/lib:\
+$LD_LIBRARY_PATH"                        export NIX_LD=$(cat "/nix/store/788mx070y81zjlg5ipcl0cra3afviw9k-gcc-wrapper-15.2.0/nix-support/dynamic-linker")
+                        export NIX_LD_LIBRARY_PATH="/run/current-system/sw/share/nix-ld/lib"
+
+                        echo "✅ Flutter dev shell ready!"
+                        echo "   ANDROID_HOME : $ANDROID_HOME"
+                        echo "   LD_LIBRARY_PATH set for emulator"
+ export CHROME_EXECUTABLE="$HOME/.nix-profile/bin/firefox"          '
 export shellHook
-stdenv='/nix/store/wr08yanv2bjrphhi5aai12hf2qz5kvic-stdenv-linux'
+stdenv='/nix/store/jci7gw90lh2vdjaxkb6pzf9xp4v08wzs-stdenv-linux'
 export stdenv
 strictDeps=''
 export strictDeps
 system='x86_64-linux'
 export system
 declare -a unpackCmdHooks=('_defaultUnpack' )
-_accumFlagsArray ()
-{
- 
-    local name;
-    if [ -n "$__structuredAttrs" ]; then
-        for name in "$@";
-        do
-            local -n nameref="$name";
-            flagsArray+=(${nameref+"${nameref[@]}"});
-        done;
-    else
-        for name in "$@";
-        do
-            local -n nameref="$name";
-            case "$name" in 
-                *Array)
-                    flagsArray+=(${nameref+"${nameref[@]}"})
-                ;;
-                *)
-                    flagsArray+=(${nameref-})
-                ;;
-            esac;
-        done;
-    fi
-}
 _activatePkgs ()
 {
  
@@ -279,13 +347,10 @@ _allFlags ()
 {
  
     export system pname name version;
-    for varName in $(awk 'BEGIN { for (v in ENVIRON) if (v ~ /^[a-z][a-zA-Z0-9_]*$/) print v }');
-    do
-        if (( "${NIX_DEBUG:-0}" >= 1 )); then
-            printf "@%s@ -> %q\n" "${varName}" "${!varName}" 1>&2;
-        fi;
+    while IFS='' read -r varName; do
+        nixTalkativeLog "@${varName}@ -> ${!varName}";
         args+=("--subst-var" "$varName");
-    done
+    done < <(awk 'BEGIN { for (v in ENVIRON) if (v ~ /^[a-z][a-zA-Z0-9_]*$/) print v }')
 }
 _assignFirst ()
 {
@@ -321,12 +386,15 @@ _callImplicitHook ()
     local def="$1";
     local hookName="$2";
     if declare -F "$hookName" > /dev/null; then
+        nixTalkativeLog "calling implicit '$hookName' function hook";
         "$hookName";
     else
         if type -p "$hookName" > /dev/null; then
+            nixTalkativeLog "sourcing implicit '$hookName' script hook";
             source "$hookName";
         else
             if [ -n "${!hookName:-}" ]; then
+                nixTalkativeLog "evaling implicit '$hookName' string hook";
                 eval "${!hookName}";
             else
                 return "$def";
@@ -346,14 +414,15 @@ _defaultUnpack ()
             echo "Did you specify two \"srcs\" with the same \"name\"?";
             return 1;
         fi;
-        cp -pr --reflink=auto -- "$fn" "$destination";
+        cp -r --preserve=timestamps --reflink=auto -- "$fn" "$destination";
     else
         case "$fn" in 
             *.tar.xz | *.tar.lzma | *.txz)
-                xz -d < "$fn" | tar xf - --warning=no-timestamp
+                ( XZ_OPT="--threads=$NIX_BUILD_CORES" xz -d < "$fn";
+                true ) | tar xf - --mode=+w --warning=no-timestamp
             ;;
             *.tar | *.tar.* | *.tgz | *.tbz2 | *.tbz)
-                tar xf "$fn" --warning=no-timestamp
+                tar xf "$fn" --mode=+w --warning=no-timestamp
             ;;
             *)
                 return 1
@@ -369,7 +438,7 @@ _doStrip ()
     local -ra allDirs=(stripAllList stripAllListTarget);
     local -ra stripCmds=(STRIP STRIP_FOR_TARGET);
     local -ra ranlibCmds=(RANLIB RANLIB_FOR_TARGET);
-    stripDebugList=${stripDebugList[*]:-lib lib32 lib64 libexec bin sbin};
+    stripDebugList=${stripDebugList[*]:-lib lib32 lib64 libexec bin sbin Applications Library/Frameworks};
     stripDebugListTarget=${stripDebugListTarget[*]:-};
     stripAllList=${stripAllList[*]:-};
     stripAllListTarget=${stripAllListTarget[*]:-};
@@ -397,33 +466,74 @@ _eval ()
         eval "$1";
     fi
 }
+_gtkCleanImmodulesCache ()
+{
+ 
+    local f="${prefix:?}/lib/gtk-3.0/3.0.0/immodules.cache";
+    if [ -f "$f" ]; then
+        sed 's|Created by .*bin/gtk-query-|Created by bin/gtk-query-|' -i "$f";
+    fi
+}
+_logHook ()
+{
+ 
+    if [[ -z ${NIX_LOG_FD-} ]]; then
+        return;
+    fi;
+    local hookKind="$1";
+    local hookExpr="$2";
+    shift 2;
+    if declare -F "$hookExpr" > /dev/null 2>&1; then
+        nixTalkativeLog "calling '$hookKind' function hook '$hookExpr'" "$@";
+    else
+        if type -p "$hookExpr" > /dev/null; then
+            nixTalkativeLog "sourcing '$hookKind' script hook '$hookExpr'";
+        else
+            if [[ "$hookExpr" != "_callImplicitHook"* ]]; then
+                local exprToOutput;
+                if [[ ${NIX_DEBUG:-0} -ge 5 ]]; then
+                    exprToOutput="$hookExpr";
+                else
+                    local hookExprLine;
+                    while IFS= read -r hookExprLine; do
+                        hookExprLine="${hookExprLine#"${hookExprLine%%[![:space:]]*}"}";
+                        if [[ -n "$hookExprLine" ]]; then
+                            exprToOutput+="$hookExprLine\\n ";
+                        fi;
+                    done <<< "$hookExpr";
+                    exprToOutput="${exprToOutput%%\\n }";
+                fi;
+                nixTalkativeLog "evaling '$hookKind' string hook '$exprToOutput'";
+            fi;
+        fi;
+    fi
+}
 _makeSymlinksRelative ()
 {
  
-    local symlinkTarget;
-    if [ "${dontRewriteSymlinks-}" ] || [ ! -e "$prefix" ]; then
-        return;
-    fi;
-    while IFS= read -r -d '' f; do
-        symlinkTarget=$(readlink "$f");
-        if [[ "$symlinkTarget"/ != "$prefix"/* ]]; then
-            continue;
-        fi;
-        if [ ! -e "$symlinkTarget" ]; then
-            echo "the symlink $f is broken, it points to $symlinkTarget (which is missing)";
-        fi;
-        echo "rewriting symlink $f to be relative to $prefix";
-        ln -snrf "$symlinkTarget" "$f";
-    done < <(find $prefix -type l -print0)
-}
-_makeSymlinksRelativeInAllOutputs ()
-{
- 
-    local output;
+    local prefixes;
+    prefixes=();
     for output in $(getAllOutputNames);
     do
-        prefix="${!output}" _makeSymlinksRelative;
-    done
+        [ ! -e "${!output}" ] && continue;
+        prefixes+=("${!output}");
+    done;
+    find "${prefixes[@]}" -type l -printf '%H\0%p\0' | xargs -0 -n2 -r -P "$NIX_BUILD_CORES" sh -c '
+      output="$1"
+      link="$2"
+
+      linkTarget=$(readlink "$link")
+
+      # only touch links that point inside the same output tree
+      [[ $linkTarget == "$output"/* ]] || exit 0
+
+      if [ ! -e "$linkTarget" ]; then
+        echo "the symlink $link is broken, it points to $linkTarget (which is missing)"
+      fi
+
+      echo "making symlink relative: $link"
+      ln -snrf "$linkTarget" "$link"
+    ' _
 }
 _moveLib64 ()
 {
@@ -530,7 +640,7 @@ _multioutConfig ()
             shareDocName="$(echo "$name" | sed 's/-[^a-zA-Z].*//')";
         fi;
     fi;
-    prependToVar configureFlags --bindir="${!outputBin}"/bin --sbindir="${!outputBin}"/sbin --includedir="${!outputInclude}"/include --oldincludedir="${!outputInclude}"/include --mandir="${!outputMan}"/share/man --infodir="${!outputInfo}"/share/info --docdir="${!outputDoc}"/share/doc/"${shareDocName}" --libdir="${!outputLib}"/lib --libexecdir="${!outputLib}"/libexec --localedir="${!outputLib}"/share/locale;
+    prependToVar configureFlags --bindir="${!outputBin}"/bin --sbindir="${!outputBin}"/sbin --includedir="${!outputInclude}"/include --mandir="${!outputMan}"/share/man --infodir="${!outputInfo}"/share/info --docdir="${!outputDoc}"/share/doc/"${shareDocName}" --libdir="${!outputLib}"/lib --libexecdir="${!outputLib}"/libexec --localedir="${!outputLib}"/share/locale;
     prependToVar installFlags pkgconfigdir="${!outputDev}"/lib/pkgconfig m4datadir="${!outputDev}"/share/aclocal aclocaldir="${!outputDev}"/share/aclocal
 }
 _multioutDevs ()
@@ -591,6 +701,47 @@ _multioutPropagateDev ()
         echo -n " ${!output}" >> "${!propagaterOutput}"/nix-support/propagated-build-inputs;
     done
 }
+_nixLogWithLevel ()
+{
+ 
+    [[ -z ${NIX_LOG_FD-} || ${NIX_DEBUG:-0} -lt ${1:?} ]] && return 0;
+    local logLevel;
+    case "${1:?}" in 
+        0)
+            logLevel=ERROR
+        ;;
+        1)
+            logLevel=WARN
+        ;;
+        2)
+            logLevel=NOTICE
+        ;;
+        3)
+            logLevel=INFO
+        ;;
+        4)
+            logLevel=TALKATIVE
+        ;;
+        5)
+            logLevel=CHATTY
+        ;;
+        6)
+            logLevel=DEBUG
+        ;;
+        7)
+            logLevel=VOMIT
+        ;;
+        *)
+            echo "_nixLogWithLevel: called with invalid log level: ${1:?}" >&"$NIX_LOG_FD";
+            return 1
+        ;;
+    esac;
+    local callerName="${FUNCNAME[2]}";
+    if [[ $callerName == "_callImplicitHook" ]]; then
+        callerName="${hookName:?}";
+    fi;
+    printf "%s: %s: %s\n" "$logLevel" "$callerName" "${2:?}" >&"$NIX_LOG_FD"
+}
 _overrideFirst ()
 {
  
@@ -621,6 +772,7 @@ activatePackage ()
     local -r targetOffset="$3";
     (( hostOffset <= targetOffset )) || exit 1;
     if [ -f "$pkg" ]; then
+        nixTalkativeLog "sourcing setup hook '$pkg'";
         source "$pkg";
     fi;
     if [[ -z "${strictDeps-}" || "$hostOffset" -le -1 ]]; then
@@ -633,8 +785,14 @@ activatePackage ()
         addToSearchPath _HOST_PATH "$pkg/bin";
     fi;
     if [[ -f "$pkg/nix-support/setup-hook" ]]; then
+        nixTalkativeLog "sourcing setup hook '$pkg/nix-support/setup-hook'";
         source "$pkg/nix-support/setup-hook";
     fi
+}
+addCMakeParams ()
+{
+ 
+    addToSearchPath NIXPKGS_CMAKE_PREFIX_PATH $1
 }
 addEnvHooks ()
 {
@@ -682,18 +840,19 @@ appendToVar ()
     else
         useArray=false;
     fi;
-    if declare -p "$1" 2> /dev/null | grep -q '^'; then
-        type="$(declare -p "$1")";
-        if [[ "$type" =~ "declare -A" ]]; then
-            echo "appendToVar(): ERROR: trying to use appendToVar on an associative array, use variable+=([\"X\"]=\"Y\") instead." 1>&2;
-            return 1;
-        else
-            if [[ "$type" =~ "declare -a" ]]; then
-                useArray=true;
-            else
-                useArray=false;
-            fi;
-        fi;
+    if type=$(declare -p "$1" 2> /dev/null); then
+        case "${type#* }" in 
+            -A*)
+                echo "appendToVar(): ERROR: trying to use appendToVar on an associative array, use variable+=([\"X\"]=\"Y\") instead." 1>&2;
+                return 1
+            ;;
+            -a*)
+                useArray=true
+            ;;
+            *)
+                useArray=false
+            ;;
+        esac;
     fi;
     shift;
     if $useArray; then
@@ -708,29 +867,46 @@ auditTmpdir ()
     local dir="$1";
     [ -e "$dir" ] || return 0;
     echo "checking for references to $TMPDIR/ in $dir...";
-    local i;
-    find "$dir" -type f -print0 | while IFS= read -r -d '' i; do
-        if [[ "$i" =~ .build-id ]]; then
-            continue;
-        fi;
-        if isELF "$i"; then
-            if { 
-                printf :;
-                patchelf --print-rpath "$i"
-            } | grep -q -F ":$TMPDIR/"; then
-                echo "RPATH of binary $i contains a forbidden reference to $TMPDIR/";
-                exit 1;
-            fi;
-        fi;
-        if isScript "$i"; then
-            if [ -e "$(dirname "$i")/.$(basename "$i")-wrapped" ]; then
-                if grep -q -F "$TMPDIR/" "$i"; then
-                    echo "wrapper script $i contains a forbidden reference to $TMPDIR/";
-                    exit 1;
+    local tmpdir elf_fifo script_fifo;
+    tmpdir="$(mktemp -d)";
+    elf_fifo="$tmpdir/elf";
+    script_fifo="$tmpdir/script";
+    mkfifo "$elf_fifo" "$script_fifo";
+    ( find "$dir" -type f -not -path '*/.build-id/*' -print0 | while IFS= read -r -d '' file; do
+        if isELF "$file"; then
+            printf '%s\0' "$file" 1>&3;
+        else
+            if isScript "$file"; then
+                filename=${file##*/};
+                dir=${file%/*};
+                if [ -e "$dir/.$filename-wrapped" ]; then
+                    printf '%s\0' "$file" 1>&4;
                 fi;
             fi;
         fi;
-    done
+    done;
+    exec 3>&- 4>&- ) 3> "$elf_fifo" 4> "$script_fifo" & ( xargs -0 -r -P "$NIX_BUILD_CORES" -n 1 sh -c '
+            if { printf :; patchelf --print-rpath "$1"; } | grep -q -F ":$TMPDIR/"; then
+                echo "RPATH of binary $1 contains a forbidden reference to $TMPDIR/"
+                exit 1
+            fi
+        ' _ < "$elf_fifo" ) & local pid_elf=$!;
+    local pid_script;
+    ( xargs -0 -r -P "$NIX_BUILD_CORES" -n 1 sh -c '
+            if grep -q -F "$TMPDIR/" "$1"; then
+                echo "wrapper script $1 contains a forbidden reference to $TMPDIR/"
+                exit 1
+            fi
+        ' _ < "$script_fifo" ) & local pid_script=$!;
+    wait "$pid_elf" || { 
+        echo "Some binaries contain forbidden references to $TMPDIR/. Check the error above!";
+        exit 1
+    };
+    wait "$pid_script" || { 
+        echo "Some scripts contain forbidden references to $TMPDIR/. Check the error above!";
+        exit 1
+    };
+    rm -r "$tmpdir"
 }
 bintoolsWrapper_addLDVars ()
 {
@@ -755,8 +931,8 @@ buildPhase ()
         echo "no Makefile or custom buildPhase, doing nothing";
     else
         foundMakefile=1;
-        local flagsArray=(${enableParallelBuilding:+-j${NIX_BUILD_CORES}} SHELL=$SHELL);
-        _accumFlagsArray makeFlags makeFlagsArray buildFlags buildFlagsArray;
+        local flagsArray=(${enableParallelBuilding:+-j${NIX_BUILD_CORES}} SHELL="$SHELL");
+        concatTo flagsArray makeFlags makeFlagsArray buildFlags buildFlagsArray;
         echoCmd 'build flags' "${flagsArray[@]}";
         make ${makefile:+-f $makefile} "${flagsArray[@]}";
         unset flagsArray;
@@ -768,11 +944,18 @@ ccWrapper_addCVars ()
  
     local role_post;
     getHostRoleEnvHook;
+    local found=;
     if [ -d "$1/include" ]; then
         export NIX_CFLAGS_COMPILE${role_post}+=" -isystem $1/include";
+        found=1;
     fi;
     if [ -d "$1/Library/Frameworks" ]; then
         export NIX_CFLAGS_COMPILE${role_post}+=" -iframework $1/Library/Frameworks";
+        found=1;
+    fi;
+    if [[ -n "" && -n ${NIX_STORE:-} && -n $found ]]; then
+        local scrubbed="$NIX_STORE/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-${1#"$NIX_STORE"/*-}";
+        export NIX_CFLAGS_COMPILE${role_post}+=" -fmacro-prefix-map=$1=$scrubbed";
     fi
 }
 checkPhase ()
@@ -786,30 +969,115 @@ checkPhase ()
     fi;
     if [[ -z "${checkTarget:-}" ]]; then
         if make -n ${makefile:+-f $makefile} check > /dev/null 2>&1; then
-            checkTarget=check;
+            checkTarget="check";
         else
             if make -n ${makefile:+-f $makefile} test > /dev/null 2>&1; then
-                checkTarget=test;
+                checkTarget="test";
             fi;
         fi;
     fi;
     if [[ -z "${checkTarget:-}" ]]; then
         echo "no check/test target in ${makefile:-Makefile}, doing nothing";
     else
-        local flagsArray=(${enableParallelChecking:+-j${NIX_BUILD_CORES}} SHELL=$SHELL);
-        _accumFlagsArray makeFlags makeFlagsArray;
-        if [ -n "$__structuredAttrs" ]; then
-            flagsArray+=("${checkFlags[@]:-VERBOSE=y}");
-        else
-            flagsArray+=(${checkFlags:-VERBOSE=y});
-        fi;
-        _accumFlagsArray checkFlagsArray;
-        flagsArray+=(${checkTarget});
+        local flagsArray=(${enableParallelChecking:+-j${NIX_BUILD_CORES}} SHELL="$SHELL");
+        concatTo flagsArray makeFlags makeFlagsArray checkFlags=VERBOSE=y checkFlagsArray checkTarget;
         echoCmd 'check flags' "${flagsArray[@]}";
         make ${makefile:+-f $makefile} "${flagsArray[@]}";
         unset flagsArray;
     fi;
     runHook postCheck
+}
+cmakeConfigurePhase ()
+{
+ 
+    runHook preConfigure;
+    : ${cmakeBuildDir:=build};
+    export CTEST_OUTPUT_ON_FAILURE=1;
+    if [ -n "${enableParallelChecking-1}" ]; then
+        export CTEST_PARALLEL_LEVEL=$NIX_BUILD_CORES;
+    fi;
+    if [ -z "${dontUseCmakeBuildDir-}" ]; then
+        mkdir -p "$cmakeBuildDir";
+        cd "$cmakeBuildDir";
+        : ${cmakeDir:=..};
+    else
+        : ${cmakeDir:=.};
+    fi;
+    if [ -z "${dontAddPrefix-}" ]; then
+        prependToVar cmakeFlags "-DCMAKE_INSTALL_PREFIX=$prefix";
+    fi;
+    prependToVar cmakeFlags "-DCMAKE_CXX_COMPILER=$CXX";
+    prependToVar cmakeFlags "-DCMAKE_C_COMPILER=$CC";
+    prependToVar cmakeFlags "-DCMAKE_AR=$(command -v $AR)";
+    prependToVar cmakeFlags "-DCMAKE_RANLIB=$(command -v $RANLIB)";
+    prependToVar cmakeFlags "-DCMAKE_STRIP=$(command -v $STRIP)";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_NAME_DIR=${!outputLib}/lib";
+    if [[ -z "$shareDocName" ]]; then
+        local cmakeLists="${cmakeDir}/CMakeLists.txt";
+        if [[ -f "$cmakeLists" ]]; then
+            local shareDocName="$(grep --only-matching --perl-regexp --ignore-case '\bproject\s*\(\s*"?\K([^[:space:]")]+)' < "$cmakeLists" | head -n1)";
+        fi;
+        if [[ -z "$shareDocName" ]] || echo "$shareDocName" | grep -q '[^a-zA-Z0-9_+-]'; then
+            if [[ -n "${pname-}" ]]; then
+                shareDocName="$pname";
+            else
+                shareDocName="$(echo "$name" | sed 's/-[^a-zA-Z].*//')";
+            fi;
+        fi;
+    fi;
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_BINDIR=${!outputBin}/bin";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_SBINDIR=${!outputBin}/sbin";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_INCLUDEDIR=${!outputInclude}/include";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_MANDIR=${!outputMan}/share/man";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_INFODIR=${!outputInfo}/share/info";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_DOCDIR=${!outputDoc}/share/doc/${shareDocName}";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_LIBDIR=${!outputLib}/lib";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_LIBEXECDIR=${!outputLib}/libexec";
+    prependToVar cmakeFlags "-DCMAKE_INSTALL_LOCALEDIR=${!outputLib}/share/locale";
+    if [ -z "${doCheck-}" ]; then
+        prependToVar cmakeFlags "-DBUILD_TESTING=OFF";
+    fi;
+    prependToVar cmakeFlags "-DCMAKE_BUILD_TYPE=${cmakeBuildType:-Release}";
+    prependToVar cmakeFlags "-DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON";
+    prependToVar cmakeFlags "-DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF";
+    prependToVar cmakeFlags "-DCMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY=OFF";
+    if [ "${buildPhase-}" = ninjaBuildPhase ]; then
+        prependToVar cmakeFlags "-GNinja";
+    fi;
+    local flagsArray=();
+    concatTo flagsArray cmakeFlags cmakeFlagsArray;
+    echoCmd 'cmake flags' "${flagsArray[@]}";
+    cmake "$cmakeDir" "${flagsArray[@]}";
+    if ! [[ -v enableParallelBuilding ]]; then
+        enableParallelBuilding=1;
+        echo "cmake: enabled parallel building";
+    fi;
+    if [[ "$enableParallelBuilding" -ne 0 ]]; then
+        export CMAKE_BUILD_PARALLEL_LEVEL=$NIX_BUILD_CORES;
+    fi;
+    if ! [[ -v enableParallelInstalling ]]; then
+        enableParallelInstalling=1;
+        echo "cmake: enabled parallel installing";
+    fi;
+    runHook postConfigure
+}
+cmakePcfileCheckPhase ()
+{
+ 
+    while IFS= read -rd '' file; do
+        grepout=$(grep --line-number '}//nix/store' "$file" || true);
+        if [ -n "$grepout" ]; then
+            { 
+                echo "Broken paths found in a .pc file! $file";
+                echo "The following lines have issues (specifically '//' in paths).";
+                echo "$grepout";
+                echo "It is very likely that paths are being joined improperly.";
+                echo 'ex: "${prefix}/@CMAKE_INSTALL_LIBDIR@" should be "@CMAKE_INSTALL_FULL_LIBDIR@"';
+                echo "Please see https://github.com/NixOS/nixpkgs/issues/144170 for more details.";
+                exit 1
+            } 1>&2;
+        fi;
+    done < <(find "${!outputDev}" -iname "*.pc" -print0)
 }
 compressManPages ()
 {
@@ -819,18 +1087,73 @@ compressManPages ()
         return;
     fi;
     echo "gzipping man pages under $dir/share/man/";
-    find "$dir"/share/man/ -type f -a '!' -regex '.*\.\(bz2\|gz\|xz\)$' -print0 | while IFS= read -r -d '' f; do
-        if gzip -c -n "$f" > "$f".gz; then
-            rm "$f";
-        else
-            rm "$f".gz;
-        fi;
-    done;
+    find "$dir"/share/man/ -type f -a '!' -regex '.*\.\(bz2\|gz\|xz\)$' -print0 | xargs -0 -n1 -P "$NIX_BUILD_CORES" gzip -n -f;
     find "$dir"/share/man/ -type l -a '!' -regex '.*\.\(bz2\|gz\|xz\)$' -print0 | sort -z | while IFS= read -r -d '' f; do
         local target;
         target="$(readlink -f "$f")";
         if [ -f "$target".gz ]; then
             ln -sf "$target".gz "$f".gz && rm "$f";
+        fi;
+    done
+}
+concatStringsSep ()
+{
+ 
+    local sep="$1";
+    local name="$2";
+    local type oldifs;
+    if type=$(declare -p "$name" 2> /dev/null); then
+        local -n nameref="$name";
+        case "${type#* }" in 
+            -A*)
+                echo "concatStringsSep(): ERROR: trying to use concatStringsSep on an associative array." 1>&2;
+                return 1
+            ;;
+            -a*)
+                local IFS="$(printf '\036')"
+            ;;
+            *)
+                local IFS=" "
+            ;;
+        esac;
+        local ifs_separated="${nameref[*]}";
+        echo -n "${ifs_separated//"$IFS"/"$sep"}";
+    fi
+}
+concatTo ()
+{
+ 
+    local -;
+    set -o noglob;
+    local -n targetref="$1";
+    shift;
+    local arg default name type;
+    for arg in "$@";
+    do
+        IFS="=" read -r name default <<< "$arg";
+        local -n nameref="$name";
+        if [[ -z "${nameref[*]}" && -n "$default" ]]; then
+            targetref+=("$default");
+        else
+            if type=$(declare -p "$name" 2> /dev/null); then
+                case "${type#* }" in 
+                    -A*)
+                        echo "concatTo(): ERROR: trying to use concatTo on an associative array." 1>&2;
+                        return 1
+                    ;;
+                    -a*)
+                        targetref+=("${nameref[@]}")
+                    ;;
+                    *)
+                        if [[ "$name" = *"Array" ]]; then
+                            nixErrorLog "concatTo(): $name is not declared as array, treating as a singleton. This will become an error in future";
+                            targetref+=(${nameref+"${nameref[@]}"});
+                        else
+                            targetref+=(${nameref-});
+                        fi
+                    ;;
+                esac;
+            fi;
         fi;
     done
 }
@@ -854,7 +1177,13 @@ configurePhase ()
         rm -f "$CONFIGURE_MTIME_REFERENCE";
     fi;
     if [[ -z "${dontAddPrefix:-}" && -n "$prefix" ]]; then
-        prependToVar configureFlags "${prefixKey:---prefix=}$prefix";
+        local -r prefixKeyOrDefault="${prefixKey:---prefix=}";
+        if [ "${prefixKeyOrDefault: -1}" = " " ]; then
+            prependToVar configureFlags "$prefix";
+            prependToVar configureFlags "${prefixKeyOrDefault::-1}";
+        else
+            prependToVar configureFlags "$prefixKeyOrDefault$prefix";
+        fi;
     fi;
     if [[ -f "$configureScript" ]]; then
         if [ -z "${dontAddDisableDepTrack:-}" ]; then
@@ -867,10 +1196,13 @@ configurePhase ()
                 prependToVar configureFlags --disable-static;
             fi;
         fi;
+        if [ -z "${dontPatchShebangsInConfigure:-}" ]; then
+            patchShebangs --build "$configureScript";
+        fi;
     fi;
     if [ -n "$configureScript" ]; then
         local -a flagsArray;
-        _accumFlagsArray configureFlags configureFlagsArray;
+        concatTo flagsArray configureFlags configureFlagsArray;
         echoCmd 'configure flags' "${flagsArray[@]}";
         $configureScript "${flagsArray[@]}";
         unset flagsArray;
@@ -887,13 +1219,19 @@ consumeEntire ()
         return 1;
     fi
 }
+definePhases ()
+{
+ 
+    if [ -z "${phases[*]:-}" ]; then
+        phases="${prePhases[*]:-} unpackPhase patchPhase ${preConfigurePhases[*]:-}             configurePhase ${preBuildPhases[*]:-} buildPhase checkPhase             ${preInstallPhases[*]:-} installPhase ${preFixupPhases[*]:-} fixupPhase installCheckPhase             ${preDistPhases[*]:-} distPhase ${postPhases[*]:-}";
+    fi
+}
 distPhase ()
 {
  
     runHook preDist;
     local flagsArray=();
-    _accumFlagsArray distFlags distFlagsArray;
-    flagsArray+=(${distTarget:-dist});
+    concatTo flagsArray distFlags distFlagsArray distTarget=dist;
     echo 'dist flags: %q' "${flagsArray[@]}";
     make ${makefile:+-f $makefile} "${flagsArray[@]}";
     if [ "${dontCopyDist:-0}" != 1 ]; then
@@ -902,11 +1240,28 @@ distPhase ()
     fi;
     runHook postDist
 }
+dropIconThemeCache ()
+{
+ 
+    if [[ -z "${dontDropIconThemeCache:-}" ]]; then
+        local icondir="${out:?}/share/icons";
+        if [[ -d "${icondir}" ]]; then
+            find "${icondir}" -name 'icon-theme.cache' -print0 | while IFS= read -r -d '' file; do
+                echo "Removing ${file}";
+                rm -f "${file}";
+            done;
+        fi;
+    fi
+}
 dumpVars ()
 {
  
-    if [ "${noDumpEnvVars:-0}" != 1 ]; then
-        export 2> /dev/null >| "$NIX_BUILD_TOP/env-vars" || true;
+    if [[ "${noDumpEnvVars:-0}" != 1 && -d "$NIX_BUILD_TOP" ]]; then
+        local old_umask;
+        old_umask=$(umask);
+        umask 0077;
+        export 2> /dev/null > "$NIX_BUILD_TOP/env-vars";
+        umask "$old_umask";
     fi
 }
 echoCmd ()
@@ -943,6 +1298,20 @@ exitHandler ()
     fi;
     return "$exitCode"
 }
+findGdkPixbufLoaders ()
+{
+ 
+    local loadersCache="$1/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
+    if [[ -f "$loadersCache" ]]; then
+        if [[ -f "${GDK_PIXBUF_MODULE_FILE-}" ]]; then
+            if (( "$(cat "$loadersCache" | wc -l)" > "$(cat "$GDK_PIXBUF_MODULE_FILE" | wc -l)" )); then
+                export GDK_PIXBUF_MODULE_FILE="$loadersCache";
+            fi;
+        else
+            export GDK_PIXBUF_MODULE_FILE="$loadersCache";
+        fi;
+    fi
+}
 findInputs ()
 {
  
@@ -955,7 +1324,7 @@ findInputs ()
     local var="${!varRef}";
     unset -v varVar varRef;
     local varSlice="$var[*]";
-    case "${!varSlice-}" in 
+    case " ${!varSlice-} " in 
         *" $pkg "*)
             return 0
         ;;
@@ -1024,7 +1393,7 @@ fixupPhase ()
     for output in $(getAllOutputNames);
     do
         if [ -e "${!output}" ]; then
-            chmod -R u+w "${!output}";
+            chmod -R u+w,u-s,g-s "${!output}";
         fi;
     done;
     runHook preFixup;
@@ -1050,9 +1419,9 @@ fixupPhase ()
         done;
         unset -v hook;
     fi;
-    if [ -n "${propagatedUserEnvPkgs:-}" ]; then
+    if [ -n "${propagatedUserEnvPkgs[*]:-}" ]; then
         mkdir -p "${!outputBin}/nix-support";
-        printWords $propagatedUserEnvPkgs > "${!outputBin}/nix-support/propagated-user-env-packages";
+        printWords "${propagatedUserEnvPkgs[@]}" > "${!outputBin}/nix-support/propagated-user-env-packages";
     fi;
     runHook postFixup
 }
@@ -1068,9 +1437,7 @@ genericBuild ()
         eval "$buildCommand";
         return;
     fi;
-    if [ -z "${phases[*]:-}" ]; then
-        phases="${prePhases[*]:-} unpackPhase patchPhase ${preConfigurePhases[*]:-}             configurePhase ${preBuildPhases[*]:-} buildPhase checkPhase             ${preInstallPhases[*]:-} installPhase ${preFixupPhases[*]:-} fixupPhase installCheckPhase             ${preDistPhases[*]:-} distPhase ${postPhases[*]:-}";
-    fi;
+    definePhases;
     for curPhase in ${phases[*]};
     do
         runPhase "$curPhase";
@@ -1109,7 +1476,7 @@ getRole ()
             role_post='_FOR_TARGET'
         ;;
         *)
-            echo "binutils-wrapper-2.40: used as improper sort of dependency" 1>&2;
+            echo "binutils-wrapper-2.46: used as improper sort of dependency" 1>&2;
             return 1
         ;;
     esac
@@ -1138,10 +1505,32 @@ getTargetRoleWrapper ()
             export NIX_BINTOOLS_WRAPPER_TARGET_TARGET_x86_64_unknown_linux_gnu=1
         ;;
         *)
-            echo "binutils-wrapper-2.40: used as improper sort of dependency" 1>&2;
+            echo "binutils-wrapper-2.46: used as improper sort of dependency" 1>&2;
             return 1
         ;;
     esac
+}
+gettextDataDirsHook ()
+{
+ 
+    getHostRoleEnvHook;
+    if [ -d "$1/share/gettext" ]; then
+        addToSearchPath "GETTEXTDATADIRS${role_post}" "$1/share/gettext";
+    fi
+}
+glibPostInstallHook ()
+{
+ 
+    if [ -d "$prefix/share/glib-2.0/schemas" ]; then
+        mkdir -p "${!outputLib}/share/gsettings-schemas/$name/glib-2.0";
+        mv "$prefix/share/glib-2.0/schemas" "${!outputLib}/share/gsettings-schemas/$name/glib-2.0/";
+    fi;
+    addToSearchPath GSETTINGS_SCHEMAS_PATH "${!outputLib}/share/gsettings-schemas/$name"
+}
+glibPreInstallPhase ()
+{
+ 
+    makeFlagsArray+=("gsettingsschemadir=${!outputLib}/share/gsettings-schemas/$name/glib-2.0/schemas/")
 }
 installCheckPhase ()
 {
@@ -1153,9 +1542,8 @@ installCheckPhase ()
         if [[ -z "${installCheckTarget:-}" ]] && ! make -n ${makefile:+-f $makefile} "${installCheckTarget:-installcheck}" > /dev/null 2>&1; then
             echo "no installcheck target in ${makefile:-Makefile}, doing nothing";
         else
-            local flagsArray=(${enableParallelChecking:+-j${NIX_BUILD_CORES}} SHELL=$SHELL);
-            _accumFlagsArray makeFlags makeFlagsArray installCheckFlags installCheckFlagsArray;
-            flagsArray+=(${installCheckTarget:-installcheck});
+            local flagsArray=(${enableParallelChecking:+-j${NIX_BUILD_CORES}} SHELL="$SHELL");
+            concatTo flagsArray makeFlags makeFlagsArray installCheckFlags installCheckFlagsArray installCheckTarget=installcheck;
             echoCmd 'installcheck flags' "${flagsArray[@]}";
             make ${makefile:+-f $makefile} "${flagsArray[@]}";
             unset flagsArray;
@@ -1177,13 +1565,8 @@ installPhase ()
     if [ -n "$prefix" ]; then
         mkdir -p "$prefix";
     fi;
-    local flagsArray=(${enableParallelInstalling:+-j${NIX_BUILD_CORES}} SHELL=$SHELL);
-    _accumFlagsArray makeFlags makeFlagsArray installFlags installFlagsArray;
-    if [ -n "$__structuredAttrs" ]; then
-        flagsArray+=("${installTargets[@]:-install}");
-    else
-        flagsArray+=(${installTargets:-install});
-    fi;
+    local flagsArray=(${enableParallelInstalling:+-j${NIX_BUILD_CORES}} SHELL="$SHELL");
+    concatTo flagsArray makeFlags makeFlagsArray installFlags installFlagsArray installTargets=install;
     echoCmd 'install flags' "${flagsArray[@]}";
     make ${makefile:+-f $makefile} "${flagsArray[@]}";
     unset flagsArray;
@@ -1196,7 +1579,7 @@ isELF ()
     local fd;
     local magic;
     exec {fd}< "$fn";
-    read -r -n 4 -u "$fd" magic;
+    LANG=C read -r -n 4 -u "$fd" magic;
     exec {fd}>&-;
     if [ "$magic" = 'ELF' ]; then
         return 0;
@@ -1211,7 +1594,7 @@ isMachO ()
     local fd;
     local magic;
     exec {fd}< "$fn";
-    read -r -n 4 -u "$fd" magic;
+    LANG=C read -r -n 4 -u "$fd" magic;
     exec {fd}>&-;
     if [[ "$magic" = $(echo -ne "\xfe\xed\xfa\xcf") || "$magic" = $(echo -ne "\xcf\xfa\xed\xfe") ]]; then
         return 0;
@@ -1234,13 +1617,61 @@ isScript ()
     local fd;
     local magic;
     exec {fd}< "$fn";
-    read -r -n 2 -u "$fd" magic;
+    LANG=C read -r -n 2 -u "$fd" magic;
     exec {fd}>&-;
     if [[ "$magic" =~ \#! ]]; then
         return 0;
     else
         return 1;
     fi
+}
+makeCmakeFindLibs ()
+{
+ 
+    isystem_seen=;
+    iframework_seen=;
+    for flag in ${NIX_CFLAGS_COMPILE-} ${NIX_LDFLAGS-};
+    do
+        if test -n "$isystem_seen" && test -d "$flag"; then
+            isystem_seen=;
+            addToSearchPath CMAKE_INCLUDE_PATH "${flag}";
+        else
+            if test -n "$iframework_seen" && test -d "$flag"; then
+                iframework_seen=;
+                addToSearchPath CMAKE_FRAMEWORK_PATH "${flag}";
+            else
+                isystem_seen=;
+                iframework_seen=;
+                case $flag in 
+                    -I*)
+                        addToSearchPath CMAKE_INCLUDE_PATH "${flag:2}"
+                    ;;
+                    -L*)
+                        addToSearchPath CMAKE_LIBRARY_PATH "${flag:2}"
+                    ;;
+                    -F*)
+                        addToSearchPath CMAKE_FRAMEWORK_PATH "${flag:2}"
+                    ;;
+                    -isystem)
+                        isystem_seen=1
+                    ;;
+                    -iframework)
+                        iframework_seen=1
+                    ;;
+                esac;
+            fi;
+        fi;
+    done
+}
+make_glib_find_gsettings_schemas ()
+{
+ 
+    for maybe_dir in "$1"/share/gsettings-schemas/*;
+    do
+        if [[ -d "$maybe_dir/glib-2.0/schemas" ]]; then
+            addToSearchPath GSETTINGS_SCHEMAS_PATH "$maybe_dir";
+        fi;
+    done
 }
 mapOffset ()
 {
@@ -1295,6 +1726,172 @@ moveToOutput ()
         done;
     done
 }
+ninjaBuildPhase ()
+{
+ 
+    runHook preBuild;
+    local buildCores=1;
+    if [ "${enableParallelBuilding-1}" ]; then
+        buildCores="$NIX_BUILD_CORES";
+    fi;
+    local flagsArray=("-j$buildCores");
+    concatTo flagsArray ninjaFlags ninjaFlagsArray;
+    echoCmd 'build flags' "${flagsArray[@]}";
+    TERM=dumb ninja "${flagsArray[@]}";
+    runHook postBuild
+}
+ninjaCheckPhase ()
+{
+ 
+    runHook preCheck;
+    if [ -z "${checkTarget:-}" ]; then
+        if ninja -t query test > /dev/null 2>&1; then
+            checkTarget="test";
+        fi;
+    fi;
+    if [ -z "${checkTarget:-}" ]; then
+        echo "no test target found in ninja, doing nothing";
+    else
+        local buildCores=1;
+        if [ "${enableParallelChecking-1}" ]; then
+            buildCores="$NIX_BUILD_CORES";
+        fi;
+        local flagsArray=("-j$buildCores");
+        concatTo flagsArray ninjaFlags ninjaFlagsArray checkTarget;
+        echoCmd 'check flags' "${flagsArray[@]}";
+        TERM=dumb ninja "${flagsArray[@]}";
+    fi;
+    runHook postCheck
+}
+ninjaInstallPhase ()
+{
+ 
+    runHook preInstall;
+    local buildCores=1;
+    if [ "${enableParallelInstalling-1}" ]; then
+        buildCores="$NIX_BUILD_CORES";
+    fi;
+    local flagsArray=("-j$buildCores");
+    concatTo flagsArray ninjaFlags ninjaFlagsArray installTargets=install;
+    echoCmd 'install flags' "${flagsArray[@]}";
+    TERM=dumb ninja "${flagsArray[@]}";
+    runHook postInstall
+}
+nixChattyLog ()
+{
+ 
+    _nixLogWithLevel 5 "$*"
+}
+nixDebugLog ()
+{
+ 
+    _nixLogWithLevel 6 "$*"
+}
+nixErrorLog ()
+{
+ 
+    _nixLogWithLevel 0 "$*"
+}
+nixInfoLog ()
+{
+ 
+    _nixLogWithLevel 3 "$*"
+}
+nixLog ()
+{
+ 
+    [[ -z ${NIX_LOG_FD-} ]] && return 0;
+    local callerName="${FUNCNAME[1]}";
+    if [[ $callerName == "_callImplicitHook" ]]; then
+        callerName="${hookName:?}";
+    fi;
+    printf "%s: %s\n" "$callerName" "$*" >&"$NIX_LOG_FD"
+}
+nixNoticeLog ()
+{
+ 
+    _nixLogWithLevel 2 "$*"
+}
+nixTalkativeLog ()
+{
+ 
+    _nixLogWithLevel 4 "$*"
+}
+nixVomitLog ()
+{
+ 
+    _nixLogWithLevel 7 "$*"
+}
+nixWarnLog ()
+{
+ 
+    _nixLogWithLevel 1 "$*"
+}
+noBrokenSymlinks ()
+{
+ 
+    local -r output="${1:?}";
+    local path;
+    local pathParent;
+    local symlinkTarget;
+    local -i numDanglingSymlinks=0;
+    local -i numReflexiveSymlinks=0;
+    local -i numUnreadableSymlinks=0;
+    if [[ ! -e $output ]]; then
+        nixWarnLog "skipping non-existent output $output";
+        return 0;
+    fi;
+    nixInfoLog "running on $output";
+    while IFS= read -r -d '' path; do
+        pathParent="$(dirname "$path")";
+        if ! symlinkTarget="$(readlink "$path")"; then
+            nixErrorLog "the symlink $path is unreadable";
+            numUnreadableSymlinks+=1;
+            continue;
+        fi;
+        if [[ $symlinkTarget == /* ]]; then
+            nixInfoLog "symlink $path points to absolute target $symlinkTarget";
+        else
+            nixInfoLog "symlink $path points to relative target $symlinkTarget";
+            symlinkTarget="$(realpath --no-symlinks --canonicalize-missing "$pathParent/$symlinkTarget")";
+        fi;
+        if [[ $symlinkTarget = "$TMPDIR"/* ]]; then
+            nixErrorLog "the symlink $path points to $TMPDIR directory: $symlinkTarget";
+            numDanglingSymlinks+=1;
+            continue;
+        fi;
+        if [[ $symlinkTarget != "$NIX_STORE"/* ]]; then
+            nixInfoLog "symlink $path points outside the Nix store; ignoring";
+            continue;
+        fi;
+        if [[ $path == "$symlinkTarget" ]]; then
+            nixErrorLog "the symlink $path is reflexive";
+            numReflexiveSymlinks+=1;
+        else
+            if [[ ! -e $symlinkTarget ]]; then
+                nixErrorLog "the symlink $path points to a missing target: $symlinkTarget";
+                numDanglingSymlinks+=1;
+            else
+                nixDebugLog "the symlink $path is irreflexive and points to a target which exists";
+            fi;
+        fi;
+    done < <(find "$output" -type l -print0);
+    if ((numDanglingSymlinks > 0 || numReflexiveSymlinks > 0 || numUnreadableSymlinks > 0)); then
+        nixErrorLog "found $numDanglingSymlinks dangling symlinks, $numReflexiveSymlinks reflexive symlinks and $numUnreadableSymlinks unreadable symlinks";
+        exit 1;
+    fi;
+    return 0
+}
+noBrokenSymlinksInAllOutputs ()
+{
+ 
+    if [[ -z ${dontCheckForBrokenSymlinks-} ]]; then
+        for output in $(getAllOutputNames);
+        do
+            noBrokenSymlinks "${!output}";
+        done;
+    fi
+}
 patchELF ()
 {
  
@@ -1318,11 +1915,9 @@ patchPhase ()
  
     runHook prePatch;
     local -a patchesArray;
-    if [ -n "$__structuredAttrs" ]; then
-        patchesArray=(${patches:+"${patches[@]}"});
-    else
-        patchesArray=(${patches:-});
-    fi;
+    concatTo patchesArray patches;
+    local -a flagsArray;
+    concatTo flagsArray patchFlags=-p1;
     for i in "${patchesArray[@]}";
     do
         echo "applying patch $i";
@@ -1341,12 +1936,6 @@ patchPhase ()
                 uncompress="lzma -d"
             ;;
         esac;
-        local -a flagsArray;
-        if [ -n "$__structuredAttrs" ]; then
-            flagsArray=("${patchFlags[@]:--p1}");
-        else
-            flagsArray=(${patchFlags:--p1});
-        fi;
         $uncompress < "$i" 2>&1 | patch "${flagsArray[@]}";
     done;
     runHook postPatch
@@ -1355,7 +1944,7 @@ patchShebangs ()
 {
  
     local pathName;
-    local update;
+    local update=false;
     while [[ $# -gt 0 ]]; do
         case "$1" in 
             --host)
@@ -1398,7 +1987,7 @@ patchShebangs ()
     local f;
     while IFS= read -r -d '' f; do
         isScript "$f" || continue;
-        read -r oldInterpreterLine < "$f";
+        read -r oldInterpreterLine < "$f" || [ "$oldInterpreterLine" ];
         read -r oldPath arg0 args <<< "${oldInterpreterLine:2}";
         if [[ -z "${pathName:-}" ]]; then
             if [[ -n $strictDeps && $f == "$NIX_STORE"* ]]; then
@@ -1410,22 +1999,22 @@ patchShebangs ()
         if [[ "$oldPath" == *"/bin/env" ]]; then
             if [[ $arg0 == "-S" ]]; then
                 arg0=${args%% *};
-                args=${args#* };
-                newPath="$(PATH="${!pathName}" command -v "env" || true)";
-                args="-S $(PATH="${!pathName}" command -v "$arg0" || true) $args";
+                [[ "$args" == *" "* ]] && args=${args#* } || args=;
+                newPath="$(PATH="${!pathName}" type -P "env" || true)";
+                args="-S $(PATH="${!pathName}" type -P "$arg0" || true) $args";
             else
                 if [[ $arg0 == "-"* || $arg0 == *"="* ]]; then
                     echo "$f: unsupported interpreter directive \"$oldInterpreterLine\" (set dontPatchShebangs=1 and handle shebang patching yourself)" 1>&2;
                     exit 1;
                 else
-                    newPath="$(PATH="${!pathName}" command -v "$arg0" || true)";
+                    newPath="$(PATH="${!pathName}" type -P "$arg0" || true)";
                 fi;
             fi;
         else
             if [[ -z $oldPath ]]; then
                 oldPath="/bin/sh";
             fi;
-            newPath="$(PATH="${!pathName}" command -v "$(basename "$oldPath")" || true)";
+            newPath="$(PATH="${!pathName}" type -P "$(basename "$oldPath")" || true)";
             args="$arg0 $args";
         fi;
         newInterpreterLine="$newPath $args";
@@ -1435,7 +2024,18 @@ patchShebangs ()
                 echo "$f: interpreter directive changed from \"$oldInterpreterLine\" to \"$newInterpreterLine\"";
                 escapedInterpreterLine=${newInterpreterLine//\\/\\\\};
                 timestamp=$(stat --printf "%y" "$f");
-                sed -i -e "1 s|.*|#\!$escapedInterpreterLine|" "$f";
+                tmpFile=$(mktemp -t patchShebangs.XXXXXXXXXX);
+                sed -e "1 s|.*|#\!$escapedInterpreterLine|" "$f" > "$tmpFile";
+                local restoreReadOnly;
+                if [[ ! -w "$f" ]]; then
+                    chmod +w "$f";
+                    restoreReadOnly=true;
+                fi;
+                cat "$tmpFile" > "$f";
+                rm "$tmpFile";
+                if [[ -n "${restoreReadOnly:-}" ]]; then
+                    chmod -w "$f";
+                fi;
                 touch --date "$timestamp" "$f";
             fi;
         fi;
@@ -1452,6 +2052,14 @@ patchShebangsAuto ()
         fi;
     fi
 }
+pkgConfigWrapper_addPkgConfigPath ()
+{
+ 
+    local role_post;
+    getHostRoleEnvHook;
+    addToSearchPath "PKG_CONFIG_PATH${role_post}" "$1/lib/pkgconfig";
+    addToSearchPath "PKG_CONFIG_PATH${role_post}" "$1/share/pkgconfig"
+}
 prependToVar ()
 {
  
@@ -1462,18 +2070,19 @@ prependToVar ()
     else
         useArray=false;
     fi;
-    if declare -p "$1" 2> /dev/null | grep -q '^'; then
-        type="$(declare -p "$1")";
-        if [[ "$type" =~ "declare -A" ]]; then
-            echo "prependToVar(): ERROR: trying to use prependToVar on an associative array." 1>&2;
-            return 1;
-        else
-            if [[ "$type" =~ "declare -a" ]]; then
-                useArray=true;
-            else
-                useArray=false;
-            fi;
-        fi;
+    if type=$(declare -p "$1" 2> /dev/null); then
+        case "${type#* }" in 
+            -A*)
+                echo "prependToVar(): ERROR: trying to use prependToVar on an associative array." 1>&2;
+                return 1
+            ;;
+            -a*)
+                useArray=true
+            ;;
+            *)
+                useArray=false
+            ;;
+        esac;
     fi;
     shift;
     if $useArray; then
@@ -1487,6 +2096,16 @@ printLines ()
  
     (( "$#" > 0 )) || return 0;
     printf '%s\n' "$@"
+}
+printPhases ()
+{
+ 
+    definePhases;
+    local phase;
+    for phase in ${phases[*]};
+    do
+        printf '%s\n' "$phase";
+    done
 }
 printWords ()
 {
@@ -1518,6 +2137,7 @@ runHook ()
     local hook;
     for hook in "_callImplicitHook 0 $hookName" ${!hooksSlice+"${!hooksSlice}"};
     do
+        _logHook "$hookName" "$hook" "$@";
         _eval "$hook" "$@";
     done;
     return 0
@@ -1531,6 +2151,7 @@ runOneHook ()
     local hook ret=1;
     for hook in "_callImplicitHook 1 $hookName" ${!hooksSlice+"${!hooksSlice}"};
     do
+        _logHook "$hookName" "$hook" "$@";
         if _eval "$hook" "$@"; then
             ret=0;
             break;
@@ -1569,18 +2190,16 @@ runPhase ()
     if [[ "$curPhase" = distPhase && -z "${doDist:-}" ]]; then
         return;
     fi;
-    if [[ -n $NIX_LOG_FD ]]; then
-        echo "@nix { \"action\": \"setPhase\", \"phase\": \"$curPhase\" }" >&"$NIX_LOG_FD";
-    fi;
     showPhaseHeader "$curPhase";
     dumpVars;
-    local startTime=$(date +"%s");
+    local startTime endTime;
+    startTime=$(date +"%s");
     eval "${!curPhase:-$curPhase}";
-    local endTime=$(date +"%s");
+    endTime=$(date +"%s");
     showPhaseFooter "$curPhase" "$startTime" "$endTime";
     if [ "$curPhase" = unpackPhase ]; then
-        [ -n "${sourceRoot:-}" ] && chmod +x "${sourceRoot}";
-        cd "${sourceRoot:-.}";
+        [ -n "${sourceRoot:-}" ] && chmod +x -- "${sourceRoot}";
+        cd -- "${sourceRoot:-.}";
     fi
 }
 showPhaseFooter ()
@@ -1603,35 +2222,11 @@ showPhaseHeader ()
 {
  
     local phase="$1";
-    case "$phase" in 
-        unpackPhase)
-            echo "unpacking sources"
-        ;;
-        patchPhase)
-            echo "patching sources"
-        ;;
-        configurePhase)
-            echo "configuring"
-        ;;
-        buildPhase)
-            echo "building"
-        ;;
-        checkPhase)
-            echo "running tests"
-        ;;
-        installPhase)
-            echo "installing"
-        ;;
-        fixupPhase)
-            echo "post-installation fixup"
-        ;;
-        installCheckPhase)
-            echo "running install tests"
-        ;;
-        *)
-            echo "$phase"
-        ;;
-    esac
+    echo "Running phase: $phase";
+    if [[ -z ${NIX_LOG_FD-} ]]; then
+        return;
+    fi;
+    printf "@nix { \"action\": \"setPhase\", \"phase\": \"%s\" }\n" "$phase" >&"$NIX_LOG_FD"
 }
 stripDirs ()
 {
@@ -1663,7 +2258,7 @@ stripDirs ()
         echo "stripping (with command $cmd and flags $stripFlags) in $paths";
         local striperr;
         striperr="$(mktemp --tmpdir="$TMPDIR" 'striperr.XXXXXX')";
-        find $paths -type f "${excludeFlags[@]}" -a '!' -path "$prefix/lib/debug/*" -print0 | xargs -r -0 -n1 -- realpath -z | sort -u -z | xargs -r -0 -n1 -P "$NIX_BUILD_CORES" -- $cmd $stripFlags 2> "$striperr" || exit_code=$?;
+        find $paths -type f "${excludeFlags[@]}" -a '!' -path "$prefix/lib/debug/*" -printf '%D-%i,%p\0' | sort -t, -k1,1 -u -z | cut -d, -f2- -z | xargs -r -0 -n1 -P "$NIX_BUILD_CORES" -- $cmd $stripFlags 2> "$striperr" || exit_code=$?;
         [[ "$exit_code" = 123 || -z "$exit_code" ]] || ( cat "$striperr" 1>&2 && exit 1 );
         rm "$striperr";
         find $paths -name '*.a' -type f -exec $ranlibCmd '{}' \; 2> /dev/null;
@@ -1737,6 +2332,10 @@ substituteInPlace ()
         fileNames+=("$arg");
         shift;
     done;
+    if ! [[ "${#fileNames[@]}" -gt 0 ]]; then
+        echo "substituteInPlace called without any files to operate on (files must come before options!)" 1>&2;
+        return 1;
+    fi;
     for file in "${fileNames[@]}";
     do
         substitute "$file" "$file" "$@";
@@ -1749,29 +2348,40 @@ substituteStream ()
     local description=$2;
     shift 2;
     while (( "$#" )); do
+        local replace_mode="$1";
         case "$1" in 
             --replace)
+                if ! "$_substituteStream_has_warned_replace_deprecation"; then
+                    echo "substituteStream() in derivation $name: WARNING: '--replace' is deprecated, use --replace-{fail,warn,quiet}. ($description)" 1>&2;
+                    _substituteStream_has_warned_replace_deprecation=true;
+                fi;
+                replace_mode='--replace-warn'
+            ;&
+            --replace-quiet | --replace-warn | --replace-fail)
                 pattern="$2";
                 replacement="$3";
                 shift 3;
-                local savedvar;
-                savedvar="${!var}";
-                eval "$var"'=${'"$var"'//"$pattern"/"$replacement"}';
-                if [ "$pattern" != "$replacement" ]; then
-                    if [ "${!var}" == "$savedvar" ]; then
-                        echo "substituteStream(): WARNING: pattern '$pattern' doesn't match anything in $description" 1>&2;
+                if ! [[ "${!var}" == *"$pattern"* ]]; then
+                    if [ "$replace_mode" == --replace-warn ]; then
+                        printf "substituteStream() in derivation $name: WARNING: pattern %q doesn't match anything in %s\n" "$pattern" "$description" 1>&2;
+                    else
+                        if [ "$replace_mode" == --replace-fail ]; then
+                            printf "substituteStream() in derivation $name: ERROR: pattern %q doesn't match anything in %s\n" "$pattern" "$description" 1>&2;
+                            return 1;
+                        fi;
                     fi;
-                fi
+                fi;
+                eval "$var"'=${'"$var"'//"$pattern"/"$replacement"}'
             ;;
             --subst-var)
                 local varName="$2";
                 shift 2;
                 if ! [[ "$varName" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
-                    echo "substituteStream(): ERROR: substitution variables must be valid Bash names, \"$varName\" isn't." 1>&2;
+                    echo "substituteStream() in derivation $name: ERROR: substitution variables must be valid Bash names, \"$varName\" isn't." 1>&2;
                     return 1;
                 fi;
                 if [ -z ${!varName+x} ]; then
-                    echo "substituteStream(): ERROR: variable \$$varName is unset" 1>&2;
+                    echo "substituteStream() in derivation $name: ERROR: variable \$$varName is unset" 1>&2;
                     return 1;
                 fi;
                 pattern="@$varName@";
@@ -1785,7 +2395,7 @@ substituteStream ()
                 shift 3
             ;;
             *)
-                echo "substituteStream(): ERROR: Invalid command line argument: $1" 1>&2;
+                echo "substituteStream() in derivation $name: ERROR: Invalid command line argument: $1" 1>&2;
                 return 1
             ;;
         esac;
@@ -1814,11 +2424,7 @@ unpackPhase ()
         srcs="$src";
     fi;
     local -a srcsArray;
-    if [ -n "$__structuredAttrs" ]; then
-        srcsArray=("${srcs[@]}");
-    else
-        srcsArray=($srcs);
-    fi;
+    concatTo srcsArray srcs;
     local dirsBefore="";
     for i in *;
     do
@@ -1875,7 +2481,7 @@ updateAutotoolsGnuConfigScriptsPhase ()
         for f in $(find . -type f -name "$script");
         do
             echo "Updating Autotools / GNU config script to a newer upstream version: $f";
-            cp -f "/nix/store/c54kyc3vn0jbq5hznimvx6wz15jxw8jq-gnu-config-2023-09-19/$script" "$f";
+            cp -f "/nix/store/zmvllxxx62iys7vpyg020rni3v29bcxi-gnu-config-2024-01-01/$script" "$f";
         done;
     done
 }
@@ -1883,7 +2489,8 @@ updateSourceDateEpoch ()
 {
  
     local path="$1";
-    local -a res=($(find "$path" -type f -not -newer "$NIX_BUILD_TOP/.." -printf '%T@ %p\0' | sort -n --zero-terminated | tail -n1 --zero-terminated | head -c -1));
+    [[ $path == -* ]] && path="./$path";
+    local -a res=($(find "$path" -type f -not -newer "$NIX_BUILD_TOP/.." -printf '%T@ "%p"\0' | sort -n --zero-terminated | tail -n1 --zero-terminated | head -c -1));
     local time="${res[0]//\.[0-9]*/}";
     local newestFile="${res[1]}";
     if [ "${time:-0}" -gt "$SOURCE_DATE_EPOCH" ]; then

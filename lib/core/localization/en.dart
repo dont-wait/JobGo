@@ -119,7 +119,8 @@ final Map<String, String> englishStrings = {
   'privacyPolicy': 'Privacy Policy',
   'termsOfService': 'Terms of Service',
   'helpCenter': 'Help Center',
-  'privacyPolicyContent': 'Privacy Policy\n\n'
+  'privacyPolicyContent':
+      'Privacy Policy\n\n'
       '1) Data we collect\n'
       '- Profile, contact, and in-app activity information.\n'
       '- Basic usage logs to improve the experience.\n\n'
@@ -133,7 +134,8 @@ final Map<String, String> englishStrings = {
       '4) Data sharing\n'
       '- Shared only within recruitment features.\n'
       '- We do not sell data to third parties.',
-  'termsOfServiceContent': 'Terms of Service\n\n'
+  'termsOfServiceContent':
+      'Terms of Service\n\n'
       '1) Account\n'
       '- Provide accurate and up-to-date information.\n'
       '- You are responsible for keeping your account secure.\n\n'
@@ -145,7 +147,8 @@ final Map<String, String> englishStrings = {
       '- Attacking or disrupting the service.\n\n'
       '4) Changes to terms\n'
       '- Terms may be updated and announced in-app.',
-  'helpCenterContent': 'Help Center\n\n'
+  'helpCenterContent':
+      'Help Center\n\n'
       'We can assist with:\n'
       '- Missing notifications.\n'
       '- Login issues or email verification.\n'
@@ -155,7 +158,8 @@ final Map<String, String> englishStrings = {
       '2) Update the app to the latest version.\n'
       '3) Sign out and sign back in.\n\n'
       'If the issue persists, contact us.',
-  'contactUsContent': 'Contact Us\n\n'
+  'contactUsContent':
+      'Contact Us\n\n'
       'Email: support@jobgo.vn\n'
       'Hotline: 1900 123 456 (08:30 - 18:00)\n'
       'Address: 68 Nguyen Hue, District 1, Ho Chi Minh City\n\n'
@@ -237,6 +241,28 @@ final Map<String, String> englishStrings = {
   'mustAddCVBeforeApplying': 'Please add a CV to your profile before applying',
 
   // Apply Job - Additional
+  'aiCvFit': 'AI CV Fit',
+  'aiInsight': 'AI Insight',
+  'aiMatch': 'AI Match',
+  'analyze': 'Analyze',
+  'analyzeCv': 'Analyze CV',
+  'reanalyze': 'Re-analyze',
+  'aiAnalysisSupportsPdfOnly': 'AI analysis supports PDF only for now.',
+  'missingJobDetailsForAiAnalysis': 'Missing job details for AI analysis.',
+  'noAiAnalysisYet':
+      'No AI analysis yet. Run analysis to get fit score and interview insights.',
+  'missingSkillsLabel': 'Missing skills:',
+  'interviewChecksLabel': 'Interview checks:',
+  'suggestionsLabel': 'Suggestions:',
+  'coverLetterTipsLabel': 'Cover letter tips:',
+  'analyzeFailed': 'Analyze failed',
+  'invalidJobIdentifier': 'Invalid job identifier.',
+  'refreshFailed': 'Refresh failed',
+  'viewProfile': 'View Profile',
+  'message': 'Message',
+  'chooseProfileImage': 'Choose profile image',
+  'takeNewPhoto': 'Take new photo',
+  'chooseFromLibrary': 'Choose from library',
   'cancelButton': 'Cancel',
   'readyToApplyStatus': 'Ready to apply',
   'optionalLabel': 'Optional',
@@ -508,11 +534,32 @@ final Map<String, String> englishStrings = {
   'restoreError': 'Error restoring account.',
   'hardDeleteTitle': 'PERMANENT DELETE',
   'hardDeleteConfirm': 'WARNING: This action will permanently delete',
-  'hardDeleteUndone': 'from the Supabase database and cannot be undone. Are you sure?',
+  'hardDeleteUndone':
+      'from the Supabase database and cannot be undone. Are you sure?',
   'hardDeleteAction': 'Delete permanently',
   'hardDeleteSuccess': 'Permanently deleted from the system.',
   'hardDeleteError': 'Error deleting permanently.',
   'accountTrashTitle': 'Account Trash',
   'emptyTrash': 'Trash is empty',
   'rolePrefix': 'Role:',
+
+  //kinh nghiệm - kĩ năng
+  'addExperience': 'Add Experience',
+  'companyName': 'Company Name',
+  'companyNameHint': 'e.g. Google',
+  'position': 'Position',
+  'positionHint': 'e.g. Flutter Developer',
+  'startDate': 'Start Date',
+  'endDate': 'End Date',
+  'endDateHint': 'Leave empty if current job',
+  'describeRole': 'Describe your role...',
+  'fillRequiredFields': 'Please fill in all required fields',
+  'endDateBeforeStart': 'End date must be after start date',
+  'workExperience': 'Work Experience',
+  'noExperienceYet': 'No experience added yet.\nTap Add to get started.',
+  'deleteExperience': 'Delete Experience',
+  'deleteExperienceConfirm': 'Are you sure you want to delete this experience?',
+  'add': 'Add',
+  'skillLabel': 'Skill',
+  'skillSearchHint': 'Type to search skill...',
 };
