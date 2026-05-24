@@ -1,0 +1,136 @@
+import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:crypto/crypto.dart';
+import 'package:intl/intl.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+// --- CẤU HÌNH VNPAY ---
+class VNPayConfig {
+  static const String tmnCode = 'AWRM7YZO';
+  static const String hashSecret = '0L7JJXCL0B73UYZHXA84A1ZRZL7W5YUP';
+  static const String url = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
+  static const String returnUrl = 'jobgo://vnpay-return';
+}
+
+class VNPayService {
+  static String generatePaymentUrl({required double amount}) {
+    // 1. Khởi tạo tham số
+    Map<String, String> vnpParams = {
+      'vnp_Version': '2.1.0',
+      'vnp_Command': 'pay',
+      'vnp_TmnCode': VNPayConfig.tmnCode,
+      'vnp_Amount': (amount * 100).toInt().toString(), // VNPAY yêu cầu nhân 100
+      'vnp_CreateDate': DateFormat('yyyyMMddHHmmss').format(DateTime.now()),
+      'vnp_CurrCode': 'VND',
+      'vnp_IpAddr': '127.0.0.1',
+      'vnp_Locale': 'vn',
+      // MẸO: Xóa toàn bộ khoảng trắng, dùng gạch dưới để tránh lỗi Encode khác biệt
+      'vnp_OrderInfo': 'Thanh_toan_don_hang_JobGo',
+      'vnp_OrderType': 'other',
+      'vnp_ReturnUrl': VNPayConfig.returnUrl,
+      'vnp_TxnRef': DateTime.now().millisecondsSinceEpoch.toString(),
+    };
+
+    // 2. Sắp xếp các key theo bảng chữ cái
+    var sortedKeys = vnpParams.keys.toList()..sort();
+
+    // 3. Tạo chuỗi query
+    List<String> queryData = [];
+    for (String key in sortedKeys) {
+      final value = vnpParams[key]!;
+      // Dùng encodeQueryComponent thay vì encodeComponent để xử lý đúng chuẩn
+      queryData.add('${Uri.encodeQueryComponent(key)}=${Uri.encodeQueryComponent(value)}');
+    }
+    String queryString = queryData.join('&');
+
+    // 4. Băm HMAC SHA512
+    var hmac = Hmac(sha512, utf8.encode(VNPayConfig.hashSecret));
+    var digest = hmac.convert(utf8.encode(queryString));
+
+    // 5. Trả về URL hoàn chỉnh
+    return '${VNPayConfig.url}?$queryString&vnp_SecureHash=${digest.toString()}';
+  }
+}
+
+// ...existing code...
+
+
+class PaymentPage extends StatefulWidget {
+  const PaymentPage({Key? key}) : super(key: key);
+
+  @override
+  State<PaymentPage> createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    final String url = VNPayService.generatePaymentUrl(amount: 50000);
+
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) {
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url.startsWith(VNPayConfig.returnUrl)) {
+              final uri = Uri.parse(request.url);
+              final responseCode = uri.queryParameters['vnp_ResponseCode'];
+
+              if (responseCode == '00') {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Thanh toán thành công!'), backgroundColor: Colors.green),
+                );
+                Navigator.pop(context, true); 
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Thanh toán thất bại hoặc bị hủy!'), backgroundColor: Colors.red),
+                );
+                Navigator.pop(context, false); 
+              }
+              
+              return NavigationDecision.prevent; 
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(url)); 
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Thanh toán VNPay'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context, false), 
+        ),
+      ),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(color: Colors.blue),
+            ),
+        ],
+      ),
+    );
+  }
+}

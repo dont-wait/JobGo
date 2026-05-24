@@ -8,6 +8,7 @@ import 'package:jobgo/presentation/widgets/employer/job_preview/preview_bottom_a
 import 'package:jobgo/presentation/widgets/employer/job_preview/preview_company_header.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/preview_salary_tags.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/preview_section.dart';
+import 'package:jobgo/presentation/widgets/employer/payment/payment_page.dart';
 
 class JobPostPreviewPage extends StatefulWidget {
   final EmployerJobModel job;
@@ -39,10 +40,26 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
   Future<void> _submit(bool publish) async {
     if (_isSubmitting) return;
 
-    setState(() => _isSubmitting = true);
+    // Nếu là publish (đăng bài), chuyển sang trang thanh toán trước
+    if (publish) {
+      setState(() => _isSubmitting = true); // Đổi nút thành vòng xoay loading để ngăn bấm liên tục
 
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const PaymentPage(),
+        ),
+      );
+      
+      // Sau khi thanh toán (thành công hoặc thất bại), quay lại đây
+      setState(() => _isSubmitting = false);
+      return;
+    }
+
+    // Nếu chỉ lưu nháp thì giữ nguyên logic cũ
+    setState(() => _isSubmitting = true);
     try {
-      final success = await widget.onSubmit(publish);
+      final success = await widget.onSubmit(false);
       if (success && mounted) {
         Navigator.pop(context, true);
       }

@@ -348,6 +348,7 @@ final Map<String, String> vietStrings = {
   'draftJobs': 'Bản nháp',
   'closedJobs': 'Đã đóng',
   'allJobs': 'Tất cả',
+  'jobPendingStatus': 'Chờ duyệt',
   'activeStatus': 'ĐANG MỞ',
   'closedStatus': 'ĐÃ ĐÓNG',
   'draftStatus': 'NHÁP',

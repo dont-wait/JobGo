@@ -349,6 +349,7 @@ final Map<String, String> englishStrings = {
   'draftJobs': 'Draft Jobs',
   'closedJobs': 'Closed Jobs',
   'allJobs': 'All Jobs',
+  'jobPendingStatus': 'Pending',
   'activeStatus': 'ACTIVE',
   'closedStatus': 'CLOSED',
   'draftStatus': 'DRAFT',
