@@ -535,4 +535,6 @@ final Map<String, String> vietStrings = {
   'messageNow': 'Nhắn tin ngay',
   'employerLabel': 'Nhà tuyển dụng',
   'activeNow': 'Đang hoạt động',
+  'employerAccountNotFound': 'Không tìm thấy tài khoản nhà tuyển dụng này.',
+  'emailSubjectQuery': 'Hỏi về vị trí tuyển dụng',
 };

@@ -103,8 +103,9 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
   }
 
   Future<void> _launchEmail(String email) async {
+    final loc = AppLocalizations.of(context);
     final Uri url = Uri.parse(
-      'mailto:$email?subject=Hỏi về vị trí tuyển dụng: ${widget.job.title}',
+      'mailto:$email?subject=${loc.emailSubjectQuery}: ${widget.job.title}',
     );
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
@@ -136,10 +137,11 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
 
   void _navigateToChat() {
     final employerUserId = widget.job.employerUserId;
+    final loc = AppLocalizations.of(context);
     if (employerUserId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Không tìm thấy tài khoản nhà tuyển dụng này.'),
+        SnackBar(
+          content: Text(loc.employerAccountNotFound),
           backgroundColor: AppColors.error,
         ),
       );

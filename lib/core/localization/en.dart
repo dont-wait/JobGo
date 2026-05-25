@@ -537,4 +537,6 @@ final Map<String, String> englishStrings = {
   'messageNow': 'Message Now',
   'employerLabel': 'Employer',
   'activeNow': 'Active now',
+  'employerAccountNotFound': 'Could not find this employer\'s account.',
+  'emailSubjectQuery': 'Inquiry about job position',
 };

@@ -514,6 +514,8 @@ class AppLocalizations {
   String get messageNow => translate('messageNow');
   String get employerLabel => translate('employerLabel');
   String get activeNow => translate('activeNow');
+  String get employerAccountNotFound => translate('employerAccountNotFound');
+  String get emailSubjectQuery => translate('emailSubjectQuery');
 }
 
 class _AppLocalizationsDelegate

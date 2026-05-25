@@ -391,6 +391,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
     final email = widget.job.employerCompanyEmail;
     final website = widget.job.employerWebsite;
     final industry = widget.job.employerIndustry;
+    final loc = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -420,9 +421,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'Nhà Tuyển Dụng',
-                style: TextStyle(
+              Text(
+                loc.employerLabel,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -437,18 +438,18 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
-                      'Chi tiết',
-                      style: TextStyle(
+                      loc.viewDetails,
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primary,
                       ),
                     ),
-                    SizedBox(width: 2),
-                    Icon(
+                    const SizedBox(width: 2),
+                    const Icon(
                       Icons.arrow_forward_ios_rounded,
                       size: 12,
                       color: AppColors.primary,
@@ -509,7 +510,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            industry ?? 'Lĩnh vực công nghệ / dịch vụ',
+                            industry ?? loc.industryLabel,
                             style: const TextStyle(
                               fontSize: 13,
                               color: AppColors.textSecondary,
@@ -539,9 +540,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 child: ElevatedButton.icon(
                   onPressed: () => _navigateToChat(context),
                   icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                  label: const Text(
-                    'Nhắn tin ngay',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  label: Text(
+                    loc.messageNow,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
