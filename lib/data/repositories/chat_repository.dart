@@ -68,7 +68,7 @@ class ChatRepository {
     final otherIds = grouped.keys.toList();
     final userRows = await _supabase
         .from('users')
-        .select('u_id, u_name, u_email, u_role')
+        .select('u_id, u_name, u_email, u_role, candidates(c_full_name), employers(e_company_name)')
         .inFilter('u_id', otherIds);
 
     final userMap = <int, Map<String, dynamic>>{};
@@ -88,9 +88,32 @@ class ChatRepository {
           .where((m) => m.receiverId == userId && m.status != 'read')
           .length;
 
+      String? displayName;
+      
+      // Ưu tiên lấy c_full_name nếu là candidate
+      if (userData != null && userData['candidates'] != null) {
+        final cData = userData['candidates'];
+        if (cData is List && cData.isNotEmpty) {
+          displayName = cData.first['c_full_name'] as String?;
+        } else if (cData is Map) {
+          displayName = cData['c_full_name'] as String?;
+        }
+      }
+      
+      // Hoặc lấy e_company_name nếu là employer
+      if (displayName == null && userData != null && userData['employers'] != null) {
+        final eData = userData['employers'];
+        if (eData is List && eData.isNotEmpty) {
+          displayName = eData.first['e_company_name'] as String?;
+        } else if (eData is Map) {
+          displayName = eData['e_company_name'] as String?;
+        }
+      }
+
       conversations.add(ConversationModel(
         otherUserId: otherId,
-        otherUserName: userData?['u_name'] as String? ??
+        otherUserName: displayName ??
+            userData?['u_name'] as String? ??
             userData?['u_email'] as String? ??
             'User #$otherId',
         otherUserRole: userData?['u_role'] as String?,

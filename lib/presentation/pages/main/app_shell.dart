@@ -73,6 +73,10 @@ class _AppShellState extends State<AppShell> {
       if (profileProvider.candidate == null) {
         profileProvider.loadProfile();
       }
+      
+      // Khởi tạo luồng lắng nghe tin nhắn và thông báo realtime cho user hiện tại
+      context.read<ChatProvider>().initRealtimeSubscriptions();
+      context.read<NotificationProvider>().initRealtimeSubscriptions();
     });
   }
 
