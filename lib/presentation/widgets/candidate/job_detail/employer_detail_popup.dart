@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/job_model.dart';
 import 'package:jobgo/presentation/widgets/common/company_logo.dart';
 import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
@@ -121,11 +122,11 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
     }
   }
 
-  void _copyToClipboard(String text, String label) {
+  void _copyToClipboard(String text, String successMsg) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã sao chép $label vào bộ nhớ tạm'),
+        content: Text(successMsg),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
         backgroundColor: AppColors.success,
@@ -191,9 +192,9 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(width: 48), // Spacer to balance close button
-                const Text(
-                  'Chi Tiết Nhà Tuyển Dụng',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).employerDetail,
+                  style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -402,9 +403,9 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
                         ),
                       ),
                       const SizedBox(width: 6),
-                      const Text(
-                        'Đang hoạt động',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context).activeNow,
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                           color: AppColors.textSecondary,
@@ -418,9 +419,9 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
             const SizedBox(height: 32),
 
             // ── Info Grid / List ──
-            const Text(
-              'Thông tin liên hệ & địa điểm',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context).contactInfo,
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -434,7 +435,7 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
               _buildDetailItem(
                 icon: Icons.business_rounded,
                 iconColor: AppColors.primary,
-                label: 'Lĩnh vực hoạt động',
+                label: loc.industryLabel,
                 content: _industry!,
               ),
 
@@ -443,7 +444,7 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
               _buildDetailItem(
                 icon: Icons.groups_rounded,
                 iconColor: const Color(0xFF8B5CF6),
-                label: 'Quy mô công ty',
+                label: loc.companySize,
                 content: _companySize!,
               ),
 
@@ -452,9 +453,9 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
               _buildDetailItem(
                 icon: Icons.location_on_rounded,
                 iconColor: AppColors.error,
-                label: 'Địa chỉ trụ sở',
+                label: loc.addressLabel,
                 content: _address!,
-                onAction: () => _copyToClipboard(_address!, 'địa chỉ'),
+                onAction: () => _copyToClipboard(_address!, loc.copyAddressSuccess),
                 actionIcon: Icons.copy_rounded,
               ),
 
@@ -463,7 +464,7 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
               _buildDetailItem(
                 icon: Icons.language_rounded,
                 iconColor: const Color(0xFF0369A1),
-                label: 'Website',
+                label: loc.websiteLabel,
                 content: _website!,
                 onAction: () => _launchWebsite(_website!),
                 actionIcon: Icons.open_in_new_rounded,
@@ -474,7 +475,7 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
               _buildDetailItem(
                 icon: Icons.phone_in_talk_rounded,
                 iconColor: AppColors.success,
-                label: 'Điện thoại liên hệ',
+                label: loc.phoneLabel,
                 content: _phone!,
                 onAction: () => _launchPhone(_phone!),
                 actionIcon: Icons.phone_forwarded_rounded,
@@ -485,7 +486,7 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
               _buildDetailItem(
                 icon: Icons.alternate_email_rounded,
                 iconColor: const Color(0xFFE11D48),
-                label: 'Email tuyển dụng',
+                label: loc.emailLabel,
                 content: _email!,
                 onAction: () => _launchEmail(_email!),
                 actionIcon: Icons.mail_rounded,
@@ -496,9 +497,9 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
             // ── Company Description / About ──
             if (hasDesc) ...[
               const Divider(color: AppColors.divider, height: 32),
-              const Text(
-                'Giới thiệu công ty',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).about,
+                style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -625,9 +626,9 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
         child: ElevatedButton.icon(
           onPressed: _navigateToChat,
           icon: const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 20),
-          label: const Text(
-            'Nhắn tin với tuyển dụng',
-            style: TextStyle(
+          label: Text(
+            AppLocalizations.of(context).chatWithEmployer,
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: Colors.white,

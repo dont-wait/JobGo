@@ -536,4 +536,5 @@ final Map<String, String> englishStrings = {
   'viewDetails': 'Details',
   'messageNow': 'Message Now',
   'employerLabel': 'Employer',
+  'activeNow': 'Active now',
 };
