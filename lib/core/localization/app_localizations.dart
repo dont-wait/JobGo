@@ -137,10 +137,10 @@ class AppLocalizations {
   String get privacyPolicy => translate('privacyPolicy');
   String get termsOfService => translate('termsOfService');
   String get helpCenter => translate('helpCenter');
-    String get privacyPolicyContent => translate('privacyPolicyContent');
-    String get termsOfServiceContent => translate('termsOfServiceContent');
-    String get helpCenterContent => translate('helpCenterContent');
-    String get contactUsContent => translate('contactUsContent');
+  String get privacyPolicyContent => translate('privacyPolicyContent');
+  String get termsOfServiceContent => translate('termsOfServiceContent');
+  String get helpCenterContent => translate('helpCenterContent');
+  String get contactUsContent => translate('contactUsContent');
   String get changePassword => translate('changePassword');
   String get pushNotifications => translate('pushNotifications');
   String get account => translate('account');
@@ -196,6 +196,29 @@ class AppLocalizations {
 
   // Apply Job
   String get applyForJob => translate('applyForJob');
+  String get aiCvFit => translate('aiCvFit');
+  String get aiInsight => translate('aiInsight');
+  String get aiMatch => translate('aiMatch');
+  String get analyze => translate('analyze');
+  String get analyzeCv => translate('analyzeCv');
+  String get reanalyze => translate('reanalyze');
+  String get aiAnalysisSupportsPdfOnly =>
+      translate('aiAnalysisSupportsPdfOnly');
+  String get missingJobDetailsForAiAnalysis =>
+      translate('missingJobDetailsForAiAnalysis');
+  String get noAiAnalysisYet => translate('noAiAnalysisYet');
+  String get missingSkillsLabel => translate('missingSkillsLabel');
+  String get interviewChecksLabel => translate('interviewChecksLabel');
+  String get suggestionsLabel => translate('suggestionsLabel');
+  String get coverLetterTipsLabel => translate('coverLetterTipsLabel');
+  String get analyzeFailed => translate('analyzeFailed');
+  String get invalidJobIdentifier => translate('invalidJobIdentifier');
+  String get refreshFailed => translate('refreshFailed');
+  String get viewProfile => translate('viewProfile');
+  String get message => translate('message');
+  String get chooseProfileImage => translate('chooseProfileImage');
+  String get takeNewPhoto => translate('takeNewPhoto');
+  String get chooseFromLibrary => translate('chooseFromLibrary');
   String get cancelButton => translate('cancelButton');
   String get selectCV => translate('selectCV');
   String get chooseResumeForApplication =>
@@ -518,6 +541,25 @@ class AppLocalizations {
   String get emailSubjectQuery => translate('emailSubjectQuery');
   String get featureInDevelopment => translate('featureInDevelopment');
   String get featureInDevelopmentTitle => translate('featureInDevelopmentTitle');
+  // kinh nghiệm
+  String get addExperience => translate('addExperience');
+  String get companyName => translate('companyName');
+  String get companyNameHint => translate('companyNameHint');
+  String get position => translate('position');
+  String get positionHint => translate('positionHint');
+  String get startDate => translate('startDate');
+  String get endDate => translate('endDate');
+  String get endDateHint => translate('endDateHint');
+  String get describeRole => translate('describeRole');
+  String get fillRequiredFields => translate('fillRequiredFields');
+  String get endDateBeforeStart => translate('endDateBeforeStart');
+  String get workExperience => translate('workExperience');
+  String get noExperienceYet => translate('noExperienceYet');
+  String get deleteExperience => translate('deleteExperience');
+  String get deleteExperienceConfirm => translate('deleteExperienceConfirm');
+  String get add => translate('add');
+  String get skillLabel => translate('skillLabel');
+  String get skillSearchHint => translate('skillSearchHint');
 }
 
 class _AppLocalizationsDelegate
