@@ -9,6 +9,9 @@ import 'package:jobgo/presentation/widgets/candidate/job_detail/job_requirements
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_benefits_section.dart';
 import 'package:jobgo/presentation/widgets/candidate/job_detail/job_apply_button.dart';
 import 'package:jobgo/presentation/pages/candidate/apply_job/apply_job_route.dart';
+import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
+import 'package:jobgo/presentation/widgets/candidate/job_detail/employer_detail_popup.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/bookmark_provider.dart';
@@ -149,6 +152,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
                     postedTime: widget.job.postedTimeAgo,
                   ),
                   const SizedBox(height: 24),
+                  _buildEmployerSection(),
+                  const SizedBox(height: 24),
                   if (widget.job.tags != null &&
                       widget.job.tags!.isNotEmpty) ...[
                     _buildTags(),
@@ -263,8 +268,8 @@ class _JobDetailPageState extends State<JobDetailPage> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
           color: isUrgent
-              ? AppColors.error.withOpacity(0.1)
-              : AppColors.primary.withOpacity(0.1),
+              ? AppColors.error.withValues(alpha: 0.1)
+              : AppColors.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -318,6 +323,288 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ),
         );
       }).toList(),
+    );
+  }
+
+  void _navigateToChat(BuildContext context) {
+    final employerUserId = widget.job.employerUserId;
+    if (employerUserId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Không tìm thấy tài khoản nhà tuyển dụng này.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatDetailPage(
+          otherUserId: employerUserId,
+          otherUserName: widget.job.company,
+          avatarColor: Color(int.parse(widget.job.logoColor)),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _launchPhone(String phone) async {
+    final Uri url = Uri.parse('tel:$phone');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    }
+  }
+
+  Future<void> _launchEmail(String email, String jobTitle) async {
+    final Uri url = Uri.parse(
+      'mailto:$email?subject=Hỏi về công việc: $jobTitle',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    }
+  }
+
+  Future<void> _launchWebsite(String website) async {
+    var urlStr = website;
+    if (!urlStr.startsWith('http://') && !urlStr.startsWith('https://')) {
+      urlStr = 'https://$urlStr';
+    }
+    final Uri url = Uri.parse(urlStr);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _showEmployerDetailPopup() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => EmployerDetailPopup(job: widget.job),
+    );
+  }
+
+  Widget _buildEmployerSection() {
+    final phone = widget.job.employerCompanyPhone;
+    final email = widget.job.employerCompanyEmail;
+    final website = widget.job.employerWebsite;
+    final industry = widget.job.employerIndustry;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Nhà Tuyển Dụng',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: _showEmployerDetailPopup,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Row(
+                  children: [
+                    Text(
+                      'Chi tiết',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 12,
+                      color: AppColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: _showEmployerDetailPopup,
+              borderRadius: BorderRadius.circular(14),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    CompanyLogo(
+                      imageUrl: widget.job.logoUrl,
+                      fallbackText: widget.job.logoText,
+                      backgroundColor: Color(int.parse(widget.job.logoColor)),
+                      width: 54,
+                      height: 54,
+                      borderRadius: 14,
+                      fontSize: 15,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  widget.job.company,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.success,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            industry ?? 'Lĩnh vực công nghệ / dịch vụ',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: AppColors.textSecondary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: ElevatedButton.icon(
+                  onPressed: () => _navigateToChat(context),
+                  icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                  label: const Text(
+                    'Nhắn tin ngay',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.primary,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              if (phone != null && phone.isNotEmpty) ...[
+                _buildQuickIconButton(
+                  icon: Icons.phone_in_talk_rounded,
+                  color: AppColors.success,
+                  onTap: () => _launchPhone(phone),
+                ),
+                const SizedBox(width: 8),
+              ],
+              if (email != null && email.isNotEmpty) ...[
+                _buildQuickIconButton(
+                  icon: Icons.alternate_email_rounded,
+                  color: const Color(0xFFE11D48),
+                  onTap: () => _launchEmail(email, widget.job.title),
+                ),
+                const SizedBox(width: 8),
+              ],
+              if (website != null && website.isNotEmpty)
+                _buildQuickIconButton(
+                  icon: Icons.language_rounded,
+                  color: const Color(0xFF0369A1),
+                  onTap: () => _launchWebsite(website),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickIconButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            child: Icon(icon, color: color, size: 20),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -210,7 +210,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final messages = snapshot.data ?? [];
+        // Đảo ngược danh sách để tin nhắn mới nhất nằm ở index 0 (kết hợp với reverse: true)
+        final messages = snapshot.data?.reversed.toList() ?? [];
 
         if (messages.isEmpty) {
           return Center(
@@ -235,19 +236,19 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           );
         }
 
-        // Auto-scroll to bottom when new messages arrive
-        _scrollToBottom();
-
         return ListView.builder(
           controller: _scrollController,
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          reverse: true,
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           itemCount: messages.length,
           itemBuilder: (context, index) {
             final msg = messages[index];
             final isMe = msg.isMe(_currentUserId!);
-            final showTime = index == 0 ||
+            
+            // Do danh sách đảo ngược, tin nhắn cũ hơn kế tiếp sẽ ở index + 1
+            final showTime = index == messages.length - 1 ||
                 messages[index].sentAt
-                        .difference(messages[index - 1].sentAt)
+                        .difference(messages[index + 1].sentAt)
                         .inMinutes >
                     5;
 

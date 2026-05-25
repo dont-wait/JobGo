@@ -55,15 +55,31 @@ class ChatMessageModel {
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate;
+    if (json['m_sent_at'] != null) {
+      final val = json['m_sent_at'];
+      if (val is DateTime) {
+        parsedDate = val.isUtc ? val.toLocal() : val;
+      } else {
+        final dateStr = val.toString();
+        if (!dateStr.endsWith('Z') && !dateStr.contains('+') && !dateStr.contains('-')) {
+          // Coi chuỗi không múi giờ là UTC từ DB và đổi sang Local của thiết bị
+          parsedDate = DateTime.parse('${dateStr.replaceAll(' ', 'T')}Z').toLocal();
+        } else {
+          parsedDate = DateTime.parse(dateStr).toLocal();
+        }
+      }
+    } else {
+      parsedDate = DateTime.now();
+    }
+
     return ChatMessageModel(
       id: _toInt(json['m_id']) ?? 0,
       senderId: _toInt(json['sender_id']) ?? 0,
       receiverId: _toInt(json['receiver_id']) ?? 0,
       content: json['m_content'] as String? ?? '',
       status: json['m_status'] as String? ?? 'sent',
-      sentAt: json['m_sent_at'] != null
-          ? DateTime.parse(json['m_sent_at'].toString())
-          : DateTime.now(),
+      sentAt: parsedDate,
     );
   }
 
