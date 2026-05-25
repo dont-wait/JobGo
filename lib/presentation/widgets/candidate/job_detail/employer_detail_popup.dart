@@ -307,6 +307,7 @@ class _EmployerDetailPopupState extends State<EmployerDetailPopup>
   }
 
   Widget _buildContent() {
+    final loc = AppLocalizations.of(context);
     final companyColor = Color(int.parse(widget.job.logoColor));
     final hasDesc = _description != null && _description!.isNotEmpty;
 
