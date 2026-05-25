@@ -537,4 +537,6 @@ final Map<String, String> vietStrings = {
   'activeNow': 'Đang hoạt động',
   'employerAccountNotFound': 'Không tìm thấy tài khoản nhà tuyển dụng này.',
   'emailSubjectQuery': 'Hỏi về vị trí tuyển dụng',
+  'featureInDevelopment': 'Tính năng này đang trong quá trình phát triển. Vui lòng quay lại sau!',
+  'featureInDevelopmentTitle': 'Sắp ra mắt',
 };

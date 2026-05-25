@@ -516,6 +516,8 @@ class AppLocalizations {
   String get activeNow => translate('activeNow');
   String get employerAccountNotFound => translate('employerAccountNotFound');
   String get emailSubjectQuery => translate('emailSubjectQuery');
+  String get featureInDevelopment => translate('featureInDevelopment');
+  String get featureInDevelopmentTitle => translate('featureInDevelopmentTitle');
 }
 
 class _AppLocalizationsDelegate

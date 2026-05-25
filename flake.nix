@@ -96,6 +96,8 @@
               clang
               gcc
               glib
+              libsecret
+              sysprof
             ]
             ++ emulatorLibs;
 
