@@ -492,6 +492,28 @@ class AppLocalizations {
   String get accountTrashTitle => translate('accountTrashTitle');
   String get emptyTrash => translate('emptyTrash');
   String get rolePrefix => translate('rolePrefix');
+
+  // Employer detail & popup
+  String get employerDetail => translate('employerDetail');
+  String get companySize => translate('companySize');
+  String get industryLabel => translate('industryLabel');
+  String get contactInfo => translate('contactInfo');
+  String get copyAddressSuccess => translate('copyAddressSuccess');
+  String get chatWithEmployer => translate('chatWithEmployer');
+  String get noDescriptionProvided => translate('noDescriptionProvided');
+  String get phoneLabel => translate('phoneLabel');
+  String get emailLabel => translate('emailLabel');
+  String get websiteLabel => translate('websiteLabel');
+  String get addressLabel => translate('addressLabel');
+  String get noPhone => translate('noPhone');
+  String get noEmail => translate('noEmail');
+  String get noWebsite => translate('noWebsite');
+  String get noAddress => translate('noAddress');
+  String get recruiter => translate('recruiter');
+  String get viewDetails => translate('viewDetails');
+  String get messageNow => translate('messageNow');
+  String get employerLabel => translate('employerLabel');
+  String get activeNow => translate('activeNow');
 }
 
 class _AppLocalizationsDelegate
