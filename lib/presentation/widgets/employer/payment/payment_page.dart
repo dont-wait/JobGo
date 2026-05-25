@@ -6,6 +6,8 @@ import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
 
 // --- CẤU HÌNH VNPAY ---
 class VNPayConfig {
@@ -70,50 +72,120 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   late final WebViewController _controller;
   bool _isLoading = true;
+  bool _openedExternal = false;
 
   @override
   void initState() {
     super.initState();
-    
     final String url = VNPayService.generatePaymentUrl(amount: widget.amount);
 
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (String url) {
-            setState(() {
-              _isLoading = false;
-            });
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith(VNPayConfig.returnUrl)) {
-              final uri = Uri.parse(request.url);
-              final responseCode = uri.queryParameters['vnp_ResponseCode'];
+    if (Platform.isWindows) {
+      // Mở link bằng trình duyệt ngoài trên Windows
+      _openExternal(url);
+    } else {
+      // Android/iOS: dùng WebView
+      _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onPageFinished: (String url) {
+              setState(() {
+                _isLoading = false;
+              });
+            },
+            onNavigationRequest: (NavigationRequest request) {
+              if (request.url.startsWith(VNPayConfig.returnUrl)) {
+                final uri = Uri.parse(request.url);
+                final responseCode = uri.queryParameters['vnp_ResponseCode'];
 
-              if (responseCode == '00') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Thanh toán thành công!'), backgroundColor: Colors.green),
-                );
-                Navigator.pop(context, true); 
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Thanh toán thất bại hoặc bị hủy!'), backgroundColor: Colors.red),
-                );
-                Navigator.pop(context, false); 
+                if (responseCode == '00') {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Thanh toán thành công!'), backgroundColor: Colors.green),
+                  );
+                  Navigator.pop(context, true);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Thanh toán thất bại hoặc bị hủy!'), backgroundColor: Colors.red),
+                  );
+                  Navigator.pop(context, false);
+                }
+                return NavigationDecision.prevent;
               }
-              
-              return NavigationDecision.prevent; 
-            }
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(url)); 
+              return NavigationDecision.navigate;
+            },
+          ),
+        )
+        ..loadRequest(Uri.parse(url));
+    }
+  }
+
+  Future<void> _openExternal(String url) async {
+    if (_openedExternal) return;
+    _openedExternal = true;
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      // Sau khi mở trình duyệt, hiển thị dialog hướng dẫn người dùng quay lại app
+      if (mounted) {
+        _showReturnDialog();
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Không thể mở trình duyệt để thanh toán!'), backgroundColor: Colors.red),
+        );
+        Navigator.pop(context, false);
+      }
+    }
+  }
+
+  void _showReturnDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Hoàn tất thanh toán'),
+        content: const Text('Vui lòng hoàn tất thanh toán trên trình duyệt. Sau khi xong, nhấn "Xác nhận đã thanh toán" để tiếp tục.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop(true); // Giả định thanh toán thành công
+            },
+            child: const Text('Xác nhận đã thanh toán'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop(false); // Hủy
+            },
+            child: const Text('Hủy'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isWindows) {
+      // Hiển thị loading hoặc hướng dẫn trên Windows
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Thanh toán VNPay'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0.5,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+        ),
+        body: const Center(
+          child: Text('Đang mở trình duyệt để thanh toán...'),
+        ),
+      );
+    }
+    // Android/iOS: vẫn dùng WebView
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thanh toán VNPay'),
@@ -122,7 +194,7 @@ class _PaymentPageState extends State<PaymentPage> {
         elevation: 0.5,
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context, false), 
+          onPressed: () => Navigator.pop(context, false),
         ),
       ),
       body: Stack(
