@@ -378,7 +378,7 @@ final Map<String, String> vietStrings = {
   'activeStatus': 'ĐANG MỞ',
   'closedStatus': 'ĐÃ ĐÓNG',
   'draftStatus': 'NHÁP',
-  'pendingStatus': 'CHỜ DUYỆT',
+  'pendingStatus': 'Chờ duyệt',
   'untitledJob': 'Công việc chưa đặt tên',
   'viewApplicants': 'Xem ứng viên →',
   'viewHistory': 'Xem lịch sử →',

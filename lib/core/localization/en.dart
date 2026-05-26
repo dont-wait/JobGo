@@ -379,7 +379,7 @@ final Map<String, String> englishStrings = {
   'activeStatus': 'ACTIVE',
   'closedStatus': 'CLOSED',
   'draftStatus': 'DRAFT',
-  'pendingStatus': 'PENDING',
+  'pendingStatus': 'Pending',
   'untitledJob': 'Untitled Job',
   'viewApplicants': 'View Applicants →',
   'viewHistory': 'View History →',
