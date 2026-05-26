@@ -188,7 +188,7 @@ final Map<String, String> vietStrings = {
   'back': 'Quay lại',
   'selectRole': 'Vui lòng chọn vai trò để tiếp tục',
   'uploadNewResume': 'Tải lên CV mới',
-  'uploadFileSize': 'PDF, DOCX tối đa 10MB',
+  'uploadFileSize': 'PDF, DOCX, TXT tối đa 10MB',
   // Register Info Page
   'fullNameHint': 'Họ và tên',
   'fullNameRequired': 'Vui lòng nhập họ và tên',
@@ -247,7 +247,7 @@ final Map<String, String> vietStrings = {
   'analyze': 'Phân tích',
   'analyzeCv': 'Phân tích CV',
   'reanalyze': 'Phân tích lại',
-  'aiAnalysisSupportsPdfOnly': 'Phân tích AI hiện chỉ hỗ trợ PDF.',
+  'aiAnalysisSupportsPdfOnly': 'Phân tích AI hiện hỗ trợ PDF, DOCX và TXT.',
   'missingJobDetailsForAiAnalysis':
       'Thiếu thông tin công việc để phân tích AI.',
   'noAiAnalysisYet':

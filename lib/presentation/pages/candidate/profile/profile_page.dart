@@ -143,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'docx'],
+        allowedExtensions: ['pdf', 'docx', 'txt'],
       );
 
       if (result == null) return;

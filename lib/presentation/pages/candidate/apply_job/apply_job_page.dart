@@ -105,7 +105,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
     final languageCode = Localizations.localeOf(context).languageCode;
 
     final selectedCvUrl = resumes[_selectedCvIndex];
-    if (!GeminiCvAnalysisService.isPdfUrl(selectedCvUrl)) {
+    if (!GeminiCvAnalysisService.isSupportedCvUrl(selectedCvUrl)) {
       setState(() {
         _analysis = null;
         _analysisError = loc.aiAnalysisSupportsPdfOnly;
@@ -769,7 +769,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
   }
 
   Widget _buildAiCvPanel(String selectedCvUrl, AppLocalizations loc) {
-    final isPdf = GeminiCvAnalysisService.isPdfUrl(selectedCvUrl);
+    final isSupported = GeminiCvAnalysisService.isSupportedCvUrl(selectedCvUrl);
     final score = _analysis?.matchScore;
 
     return Container(
@@ -820,7 +820,7 @@ class _ApplyJobPageState extends State<ApplyJobPage> {
             ],
           ),
           const SizedBox(height: 10),
-          if (!isPdf)
+          if (!isSupported)
             Text(
               loc.aiAnalysisSupportsPdfOnly,
               style: const TextStyle(

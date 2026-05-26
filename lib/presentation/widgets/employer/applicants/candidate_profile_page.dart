@@ -127,7 +127,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     final requestToken = ++_analysisRequestToken;
 
     final cvUrl = application.cvUrl.trim();
-    if (!GeminiCvAnalysisService.isPdfUrl(cvUrl)) {
+    if (!GeminiCvAnalysisService.isSupportedCvUrl(cvUrl)) {
       setState(() {
         _analysisError = loc.aiAnalysisSupportsPdfOnly;
       });

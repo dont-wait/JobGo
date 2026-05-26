@@ -1,3 +1,5 @@
+import JSZip from 'npm:jszip@3.10.1';
+
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
 const CORS_HEADERS = {
@@ -68,8 +70,9 @@ Deno.serve(async (req) => {
   if (!cvUrl) {
     return jsonResponse({ error: 'Missing cvUrl' }, 400);
   }
-  if (!isPdfUrl(cvUrl)) {
-    return jsonResponse({ error: 'AI analysis supports PDF only for now.' }, 400);
+  const cvFormat = detectCvFormat(cvUrl);
+  if (cvFormat == null) {
+    return jsonResponse({ error: 'AI analysis supports PDF, DOCX, TXT only.' }, 400);
   }
   try {
     new URL(cvUrl);
@@ -81,46 +84,41 @@ Deno.serve(async (req) => {
   const model = (body.model?.trim() || Deno.env.get('GEMINI_MODEL')?.trim() || DEFAULT_MODEL).trim();
 
   try {
-    const pdfBytes = await downloadPdf(cvUrl);
-    const prompt = buildPrompt(body, languageCode);
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
+    const file = await downloadCvDocument(cvUrl);
+    const fileBytes = file.bytes;
+    const prompt = await buildPrompt(body, languageCode, cvFormat, fileBytes);
+    const parts: Record<string, unknown>[] = [{ text: prompt }];
+    if (cvFormat === 'pdf') {
+      if (!looksLikePdf(fileBytes)) {
+        throw new Error(
+          `CV URL did not return a valid PDF file. content-type=${file.contentType || 'unknown'}, first-bytes=${previewBytes(fileBytes)}`,
+        );
+      }
+      parts.push({
+        inline_data: {
+          mime_type: 'application/pdf',
+          data: bytesToBase64(fileBytes),
         },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: 'user',
-              parts: [
-                { text: prompt },
-                {
-                  inline_data: {
-                    mime_type: 'application/pdf',
-                    data: bytesToBase64(pdfBytes),
-                  },
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.2,
-            responseMimeType: 'application/json',
-            responseJsonSchema: responseSchema(),
-          },
-        }),
-      },
-    );
+      });
+    }
+
+    const geminiResponse = await requestGemini({
+      apiKey,
+      model,
+      parts,
+    });
 
     if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
       console.error(
-        `Gemini request failed: ${geminiResponse.status} ${geminiResponse.statusText}`,
+        `Gemini request failed: ${geminiResponse.status} ${geminiResponse.statusText} ${errorText}`,
       );
       return jsonResponse(
-        { error: 'Gemini request failed', status: geminiResponse.status },
+        {
+          error: 'Gemini request failed',
+          status: geminiResponse.status,
+          detail: summarizeErrorText(errorText),
+        },
         502,
       );
     }
@@ -135,15 +133,21 @@ Deno.serve(async (req) => {
       languageCode,
     });
   } catch (error) {
-    console.error('AI analysis failed:', error instanceof Error ? error.message : error);
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error('AI analysis failed:', detail);
     return jsonResponse(
-      { error: 'AI analysis failed' },
+      { error: 'AI analysis failed', detail },
       500,
     );
   }
 });
 
-function buildPrompt(body: AnalysisRequest, languageCode: string): string {
+async function buildPrompt(
+  body: AnalysisRequest,
+  languageCode: string,
+  cvFormat: SupportedCvFormat,
+  fileBytes: Uint8Array,
+): Promise<string> {
   const job = body.job ?? {};
   const candidate = body.candidate ?? {};
   const profileSkills = (candidate.skillList ?? []).join(', ');
@@ -159,13 +163,21 @@ function buildPrompt(body: AnalysisRequest, languageCode: string): string {
     })
     .join('; ');
   const coverLetter = body.coverLetter?.trim() ?? '';
+  const cvTextBlock = cvFormat === 'pdf'
+    ? ''
+    : await buildExtractedCvTextBlock(cvFormat, fileBytes);
 
   if (languageCode === 'en') {
     return `
 You are an AI hiring assistant.
-Analyze the attached PDF CV against the target job.
+Analyze the provided CV against the target job.
 Return valid JSON only, matching the schema exactly. Do not add any text outside the JSON.
 Keep the JSON field names in English as specified, but write all text values naturally in English.
+Be concise and outline-style:
+- summary: 1 short sentence.
+- strengths, gaps, suggestions, coverLetterTips, riskFlags: 2-4 short bullet-like phrases each.
+- Each array item must be under 18 words.
+- Avoid long explanations, repeated points, and generic advice.
 
 Target Job:
 - Title: ${job.title ?? ''}
@@ -185,22 +197,28 @@ Candidate Profile:
 - Experience: ${profileExperiences}
 - Education: ${candidate.displayEducation ?? ''}
 - Cover letter: ${coverLetter}
+${cvTextBlock}
 
 Scoring rules:
 - matchScore must be an integer from 0 to 100.
-- strengths: evidence from the CV relevant to the job.
-- gaps: missing skills or experience relative to the requirements.
-- suggestions: concrete CV improvements tailored to this job.
-- coverLetterTips: 3-5 specific improvement tips.
-- riskFlags: concerns the recruiter should verify in interview.
+- strengths: concise evidence from the CV relevant to the job.
+- gaps: concise missing skills or experience relative to the requirements.
+- suggestions: concise CV improvements tailored to this job.
+- coverLetterTips: 2-4 concise improvement tips.
+- riskFlags: concise concerns the recruiter should verify in interview.
 `.trim();
   }
 
   return `
 Bạn là một trợ lý tuyển dụng AI.
-Hãy phân tích CV PDF đính kèm so với công việc mục tiêu.
+Hãy phân tích CV được cung cấp so với công việc mục tiêu.
 Chỉ trả về JSON hợp lệ theo đúng schema, không thêm bất kỳ văn bản nào bên ngoài JSON.
 Tên các field JSON phải giữ nguyên bằng tiếng Anh như schema, nhưng toàn bộ giá trị text bên trong phải viết bằng tiếng Việt tự nhiên.
+Viết ngắn gọn theo dạng outline:
+- summary: 1 câu ngắn.
+- strengths, gaps, suggestions, coverLetterTips, riskFlags: mỗi mục 2-4 ý ngắn.
+- Mỗi item trong array tối đa 18 từ.
+- Tránh giải thích dài, lặp ý, hoặc lời khuyên chung chung.
 
 Thông tin công việc:
 - Tiêu đề: ${job.title ?? ''}
@@ -220,23 +238,30 @@ Thông tin ứng viên:
 - Kinh nghiệm: ${profileExperiences}
 - Học vấn: ${candidate.displayEducation ?? ''}
 - Cover letter: ${coverLetter}
+${cvTextBlock}
 
 Quy tắc chấm điểm:
 - matchScore là số nguyên từ 0 đến 100.
-- strengths: bằng chứng nổi bật trong CV phù hợp với job.
-- gaps: kỹ năng/kinh nghiệm còn thiếu so với yêu cầu.
-- suggestions: gợi ý cải thiện CV cụ thể cho job này.
-- coverLetterTips: 3-5 gợi ý chỉnh cover letter.
-- riskFlags: các điểm cần nhà tuyển dụng xác minh thêm khi phỏng vấn.
+- strengths: bằng chứng ngắn gọn trong CV phù hợp với job.
+- gaps: kỹ năng/kinh nghiệm còn thiếu, viết ngắn gọn.
+- suggestions: gợi ý cải thiện CV cụ thể, viết ngắn gọn.
+- coverLetterTips: 2-4 gợi ý chỉnh cover letter.
+- riskFlags: điểm cần nhà tuyển dụng xác minh thêm khi phỏng vấn.
 `.trim();
 }
 
-async function downloadPdf(cvUrl: string): Promise<Uint8Array> {
+type DownloadedCvDocument = {
+  bytes: Uint8Array;
+  contentType: string;
+};
+
+async function downloadCvDocument(cvUrl: string): Promise<DownloadedCvDocument> {
   const response = await fetch(cvUrl, { method: 'GET', redirect: 'follow' });
   if (!response.ok) {
     throw new Error(`Failed to download CV: ${response.status}`);
   }
 
+  const contentType = response.headers.get('content-type') ?? '';
   const contentLength = Number(response.headers.get('content-length') ?? '0');
   if (contentLength > MAX_PDF_BYTES) {
     throw new Error('CV file is too large');
@@ -249,29 +274,41 @@ async function downloadPdf(cvUrl: string): Promise<Uint8Array> {
   if (bytes.length > MAX_PDF_BYTES) {
     throw new Error('CV file is too large');
   }
-  if (!looksLikePdf(bytes)) {
-    throw new Error('Only PDF files are supported');
-  }
-
-  return bytes;
+  return { bytes, contentType };
 }
 
 function looksLikePdf(bytes: Uint8Array): boolean {
+  let offset = 0;
+  while (
+    offset < bytes.length &&
+    (bytes[offset] === 0x09 ||
+      bytes[offset] === 0x0a ||
+      bytes[offset] === 0x0d ||
+      bytes[offset] === 0x20)
+  ) {
+    offset++;
+  }
+
   return (
-    bytes.length >= 5 &&
-    bytes[0] === 0x25 &&
-    bytes[1] === 0x50 &&
-    bytes[2] === 0x44 &&
-    bytes[3] === 0x46 &&
-    bytes[4] === 0x2d
+    bytes.length >= offset + 5 &&
+    bytes[offset] === 0x25 &&
+    bytes[offset + 1] === 0x50 &&
+    bytes[offset + 2] === 0x44 &&
+    bytes[offset + 3] === 0x46 &&
+    bytes[offset + 4] === 0x2d
   );
 }
 
-function isPdfUrl(url: string): boolean {
+type SupportedCvFormat = 'pdf' | 'docx' | 'txt';
+
+function detectCvFormat(url: string): SupportedCvFormat | null {
   const lower = url.toLowerCase().trim();
-  if (lower.length === 0) return false;
+  if (lower.length === 0) return null;
   const normalized = lower.split('?')[0].split('#')[0];
-  return normalized.endsWith('.pdf');
+  if (normalized.endsWith('.pdf')) return 'pdf';
+  if (normalized.endsWith('.docx')) return 'docx';
+  if (normalized.endsWith('.txt')) return 'txt';
+  return null;
 }
 
 function normalizeLanguageCode(languageCode?: string | null): 'vi' | 'en' {
@@ -319,6 +356,140 @@ function bytesToBase64(bytes: Uint8Array): string {
     binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
   }
   return btoa(binary);
+}
+
+async function requestGemini({
+  apiKey,
+  model,
+  parts,
+}: {
+  apiKey: string;
+  model: string;
+  parts: Record<string, unknown>[];
+}): Promise<Response> {
+  const url =
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+  const requestInit: RequestInit = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey,
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          role: 'user',
+          parts,
+        },
+      ],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: 'application/json',
+        responseJsonSchema: responseSchema(),
+      },
+    }),
+  };
+
+  let response = await fetch(url, requestInit);
+  for (let attempt = 1; attempt <= 2 && isRetryableGeminiStatus(response.status); attempt++) {
+    await delay(350 * attempt);
+    response = await fetch(url, requestInit);
+  }
+  return response;
+}
+
+function isRetryableGeminiStatus(status: number): boolean {
+  return status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function summarizeErrorText(text: string): string {
+  const trimmed = text.trim();
+  return trimmed.length > 500 ? `${trimmed.slice(0, 500)}...` : trimmed;
+}
+
+function previewBytes(bytes: Uint8Array): string {
+  return Array.from(bytes.slice(0, 12))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join(' ');
+}
+
+async function buildExtractedCvTextBlock(
+  format: Exclude<SupportedCvFormat, 'pdf'>,
+  bytes: Uint8Array,
+): Promise<string> {
+  let extracted = '';
+  if (format === 'txt') {
+    extracted = decodeTextFile(bytes);
+  } else {
+    extracted = await extractDocxText(bytes);
+  }
+  const cleaned = extracted.trim().replace(/\s+/g, ' ');
+  if (!cleaned) {
+    throw new Error('CV content is empty or unreadable');
+  }
+  const truncated = cleaned.slice(0, 18000);
+  return `\nCandidate CV content (extracted plain text):\n${truncated}\n`;
+}
+
+function decodeTextFile(bytes: Uint8Array): string {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+}
+
+async function extractDocxText(bytes: Uint8Array): Promise<string> {
+  if (!looksLikeZip(bytes)) {
+    throw new Error('Invalid DOCX file');
+  }
+
+  const zip = await JSZip.loadAsync(bytes);
+  const files = [
+    'word/document.xml',
+    'word/header1.xml',
+    'word/header2.xml',
+    'word/footer1.xml',
+    'word/footer2.xml',
+  ];
+  const texts: string[] = [];
+
+  for (const file of files) {
+    const xml = await zip.file(file)?.async('string');
+    if (xml && xml.trim().length > 0) {
+      texts.push(xmlToText(xml));
+    }
+  }
+
+  return texts.join('\n').trim();
+}
+
+function looksLikeZip(bytes: Uint8Array): boolean {
+  return bytes.length >= 4 &&
+    bytes[0] === 0x50 &&
+    bytes[1] === 0x4b &&
+    (bytes[2] === 0x03 || bytes[2] === 0x05 || bytes[2] === 0x07) &&
+    (bytes[3] === 0x04 || bytes[3] === 0x06 || bytes[3] === 0x08);
+}
+
+function xmlToText(xml: string): string {
+  return xml
+    .replace(/<w:tab\/>/g, '\t')
+    .replace(/<w:br\/>/g, '\n')
+    .replace(/<\/w:p>/g, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 function responseSchema() {

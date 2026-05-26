@@ -188,7 +188,7 @@ final Map<String, String> englishStrings = {
   'back': 'Back',
   'selectRole': 'Please select a role to continue',
   'uploadNewResume': 'Upload a new resume',
-  'uploadFileSize': 'PDF, DOCX up to 10MB',
+  'uploadFileSize': 'PDF, DOCX, TXT up to 10MB',
   // Register Info Page
   'fullNameHint': 'Full Name',
   'fullNameRequired': 'Full name is required',
@@ -247,7 +247,8 @@ final Map<String, String> englishStrings = {
   'analyze': 'Analyze',
   'analyzeCv': 'Analyze CV',
   'reanalyze': 'Re-analyze',
-  'aiAnalysisSupportsPdfOnly': 'AI analysis supports PDF only for now.',
+  'aiAnalysisSupportsPdfOnly':
+      'AI analysis supports PDF, DOCX, and TXT only.',
   'missingJobDetailsForAiAnalysis': 'Missing job details for AI analysis.',
   'noAiAnalysisYet':
       'No AI analysis yet. Run analysis to get fit score and interview insights.',
