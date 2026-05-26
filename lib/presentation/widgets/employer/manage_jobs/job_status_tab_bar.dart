@@ -18,6 +18,7 @@ class JobStatusTabBar extends StatelessWidget {
     final loc = AppLocalizations.of(context);
     final tabs = <String>[
       loc.allJobs,
+      loc.jobPendingStatus,
       loc.activeJobs,
       loc.closedJobs,
       loc.draftJobs,
@@ -38,8 +39,14 @@ class JobStatusTabBar extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    title,
+                    title.isNotEmpty 
+                        ? '${title[0].toUpperCase()}${title.substring(1).toLowerCase()}' 
+                        : title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
+                      fontSize: 13,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w500,

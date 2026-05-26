@@ -75,13 +75,16 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
     }
   }
 
-  List<EmployerJobModel> get _draftJobs =>
+    List<EmployerJobModel> get _draftJobs =>
       _jobs.where((job) => job.isDraft).toList();
 
-  List<EmployerJobModel> get _activeJobs =>
-      _jobs.where((job) => job.isActive).toList();
+    List<EmployerJobModel> get _activeJobs =>
+      _jobs.where((job) => job.isActive && job.moderationStatus != 'pending').toList();
 
-  List<EmployerJobModel> get _closedJobs =>
+    List<EmployerJobModel> get _pendingJobs =>
+      _jobs.where((job) => job.moderationStatus == 'pending').toList();
+
+    List<EmployerJobModel> get _closedJobs =>
       _jobs.where((job) => job.isClosed).toList();
 
   Future<void> _openCreateJob() async {
@@ -188,7 +191,9 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
     return Padding(
       padding: const EdgeInsets.only(top: 24, bottom: 12),
       child: Text(
-        title,
+        title.isNotEmpty 
+            ? '${title[0].toUpperCase()}${title.substring(1).toLowerCase()}' 
+            : title,
         style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w700,
@@ -208,22 +213,23 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
             size: 48,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _openCreateJob,
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.orange),
-            child: Text(AppLocalizations.of(context).postNewJob),
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -232,19 +238,21 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
 
   List<Widget> _buildCurrentTabContent() {
     if (_isLoading) {
-      return const [
-        SizedBox(height: 120),
-        Center(child: CircularProgressIndicator()),
+      return [
+        const Padding(
+          padding: EdgeInsets.only(top: 100),
+          child: Center(child: CircularProgressIndicator()),
+        ),
       ];
     }
 
     if (_errorMessage != null) {
       return [
-        const SizedBox(height: 120),
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+        Padding(
+          padding: const EdgeInsets.only(top: 100),
+          child: Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.error_outline,
@@ -286,13 +294,13 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         return widgets;
       }
 
-      if (_draftJobs.isNotEmpty) {
-        widgets.add(_sectionHeader(AppLocalizations.of(context).draftJobs));
-        for (final job in _draftJobs) {
+      if (_pendingJobs.isNotEmpty) {
+        widgets.add(_sectionHeader(AppLocalizations.of(context).jobPendingStatus));
+        for (final job in _pendingJobs) {
           widgets.add(
-            DraftJobCard(
+            PublishedJobCard(
               job: job,
-              onResume: () => _openEditJob(job),
+              onEdit: () => _openEditJob(job),
               onClose: () => _closeJob(job),
             ),
           );
@@ -328,14 +336,29 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         }
       }
 
+      if (_draftJobs.isNotEmpty) {
+        widgets.add(_sectionHeader(AppLocalizations.of(context).draftJobs));
+        for (final job in _draftJobs) {
+          widgets.add(
+            DraftJobCard(
+              job: job,
+              onResume: () => _openEditJob(job),
+              onClose: () => _closeJob(job),
+            ),
+          );
+          widgets.add(const SizedBox(height: 16));
+        }
+      }
+
       widgets.add(const SizedBox(height: 20));
       return widgets;
     }
 
     final filteredJobs = switch (_currentTab) {
-      1 => _activeJobs,
-      2 => _closedJobs,
-      3 => _draftJobs,
+      1 => _pendingJobs,
+      2 => _activeJobs,
+      3 => _closedJobs,
+      4 => _draftJobs,
       _ => _jobs,
     };
 
@@ -357,8 +380,17 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
           onEdit: () => _openEditJob(job),
           onClose: () => _closeJob(job),
         ),
-        2 => ClosedJobCard(job: job, onReopen: () => _reopenJob(job)),
-        3 => DraftJobCard(
+        2 => PublishedJobCard(
+          job: job,
+          onEdit: () => _openEditJob(job),
+          onClose: () => _closeJob(job),
+        ),
+        3 => ClosedJobCard(
+          job: job, 
+          onReopen: () => _reopenJob(job),
+          onViewHistory: () {},
+        ),
+        4 => DraftJobCard(
           job: job,
           onResume: () => _openEditJob(job),
           onClose: () => _closeJob(job),
