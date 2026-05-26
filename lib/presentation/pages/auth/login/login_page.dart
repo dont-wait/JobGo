@@ -225,19 +225,34 @@ class _LoginPageState extends State<LoginPage> {
         // Fallback: Query bảng users với email + password
         final userData = await Supabase.instance.client
             .from('users')
-            .select('u_role')
+            .select('u_role, u_status')
             .eq('u_email', email)
             .eq('u_password', password)
             .maybeSingle();
 
         if (!mounted) return;
 
+        // if (userData != null) {
+        //   _navigateToHome(userData['u_role'] as String);
+        // } else {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content: Text(loc.invalidCredentials)),
+        //   );
+        // }
         if (userData != null) {
+          final status = userData['u_status'] as String? ?? 'active';
+          if (status == 'blocked') {
+            await Supabase.instance.client.auth.signOut();
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Tài khoản của bạn đã bị khóa."),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
           _navigateToHome(userData['u_role'] as String);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(loc.invalidCredentials)),
-          );
         }
       } catch (e, st) {
         AppLogger.error('Login error', error: e, stackTrace: st);
@@ -254,20 +269,45 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final userData = await Supabase.instance.client
           .from('users')
-          .select('u_role')
+          .select('u_role, u_status')
           .eq('auth_uid', authUid)
           .maybeSingle();
 
       if (!mounted) return;
+      
+      // if (userData != null) {
+      //   _navigateToHome(userData['u_role'] as String);
+      // } else {
+      //   final loc = AppLocalizations.of(context);
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content: Text(loc.somethingWentWrong)),
+      //   );
+      // }
+      if (userData == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Không tìm thấy thông tin người dùng")),
+      );
+      return;
+    }
 
-      if (userData != null) {
-        _navigateToHome(userData['u_role'] as String);
-      } else {
-        final loc = AppLocalizations.of(context);
+    //  Check status trước khi cho vào
+    final status = userData['u_status'] as String? ?? 'active';
+      if (status == 'blocked') {
+        // Đăng xuất luôn
+        await Supabase.instance.client.auth.signOut();
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(loc.somethingWentWrong)),
+          const SnackBar(
+            content: Text("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên."),
+            backgroundColor: Colors.red,
+          ),
         );
+        return;
       }
+
+      _navigateToHome(userData['u_role'] as String);
+      
+
     } catch (e) {
       if (!mounted) return;
       final loc = AppLocalizations.of(context);
@@ -293,20 +333,21 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _onFacebookSignIn() async {
-    setState(() => _isLoading = true);
-    try {
-      await _authRepository.signInWithFacebook();
-      // Auth state listener in main.dart handles navigation
-    } catch (e) {
-      if (!mounted) return;
-      final loc = AppLocalizations.of(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+  void _onFacebookSignIn() {
+    final loc = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(loc.featureInDevelopmentTitle),
+        content: Text(loc.featureInDevelopment),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(loc.ok),
+          ),
+        ],
+      ),
+    );
   }
 
   void _navigateToHome(String roleString) {

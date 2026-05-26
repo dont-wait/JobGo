@@ -77,7 +77,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Invalid job identifier.';
+        _errorMessage = 'invalid_job_id';
         _allApplications = [];
         _filteredApplications = [];
       });
@@ -112,12 +112,13 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
       if (_allApplications.isEmpty) {
         setState(() {
-          _errorMessage = 'Failed to refresh applicants.';
+          _errorMessage = 'failed_to_refresh';
           _filteredApplications = [];
         });
       } else {
+        final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to refresh applicants: $e')),
+          SnackBar(content: Text('${loc.failedToLoadApplicants}: $e')),
         );
       }
     } finally {
@@ -188,7 +189,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
     if (_analyzingApplicationIds.contains(appId)) return;
     final loc = AppLocalizations.of(context);
     final cvUrl = application.cvUrl.trim();
-    if (!GeminiCvAnalysisService.isPdfUrl(cvUrl)) {
+    if (!GeminiCvAnalysisService.isSupportedCvUrl(cvUrl)) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(loc.aiAnalysisSupportsPdfOnly)));
@@ -247,6 +248,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final applicantCount = _isLoading
         ? widget.totalApplicants
         : _allApplications.length;
@@ -268,7 +270,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
             Text(
-              '$applicantCount APPLICANTS',
+              '$applicantCount ${loc.applicantsSubtitle}',
               style: const TextStyle(
                 fontSize: 13,
                 color: AppColors.textSecondary,
@@ -290,7 +292,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
                   controller: _searchController,
                   onChanged: _filterApplicants,
                   decoration: InputDecoration(
-                    hintText: 'Search candidates...',
+                    hintText: loc.searchCandidatesHint,
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchController.text.trim().isEmpty
                         ? const Icon(Icons.filter_list)
@@ -310,25 +312,25 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Text(
-                      'Sort:',
-                      style: TextStyle(color: AppColors.textSecondary),
+                    Text(
+                      loc.sortLabel,
+                      style: const TextStyle(color: AppColors.textSecondary),
                     ),
                     const SizedBox(width: 8),
                     DropdownButton<String>(
                       value: _sortBy,
-                      items: const [
+                      items: [
                         DropdownMenuItem(
                           value: 'newest',
-                          child: Text('Newest'),
+                          child: Text(loc.sortNewest),
                         ),
                         DropdownMenuItem(
                           value: 'ai_desc',
-                          child: Text('AI score high'),
+                          child: Text(loc.sortAiHigh),
                         ),
                         DropdownMenuItem(
                           value: 'ai_asc',
-                          child: Text('AI score low'),
+                          child: Text(loc.sortAiLow),
                         ),
                       ],
                       onChanged: (value) {
@@ -354,6 +356,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
   }
 
   Widget _buildBody() {
+    final loc = AppLocalizations.of(context);
     if (_isLoading) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -380,7 +383,11 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  _errorMessage!,
+                  _errorMessage == 'invalid_job_id'
+                      ? loc.invalidJobId
+                      : (_errorMessage == 'failed_to_refresh'
+                          ? loc.failedToLoadApplicants
+                          : _errorMessage!),
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: AppColors.textSecondary),
                 ),
@@ -388,7 +395,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
                 ElevatedButton.icon(
                   onPressed: () => _loadApplicants(refresh: true),
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
+                  label: Text(loc.retryButton),
                 ),
               ],
             ),
@@ -406,8 +413,8 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
           Center(
             child: Text(
               _allApplications.isEmpty
-                  ? 'No applicants found for this job'
-                  : 'No applicants match your search',
+                  ? loc.noApplicantsFound
+                  : loc.noApplicantsMatch,
             ),
           ),
         ],

@@ -126,7 +126,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ),
                                   const SizedBox(height: 12),
                                   OverviewCard(
-                                    title: 'Hồ sơ mới', // Đã đổi title sang Hồ sơ mới nhận
+                                    title: loc.applicants, // Đã đổi title sang Hồ sơ mới nhận
                                     value: stats.newProfiles.toString(),
                                     percentage: _formatTrendLabel(
                                       data.applicantsTrend,
@@ -167,7 +167,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: OverviewCard(
-                                    title: 'Hồ sơ mới', // Đã đổi title sang Hồ sơ mới nhận
+                                    title: loc.applicants,
                                     value: stats.newProfiles.toString(),
                                     percentage: _formatTrendLabel(
                                       data.applicantsTrend,
@@ -257,6 +257,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildErrorState(String message) {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -266,9 +267,9 @@ class _DashboardPageState extends State<DashboardPage> {
             Icon(Icons.error_outline,
                 size: 56, color: AppColors.error.withValues(alpha: 0.7)),
             const SizedBox(height: 12),
-            const Text(
-              'Unable to load dashboard',
-              style: TextStyle(
+            Text(
+              loc.somethingWentWrong,
+              style: const TextStyle(
                 fontSize: 15,
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -291,7 +292,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   _dashboardFuture = _fetchDashboardData();
                 });
               },
-              child: const Text('Retry'),
+              child: Text(loc.retryButton),
             ),
           ],
         ),
@@ -466,6 +467,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<List<ActivityItem>> _loadRecentActivities(int employerId) async {
     final supabase = Supabase.instance.client;
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
 
     final applicationsResp = await supabase
         .from('applications')
@@ -495,12 +497,12 @@ class _DashboardPageState extends State<DashboardPage> {
     for (final row in (applicationsResp as List)) {
       final appliedAt = _toDateTime(row['a_applied_at']) ?? DateTime.now();
       final candidateName = _stringValue(row['candidates']?['c_full_name'],
-          fallback: 'Candidate');
-      final jobTitle = _stringValue(row['jobs']?['j_title'], fallback: 'Job');
+          fallback: isVi ? 'Ứng viên' : 'Candidate');
+      final jobTitle = _stringValue(row['jobs']?['j_title'], fallback: isVi ? 'Công việc' : 'Job');
       activities.add(
         ActivityItem(
-          title: '$candidateName applied for $jobTitle',
-          description: '$jobTitle • ${_timeAgo(appliedAt)}',
+          title: isVi ? '$candidateName đã ứng tuyển vào $jobTitle' : '$candidateName applied for $jobTitle',
+          description: isVi ? '$jobTitle • ${_timeAgo(appliedAt, isVi)}' : '$jobTitle • ${_timeAgo(appliedAt, isVi)}',
           timestamp: appliedAt,
           type: 'application',
         ),
@@ -511,12 +513,12 @@ class _DashboardPageState extends State<DashboardPage> {
       final interviewDate =
           _toDateTime(row['i_interview_date']) ?? DateTime.now();
       final candidateName = _stringValue(row['candidates']?['c_full_name'],
-          fallback: 'Candidate');
-      final jobTitle = _stringValue(row['jobs']?['j_title'], fallback: 'Job');
+          fallback: isVi ? 'Ứng viên' : 'Candidate');
+      final jobTitle = _stringValue(row['jobs']?['j_title'], fallback: isVi ? 'Công việc' : 'Job');
       activities.add(
         ActivityItem(
-          title: 'Interview scheduled with $candidateName',
-          description: '$jobTitle • ${_timeAgo(interviewDate)}',
+          title: isVi ? 'Lịch hẹn phỏng vấn với $candidateName' : 'Interview scheduled with $candidateName',
+          description: isVi ? '$jobTitle • ${_timeAgo(interviewDate, isVi)}' : '$jobTitle • ${_timeAgo(interviewDate, isVi)}',
           timestamp: interviewDate,
           type: 'view',
         ),
@@ -525,11 +527,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
     for (final row in (postingsResp as List)) {
       final postedAt = _toDateTime(row['j_create_at']) ?? DateTime.now();
-      final jobTitle = _stringValue(row['j_title'], fallback: 'New job');
+      final jobTitle = _stringValue(row['j_title'], fallback: isVi ? 'Việc làm mới' : 'New job');
       activities.add(
         ActivityItem(
-          title: 'New job posted: $jobTitle',
-          description: 'Posting • ${_timeAgo(postedAt)}',
+          title: isVi ? 'Tin tuyển dụng mới: $jobTitle' : 'New job posted: $jobTitle',
+          description: isVi ? 'Đăng tuyển • ${_timeAgo(postedAt, isVi)}' : 'Posting • ${_timeAgo(postedAt, isVi)}',
           timestamp: postedAt,
           type: 'posting',
         ),
@@ -598,15 +600,25 @@ class _DashboardPageState extends State<DashboardPage> {
     return ((currentValue - previousValue) / previousValue) * 100;
   }
 
-  String _timeAgo(DateTime dateTime) {
+  String _timeAgo(DateTime dateTime, bool isVi) {
     final diff = DateTime.now().difference(dateTime);
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
-    if (diff.inHours < 24) return '${diff.inHours} hours ago';
-    if (diff.inDays < 7) return '${diff.inDays} days ago';
-    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()} weeks ago';
-    if (diff.inDays < 365) return '${(diff.inDays / 30).floor()} months ago';
-    return '${(diff.inDays / 365).floor()} years ago';
+    if (isVi) {
+      if (diff.inMinutes < 1) return 'Vừa xong';
+      if (diff.inMinutes < 60) return '${diff.inMinutes} phút trước';
+      if (diff.inHours < 24) return '${diff.inHours} giờ trước';
+      if (diff.inDays < 7) return '${diff.inDays} ngày trước';
+      if (diff.inDays < 30) return '${(diff.inDays / 7).floor()} tuần trước';
+      if (diff.inDays < 365) return '${(diff.inDays / 30).floor()} tháng trước';
+      return '${(diff.inDays / 365).floor()} năm trước';
+    } else {
+      if (diff.inMinutes < 1) return 'Just now';
+      if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
+      if (diff.inHours < 24) return '${diff.inHours} hours ago';
+      if (diff.inDays < 7) return '${diff.inDays} days ago';
+      if (diff.inDays < 30) return '${(diff.inDays / 7).floor()} weeks ago';
+      if (diff.inDays < 365) return '${(diff.inDays / 30).floor()} months ago';
+      return '${(diff.inDays / 365).floor()} years ago';
+    }
   }
 
   int? _toInt(dynamic value) {

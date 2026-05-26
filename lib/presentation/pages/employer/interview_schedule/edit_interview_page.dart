@@ -3,6 +3,7 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/interview_schedule_model.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class EditInterviewPage extends StatefulWidget {
   final InterviewScheduleModel schedule;
@@ -48,7 +49,6 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
-      // firstDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       initialDate: _date,
@@ -65,6 +65,7 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context);
     final dateTime = DateTime(
       _date.year, _date.month, _date.day,
       _time.hour, _time.minute,
@@ -82,8 +83,8 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
     if (!mounted) return;
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Cập nhật lịch phỏng vấn thành công!'),
+      SnackBar(
+        content: Text(loc.updateInterviewSuccess),
         backgroundColor: Colors.green,
       ),
     );
@@ -91,10 +92,13 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text("Sửa lịch phỏng vấn"),
+        title: Text(loc.editInterviewTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -128,7 +132,7 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
             const SizedBox(height: 20),
 
             // Ngày
-            _buildLabel('Ngày phỏng vấn'),
+            _buildLabel(loc.interviewDateLabel.replaceAll(' *', '')),
             InkWell(
               onTap: _pickDate,
               child: _buildInfoBox(
@@ -140,7 +144,7 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
             const SizedBox(height: 16),
 
             // Giờ
-            _buildLabel('Giờ phỏng vấn'),
+            _buildLabel(loc.interviewTimeLabel.replaceAll(' *', '')),
             InkWell(
               onTap: _pickTime,
               child: _buildInfoBox(
@@ -152,7 +156,7 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
             const SizedBox(height: 16),
 
             // Loại
-            _buildLabel('Hình thức'),
+            _buildLabel(loc.interviewTypeLabel),
             DropdownButtonFormField<String>(
               value: _type,
               items: const [
@@ -165,18 +169,18 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
 
             const SizedBox(height: 16),
 
-            _buildLabel('Địa điểm'),
-            _buildTextField(_locationCtrl, 'Nhập địa điểm'),
+            _buildLabel(isVi ? 'Địa điểm' : 'Location'),
+            _buildTextField(_locationCtrl, loc.locationHint),
 
             const SizedBox(height: 16),
 
-            _buildLabel('Người liên hệ'),
-            _buildTextField(_contactCtrl, 'Tên người liên hệ'),
+            _buildLabel(isVi ? 'Người liên hệ' : 'Contact Person'),
+            _buildTextField(_contactCtrl, loc.contactPersonHint),
 
             const SizedBox(height: 16),
 
-            _buildLabel('Ghi chú'),
-            _buildTextField(_noteCtrl, 'Ghi chú thêm', maxLines: 3),
+            _buildLabel(isVi ? 'Ghi chú' : 'Notes'),
+            _buildTextField(_noteCtrl, loc.notesHint, maxLines: 3),
 
             const SizedBox(height: 32),
 
@@ -192,9 +196,9 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'Cập nhật lịch',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                child: Text(
+                  isVi ? 'Cập nhật lịch' : 'Update Schedule',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ),
             ),

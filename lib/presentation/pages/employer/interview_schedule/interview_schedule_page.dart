@@ -7,6 +7,7 @@ import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_d
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:jobgo/presentation/widgets/employer/interview_schedule/interview_card.dart';
 import 'package:provider/provider.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class InterviewSchedulePage extends StatefulWidget {
   const InterviewSchedulePage({super.key});
@@ -29,11 +30,14 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
 
       appBar: AppBar(
-        title: const Text("Lịch hẹn phỏng vấn"),
+        title: Text(loc.interviewScheduleTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -72,9 +76,9 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
                   const Icon(Icons.event_busy,
                       size: 60, color: AppColors.textHint),
                   const SizedBox(height: 12),
-                  const Text(
-                    "Chưa có lịch hẹn",
-                    style: TextStyle(
+                  Text(
+                    loc.noInterviewsMessage,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
@@ -93,7 +97,7 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
                           .read<InterviewProvider>()
                           .loadSchedules();
                     },
-                    child: const Text("Tạo lịch ngay"),
+                    child: Text(isVi ? "Tạo lịch ngay" : "Create now"),
                   )
                 ],
               ),
@@ -121,12 +125,12 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
                     showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                        title: const Text("Xóa lịch hẹn"),
-                        content: const Text("Bạn có chắc muốn xóa lịch này không?"),
+                        title: Text(loc.deleteInterviewTitle),
+                        content: Text(loc.deleteInterviewConfirm),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text("Hủy"),
+                            child: Text(loc.cancel),
                           ),
                           TextButton(
                             onPressed: () async {
@@ -139,13 +143,15 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
                               // reload
                               context.read<InterviewProvider>().loadSchedules();
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Đã xóa lịch hẹn")),
-                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(loc.deleteSuccessMsg)),
+                                );
+                              }
                             },
-                            child: const Text(
-                              "Xóa",
-                              style: TextStyle(color: Colors.red),
+                            child: Text(
+                              loc.delete,
+                              style: const TextStyle(color: Colors.red),
                             ),
                           ),
                         ],

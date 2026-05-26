@@ -20,6 +20,11 @@ class JobModel {
   final int? applicants;
   final int? positions;
   final String status;
+  final int? employerUserId;
+  final String? employerCompanyEmail;
+  final String? employerCompanyPhone;
+  final String? employerWebsite;
+  final String? employerIndustry;
 
   const JobModel({
     required this.id,
@@ -43,6 +48,11 @@ class JobModel {
     this.applicants,
     this.positions,
     this.status = 'open',
+    this.employerUserId,
+    this.employerCompanyEmail,
+    this.employerCompanyPhone,
+    this.employerWebsite,
+    this.employerIndustry,
   });
 
   JobModel copyWith({
@@ -67,6 +77,11 @@ class JobModel {
     int? applicants,
     int? positions,
     String? status,
+    int? employerUserId,
+    String? employerCompanyEmail,
+    String? employerCompanyPhone,
+    String? employerWebsite,
+    String? employerIndustry,
   }) {
     return JobModel(
       id: id ?? this.id,
@@ -90,6 +105,11 @@ class JobModel {
       applicants: applicants ?? this.applicants,
       positions: positions ?? this.positions,
       status: status ?? this.status,
+      employerUserId: employerUserId ?? this.employerUserId,
+      employerCompanyEmail: employerCompanyEmail ?? this.employerCompanyEmail,
+      employerCompanyPhone: employerCompanyPhone ?? this.employerCompanyPhone,
+      employerWebsite: employerWebsite ?? this.employerWebsite,
+      employerIndustry: employerIndustry ?? this.employerIndustry,
     );
   }
 
@@ -164,6 +184,31 @@ class JobModel {
       ),
       positions: _toIntValue(json['j_positions'] ?? json['positions']),
       status: _stringValue(json['j_status'] ?? json['status'] ?? 'open'),
+      employerUserId: _toIntValue(
+        json['employer_user_id'] ??
+            json['u_id'] ??
+            json['employers']?['u_id'],
+      ),
+      employerCompanyEmail: _nullableStringValue(
+        json['employer_company_email'] ??
+            json['employers']?['e_email'] ??
+            json['employers']?['email'],
+      ),
+      employerCompanyPhone: _nullableStringValue(
+        json['employer_company_phone'] ??
+            json['employers']?['e_phone'] ??
+            json['employers']?['phone'],
+      ),
+      employerWebsite: _nullableStringValue(
+        json['employer_website'] ??
+            json['employers']?['e_website'] ??
+            json['employers']?['website'],
+      ),
+      employerIndustry: _nullableStringValue(
+        json['employer_industry'] ??
+            json['employers']?['e_industry'] ??
+            json['employers']?['industry'],
+      ),
     );
   }
 
@@ -190,6 +235,11 @@ class JobModel {
       'j_application_count': applicants,
       'j_positions': positions,
       'j_status': status,
+      'employer_user_id': employerUserId,
+      'employer_company_email': employerCompanyEmail,
+      'employer_company_phone': employerCompanyPhone,
+      'employer_website': employerWebsite,
+      'employer_industry': employerIndustry,
     };
   }
 

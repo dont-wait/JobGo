@@ -12,10 +12,10 @@ class CandidateInterviewDetailPage extends StatelessWidget {
 
   Color get _statusColor {
     switch (schedule.status) {
-      case 'accepted': return Colors.green;
-      case 'rejected': return Colors.red;
-      case 'reschedule': return Colors.orange;
-      default: return Colors.grey;
+      case 'accepted': return AppColors.success;
+      case 'rejected': return AppColors.error;
+      case 'reschedule': return AppColors.warning;
+      default: return AppColors.textHint;
     }
   }
 
@@ -42,9 +42,22 @@ class CandidateInterviewDetailPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text('Chi tiết lịch hẹn'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0.5,
+        centerTitle: true,
+        title: const Text(
+          'Chi tiết lịch hẹn',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -166,10 +179,17 @@ class CandidateInterviewDetailPage extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => _respond(context, 'rejected'),
-                      icon: const Icon(Icons.close, color: Colors.red),
-                      label: const Text('Từ chối', style: TextStyle(color: Colors.red)),
+                      icon: const Icon(Icons.close, color: AppColors.error, size: 16),
+                      label: const Text(
+                        'Từ chối',
+                        style: TextStyle(color: AppColors.error, fontSize: 13),
+                      ),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.red),
+                        side: const BorderSide(color: AppColors.error),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
@@ -177,10 +197,17 @@ class CandidateInterviewDetailPage extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => _respond(context, 'reschedule'),
-                      icon: const Icon(Icons.schedule, color: Colors.orange),
-                      label: const Text('Đổi lịch', style: TextStyle(color: Colors.orange)),
+                      icon: const Icon(Icons.schedule, color: AppColors.warning, size: 16),
+                      label: const Text(
+                        'Đổi lịch',
+                        style: TextStyle(color: AppColors.warning, fontSize: 13),
+                      ),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.orange),
+                        side: const BorderSide(color: AppColors.warning),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
@@ -188,11 +215,19 @@ class CandidateInterviewDetailPage extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _respond(context, 'accepted'),
-                      icon: const Icon(Icons.check),
-                      label: const Text('Đồng ý'),
+                      icon: const Icon(Icons.check, size: 16),
+                      label: const Text(
+                        'Đồng ý',
+                        style: TextStyle(fontSize: 13),
+                      ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppColors.success,
                         foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
@@ -224,14 +259,19 @@ class CandidateInterviewDetailPage extends StatelessWidget {
                   ? 'Đã xác nhận lịch phỏng vấn!'
                   : 'Đã từ chối lịch phỏng vấn',
             ),
-            backgroundColor: status == 'accepted' ? Colors.green : Colors.red,
+            backgroundColor: status == 'accepted' ? AppColors.success : AppColors.error,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
+          SnackBar(
+            content: Text('Lỗi: $e'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     }
@@ -245,21 +285,43 @@ class CandidateInterviewDetailPage extends StatelessWidget {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Yêu cầu đổi lịch'),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text(
+            'Yêu cầu đổi lịch',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
                 'Chọn ngày và giờ mới bạn muốn phỏng vấn:',
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 16),
               ListTile(
-                leading: const Icon(Icons.calendar_today, color: Colors.blue),
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.calendar_today, color: AppColors.primary, size: 20),
+                ),
                 title: Text(
                   selectedDate == null
                       ? 'Chọn ngày'
                       : '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: selectedDate == null ? AppColors.textHint : AppColors.textPrimary,
+                  ),
                 ),
                 onTap: () async {
                   final picked = await showDatePicker(
@@ -272,11 +334,24 @@ class CandidateInterviewDetailPage extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.access_time, color: Colors.blue),
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.access_time, color: AppColors.primary, size: 20),
+                ),
                 title: Text(
                   selectedTime == null
                       ? 'Chọn giờ'
                       : '${selectedTime!.hour}:${selectedTime!.minute.toString().padLeft(2, '0')}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: selectedTime == null ? AppColors.textHint : AppColors.textPrimary,
+                  ),
                 ),
                 onTap: () async {
                   final picked = await showTimePicker(
@@ -291,7 +366,10 @@ class CandidateInterviewDetailPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Hủy'),
+              child: const Text(
+                'Hủy',
+                style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+              ),
             ),
             ElevatedButton(
               onPressed: selectedDate == null || selectedTime == null
@@ -312,18 +390,29 @@ class CandidateInterviewDetailPage extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Đã gửi yêu cầu đổi lịch!'),
-                              backgroundColor: Colors.orange,
+                              backgroundColor: AppColors.warning,
+                              behavior: SnackBarBehavior.floating,
                             ),
                           );
                         }
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Lỗi: $e')),
+                            SnackBar(
+                              content: Text('Lỗi: $e'),
+                              backgroundColor: AppColors.error,
+                              behavior: SnackBarBehavior.floating,
+                            ),
                           );
                         }
                       }
                     },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
               child: const Text('Gửi yêu cầu'),
             ),
           ],

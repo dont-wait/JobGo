@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/notification_model.dart';
-import 'package:jobgo/data/repositories/notification_repository.dart';
+import 'package:jobgo/presentation/providers/notification_provider.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/presentation/providers/chat_provider.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
-/// Employer Notifications page — thông báo tuyển dụng, ứng viên, phản hồi, hệ thống.
+/// Employer Notifications page — realtime qua NotificationProvider.
 class EmployerNotificationsPage extends StatefulWidget {
   const EmployerNotificationsPage({super.key});
 
@@ -17,14 +20,11 @@ class EmployerNotificationsPage extends StatefulWidget {
 class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final NotificationRepository _notificationRepo = NotificationRepository();
-  late Future<List<NotificationModel>> _notificationsFuture;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _notificationsFuture = _notificationRepo.fetchNotificationsForCurrentUser();
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -35,6 +35,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -43,17 +44,30 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
         scrolledUnderElevation: 0.5,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          loc.notifications,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
         ),
-        actions: const [
-          ProfileAvatar(role: UserRole.employer),
-          SizedBox(width: 4),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
+            tooltip: loc.markAllAsRead,
+            onPressed: () {
+              context.read<NotificationProvider>().markAllAsRead();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(loc.allMarkedAsReadMessage),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+          ),
+          const ProfileAvatar(role: UserRole.employer),
+          const SizedBox(width: 4),
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -65,11 +79,41 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Applicants'),
-            Tab(text: 'Responses'),
-            Tab(text: 'System'),
+          tabs: [
+            Tab(text: loc.allLabel),
+            Tab(text: loc.applicants),
+            Tab(text: loc.responsesTabLabel),
+            Tab(text: loc.systemTabLabel),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(loc.messagesTitle),
+                  Consumer<ChatProvider>(
+                    builder: (context, chatProvider, _) {
+                      final count = chatProvider.totalUnread;
+                      if (count <= 0) return const SizedBox.shrink();
+                      return Container(
+                        margin: const EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -80,35 +124,37 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
           _buildNotificationTab(_NType.applicant),
           _buildNotificationTab(_NType.response),
           _buildNotificationTab(_NType.system),
+          _buildNotificationTab(_NType.message),
         ],
       ),
     );
   }
 
   Widget _buildNotificationTab(_NType type) {
-    return FutureBuilder<List<NotificationModel>>(
-      future: _notificationsFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer<NotificationProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (snapshot.hasError) {
-          return _buildErrorState(snapshot.error.toString());
+        if (provider.error != null && provider.notifications.isEmpty) {
+          return _buildErrorState(provider.error!);
         }
 
-        final models = snapshot.data ?? [];
-        final items = models.map(_toNotificationItem).toList();
+        final items = provider.notifications
+            .map(_toNotificationItem)
+            .toList();
         final filtered = type == _NType.all
             ? items
             : items.where((item) => item.type == type).toList();
 
-        return _buildNotificationList(filtered);
+        return _buildNotificationList(filtered, provider);
       },
     );
   }
 
   Widget _buildErrorState(String message) {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -118,9 +164,9 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             Icon(Icons.error_outline,
                 size: 56, color: AppColors.error.withValues(alpha: 0.7)),
             const SizedBox(height: 12),
-            const Text(
-              'Unable to load notifications',
-              style: TextStyle(
+            Text(
+              loc.unableToLoadNotifications,
+              style: const TextStyle(
                 fontSize: 15,
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -130,16 +176,14 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             const SizedBox(height: 6),
             Text(
               message,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textHint,
-              ),
+              style: const TextStyle(fontSize: 12, color: AppColors.textHint),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _refreshNotifications,
-              child: const Text('Retry'),
+              onPressed: () =>
+                  context.read<NotificationProvider>().loadNotifications(),
+              child: Text(loc.retryButton),
             ),
           ],
         ),
@@ -147,10 +191,14 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     );
   }
 
-  Widget _buildNotificationList(List<_NotificationItem> items) {
+  Widget _buildNotificationList(
+    List<_NotificationItem> items,
+    NotificationProvider provider,
+  ) {
+    final loc = AppLocalizations.of(context);
     if (items.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _refreshNotifications,
+        onRefresh: () => provider.loadNotifications(),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
@@ -164,9 +212,9 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
                         size: 64,
                         color: AppColors.textHint.withValues(alpha: 0.5)),
                     const SizedBox(height: 12),
-                    const Text(
-                      'No notifications yet',
-                      style: TextStyle(
+                    Text(
+                      loc.noNotificationsMessage,
+                      style: const TextStyle(
                         fontSize: 15,
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
@@ -182,18 +230,22 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     }
 
     return RefreshIndicator(
-      onRefresh: _refreshNotifications,
+      onRefresh: () => provider.loadNotifications(),
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: items.length,
         separatorBuilder: (_, __) =>
             const Divider(height: 1, indent: 72, endIndent: 16),
-        itemBuilder: (context, index) => _buildNotificationTile(items[index]),
+        itemBuilder: (context, index) =>
+            _buildNotificationTile(items[index], provider),
       ),
     );
   }
 
-  Widget _buildNotificationTile(_NotificationItem item) {
+  Widget _buildNotificationTile(
+    _NotificationItem item,
+    NotificationProvider provider,
+  ) {
     return Container(
       color: item.isRead ? Colors.white : const Color(0xFFF0F7FF),
       child: ListTile(
@@ -235,22 +287,20 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
                   shape: BoxShape.circle,
                 ),
               ),
-        onTap: () {},
+        onTap: () {
+          if (!item.isRead) {
+            provider.markAsRead(item.id);
+          }
+        },
       ),
     );
-  }
-
-  Future<void> _refreshNotifications() async {
-    setState(() {
-      _notificationsFuture = _notificationRepo.fetchNotificationsForCurrentUser();
-    });
-    await _notificationsFuture;
   }
 
   _NotificationItem _toNotificationItem(NotificationModel model) {
     final type = _mapType(model.type);
     final visual = _resolveVisual(type, model.type);
     return _NotificationItem(
+      id: model.id,
       title: model.content,
       time: _formatTimeAgo(model.createdAt),
       icon: visual.icon,
@@ -274,6 +324,10 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
         normalized.contains('accept') ||
         normalized.contains('decline')) {
       return _NType.response;
+    }
+
+    if (normalized.contains('message') || normalized.contains('chat')) {
+      return _NType.message;
     }
 
     return _NType.system;
@@ -308,6 +362,12 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
           iconBg: Color(0xFFFFF8E1),
           iconColor: AppColors.warning,
         );
+      case _NType.message:
+        return const _NotificationVisual(
+          icon: Icons.chat_bubble_outline,
+          iconBg: Color(0xFFE8F5E9),
+          iconColor: AppColors.success,
+        );
       case _NType.system:
         return const _NotificationVisual(
           icon: Icons.info_outline,
@@ -339,9 +399,9 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
   }
 }
 
-// ── Mock data ──
+// ── Data classes ──
 
-enum _NType { all, applicant, response, system }
+enum _NType { all, applicant, response, system, message }
 
 class _NotificationVisual {
   final IconData icon;
@@ -356,6 +416,7 @@ class _NotificationVisual {
 }
 
 class _NotificationItem {
+  final int id;
   final String title;
   final String time;
   final IconData icon;
@@ -365,6 +426,7 @@ class _NotificationItem {
   final bool isRead;
 
   const _NotificationItem({
+    required this.id,
     required this.title,
     required this.time,
     required this.icon,
@@ -374,4 +436,3 @@ class _NotificationItem {
     this.isRead = false,
   });
 }
-

@@ -146,19 +146,21 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
     }
   }
 
-  void _onFacebookSignIn() async {
-    setState(() => _isLoading = true);
-    try {
-      await _authRepository.signInWithFacebook();
-    } catch (e) {
-      if (!mounted) return;
-      final loc = AppLocalizations.of(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("${loc.error}: $e")));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+  void _onFacebookSignIn() {
+    final loc = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(loc.featureInDevelopmentTitle),
+        content: Text(loc.featureInDevelopment),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(loc.ok),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onContinue() async {
