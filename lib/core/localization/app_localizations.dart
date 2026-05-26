@@ -516,6 +516,31 @@ class AppLocalizations {
   String get emptyTrash => translate('emptyTrash');
   String get rolePrefix => translate('rolePrefix');
 
+  // Employer detail & popup
+  String get employerDetail => translate('employerDetail');
+  String get companySize => translate('companySize');
+  String get industryLabel => translate('industryLabel');
+  String get contactInfo => translate('contactInfo');
+  String get copyAddressSuccess => translate('copyAddressSuccess');
+  String get chatWithEmployer => translate('chatWithEmployer');
+  String get noDescriptionProvided => translate('noDescriptionProvided');
+  String get phoneLabel => translate('phoneLabel');
+  String get emailLabel => translate('emailLabel');
+  String get websiteLabel => translate('websiteLabel');
+  String get addressLabel => translate('addressLabel');
+  String get noPhone => translate('noPhone');
+  String get noEmail => translate('noEmail');
+  String get noWebsite => translate('noWebsite');
+  String get noAddress => translate('noAddress');
+  String get recruiter => translate('recruiter');
+  String get viewDetails => translate('viewDetails');
+  String get messageNow => translate('messageNow');
+  String get employerLabel => translate('employerLabel');
+  String get activeNow => translate('activeNow');
+  String get employerAccountNotFound => translate('employerAccountNotFound');
+  String get emailSubjectQuery => translate('emailSubjectQuery');
+  String get featureInDevelopment => translate('featureInDevelopment');
+  String get featureInDevelopmentTitle => translate('featureInDevelopmentTitle');
   // kinh nghiệm
   String get addExperience => translate('addExperience');
   String get companyName => translate('companyName');
@@ -535,6 +560,17 @@ class AppLocalizations {
   String get add => translate('add');
   String get skillLabel => translate('skillLabel');
   String get skillSearchHint => translate('skillSearchHint');
+
+  // Tab labels for notification pages
+  String get responsesTabLabel => translate('responsesTabLabel');
+  String get systemTabLabel => translate('systemTabLabel');
+  String get reportsTabLabel => translate('reportsTabLabel');
+
+  // Notifications Page strings
+  String get noNotificationsMessage => translate('noNotificationsMessage');
+  String get unableToLoadNotifications => translate('unableToLoadNotifications');
+  String get markAllAsRead => translate('markAllAsRead');
+  String get allMarkedAsReadMessage => translate('allMarkedAsReadMessage');
 }
 
 class _AppLocalizationsDelegate

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/data/models/notification_model.dart';
+import 'package:jobgo/presentation/providers/notification_provider.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/presentation/providers/chat_provider.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 import 'package:jobgo/presentation/pages/candidate/interview_schedule/candidate_interview_page.dart';
 
-
-
-/// Candidate Notifications page — hiển thị danh sách thông báo.
+/// Candidate Notifications page — realtime qua NotificationProvider.
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
@@ -32,6 +35,7 @@ class _NotificationsPageState extends State<NotificationsPage>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -40,9 +44,9 @@ class _NotificationsPageState extends State<NotificationsPage>
         scrolledUnderElevation: 0.5,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          loc.notifications,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -51,12 +55,14 @@ class _NotificationsPageState extends State<NotificationsPage>
         actions: [
           IconButton(
             icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
-            tooltip: 'Mark all as read',
+            tooltip: loc.markAllAsRead,
             onPressed: () {
+              context.read<NotificationProvider>().markAllAsRead();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('All notifications marked as read'),
+                SnackBar(
+                  content: Text(loc.allMarkedAsReadMessage),
                   behavior: SnackBarBehavior.floating,
+                  
                 ),
               );
             },
@@ -73,48 +79,141 @@ class _NotificationsPageState extends State<NotificationsPage>
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Jobs'),
-            Tab(text: 'Interviews'),
-            Tab(text: 'Messages'),
+          tabs: [
+            Tab(text: loc.allLabel),
+            Tab(text: loc.jobs),
+            Tab(text: loc.interviewsTabLabel),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(loc.messagesTitle),
+                  Consumer<ChatProvider>(
+                    builder: (context, chatProvider, _) {
+                      final count = chatProvider.totalUnread;
+                      if (count <= 0) return const SizedBox.shrink();
+                      return Container(
+                        margin: const EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildNotificationList(_allNotifications),
-          _buildNotificationList(
-            _allNotifications.where((n) => n.type == _NType.job).toList(),
-          ),
-          _buildNotificationList(
-            _allNotifications.where((n) => n.type == _NType.interviewSchedule).toList(),
-          ),
-
-          _buildNotificationList(
-            _allNotifications.where((n) => n.type == _NType.message).toList(),
-          ),
+          _buildNotificationTab(_NType.all),
+          _buildNotificationTab(_NType.job),
+          _buildNotificationTab(_NType.interviewSchedule),
+          _buildNotificationTab(_NType.message),
         ],
       ),
     );
   }
 
-  Widget _buildNotificationList(List<_NotificationItem> items) {
-    if (items.isEmpty) {
-      return Center(
+  Widget _buildNotificationTab(_NType filterType) {
+    return Consumer<NotificationProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (provider.error != null && provider.notifications.isEmpty) {
+          return _buildErrorState(provider.error!);
+        }
+
+        final items = provider.notifications
+            .map(_toNotificationItem)
+            .toList();
+        final filtered = filterType == _NType.all
+            ? items
+            : items.where((item) => item.type == filterType).toList();
+
+        return _buildNotificationList(filtered, provider);
+      },
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    final loc = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.notifications_off_outlined,
-                size: 64, color: AppColors.textHint.withValues(alpha: 0.5)),
+            Icon(Icons.error_outline,
+                size: 56, color: AppColors.error.withValues(alpha: 0.7)),
             const SizedBox(height: 12),
-            const Text(
-              'No notifications yet',
-              style: TextStyle(
+            Text(
+              loc.unableToLoadNotifications,
+              style: const TextStyle(
                 fontSize: 15,
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () =>
+                  context.read<NotificationProvider>().loadNotifications(),
+              child: Text(loc.retryButton),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationList(
+    List<_NotificationItem> items,
+    NotificationProvider provider,
+  ) {
+    final loc = AppLocalizations.of(context);
+    if (items.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: () => provider.loadNotifications(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.notifications_off_outlined,
+                        size: 64,
+                        color: AppColors.textHint.withValues(alpha: 0.5)),
+                    const SizedBox(height: 12),
+                    Text(
+                      loc.noNotificationsMessage,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -122,19 +221,23 @@ class _NotificationsPageState extends State<NotificationsPage>
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: items.length,
-      separatorBuilder: (_, __) =>
-          const Divider(height: 1, indent: 72, endIndent: 16),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildNotificationTile(item);
-      },
+    return RefreshIndicator(
+      onRefresh: () => provider.loadNotifications(),
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: items.length,
+        separatorBuilder: (_, __) =>
+            const Divider(height: 1, indent: 72, endIndent: 16),
+        itemBuilder: (context, index) =>
+            _buildNotificationTile(items[index], provider),
+      ),
     );
   }
 
-  Widget _buildNotificationTile(_NotificationItem item) {
+  Widget _buildNotificationTile(
+    _NotificationItem item,
+    NotificationProvider provider,
+  ) {
     return Container(
       color: item.isRead ? Colors.white : const Color(0xFFF0F7FF),
       child: ListTile(
@@ -163,10 +266,7 @@ class _NotificationsPageState extends State<NotificationsPage>
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             item.time,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textHint,
-            ),
+            style: const TextStyle(fontSize: 12, color: AppColors.textHint),
           ),
         ),
         trailing: item.isRead
@@ -179,8 +279,12 @@ class _NotificationsPageState extends State<NotificationsPage>
                   shape: BoxShape.circle,
                 ),
               ),
-        // Sửa onTap trong _buildNotificationTile
         onTap: () {
+          // Mark as read
+          if (!item.isRead) {
+            provider.markAsRead(item.id);
+          }
+          // Navigate for interview notifications
           if (item.type == _NType.interviewSchedule) {
             Navigator.push(
               context,
@@ -193,13 +297,104 @@ class _NotificationsPageState extends State<NotificationsPage>
       ),
     );
   }
+
+  // ── Mapping helpers ──
+
+  _NotificationItem _toNotificationItem(NotificationModel model) {
+    final type = _mapType(model.type);
+    final visual = _resolveVisual(type, model.type);
+    return _NotificationItem(
+      id: model.id,
+      title: model.content,
+      time: _formatTimeAgo(model.createdAt),
+      icon: visual.icon,
+      iconBg: visual.iconBg,
+      iconColor: visual.iconColor,
+      type: type,
+      isRead: model.isRead,
+    );
+  }
+
+  _NType _mapType(String rawType) {
+    final normalized = rawType.toLowerCase();
+    if (normalized.contains('job') ||
+        normalized.contains('application') ||
+        normalized.contains('shortlist')) {
+      return _NType.job;
+    }
+    if (normalized.contains('interview') || normalized.contains('schedule')) {
+      return _NType.interviewSchedule;
+    }
+    if (normalized.contains('message') || normalized.contains('chat')) {
+      return _NType.message;
+    }
+    return _NType.system;
+  }
+
+  _NotificationVisual _resolveVisual(_NType type, String rawType) {
+    switch (type) {
+      case _NType.job:
+        return const _NotificationVisual(
+          icon: Icons.work_outline_rounded,
+          iconBg: Color(0xFFE3F2FD),
+          iconColor: AppColors.primary,
+        );
+      case _NType.interviewSchedule:
+        return const _NotificationVisual(
+          icon: Icons.calendar_today_outlined,
+          iconBg: Color(0xFFF3E5F5),
+          iconColor: Color(0xFF8B5CF6),
+        );
+      case _NType.message:
+        return const _NotificationVisual(
+          icon: Icons.chat_bubble_outline,
+          iconBg: Color(0xFFE8F5E9),
+          iconColor: AppColors.success,
+        );
+      case _NType.all:
+        return const _NotificationVisual(
+          icon: Icons.notifications_outlined,
+          iconBg: Color(0xFFE3F2FD),
+          iconColor: AppColors.primary,
+        );
+      case _NType.system:
+        return const _NotificationVisual(
+          icon: Icons.info_outline,
+          iconBg: Color(0xFFFFF8E1),
+          iconColor: AppColors.warning,
+        );
+    }
+  }
+
+  String _formatTimeAgo(DateTime? createdAt) {
+    if (createdAt == null) return 'Just now';
+    final diff = DateTime.now().difference(createdAt);
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
+    if (diff.inHours < 24) return '${diff.inHours} hours ago';
+    if (diff.inDays < 7) return '${diff.inDays} days ago';
+    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()} weeks ago';
+    return '${(diff.inDays / 30).floor()} months ago';
+  }
 }
 
-// ── Mock data ──
+// ── Data classes ──
 
-enum _NType { job, message, system, interviewSchedule  }
+enum _NType { all, job, message, interviewSchedule, system }
+
+class _NotificationVisual {
+  final IconData icon;
+  final Color iconBg;
+  final Color iconColor;
+  const _NotificationVisual({
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+  });
+}
 
 class _NotificationItem {
+  final int id;
   final String title;
   final String time;
   final IconData icon;
@@ -209,6 +404,7 @@ class _NotificationItem {
   final bool isRead;
 
   const _NotificationItem({
+    required this.id,
     required this.title,
     required this.time,
     required this.icon,
@@ -218,66 +414,3 @@ class _NotificationItem {
     this.isRead = false,
   });
 }
-
-final List<_NotificationItem> _allNotifications = [
-  const _NotificationItem(
-    title: 'Your application for Senior UI Designer was viewed',
-    time: '2 hours ago',
-    icon: Icons.visibility_outlined,
-    iconBg: Color(0xFFE3F2FD),
-    iconColor: AppColors.primary,
-    type: _NType.job,
-  ),
-  const _NotificationItem(
-    title: 'New message from Anh Khoa at VietFin Bank',
-    time: '3 hours ago',
-    icon: Icons.chat_bubble_outline,
-    iconBg: Color(0xFFE8F5E9),
-    iconColor: AppColors.success,
-    type: _NType.message,
-  ),
-  const _NotificationItem(
-    title: 'Interview scheduled for Product Manager position',
-    time: '5 hours ago',
-    icon: Icons.calendar_today_outlined,
-    iconBg: Color(0xFFF3E5F5),
-    iconColor: Color(0xFF8B5CF6),
-    type: _NType.interviewSchedule,
-  ),
-  const _NotificationItem(
-    title: 'Congratulations! You were shortlisted for Flutter Developer',
-    time: '1 day ago',
-    icon: Icons.star_outline_rounded,
-    iconBg: Color(0xFFFFF8E1),
-    iconColor: AppColors.warning,
-    type: _NType.job,
-    isRead: true,
-  ),
-  const _NotificationItem(
-    title: 'Chi Hanh sent you a file attachment',
-    time: '1 day ago',
-    icon: Icons.attach_file_rounded,
-    iconBg: Color(0xFFE8F5E9),
-    iconColor: AppColors.success,
-    type: _NType.message,
-    isRead: true,
-  ),
-  const _NotificationItem(
-    title: 'Your profile was viewed 12 times this week',
-    time: '2 days ago',
-    icon: Icons.trending_up_rounded,
-    iconBg: Color(0xFFE3F2FD),
-    iconColor: AppColors.primary,
-    type: _NType.system,
-    isRead: true,
-  ),
-  const _NotificationItem(
-    title: 'New job matching your skills: React Native Developer',
-    time: '3 days ago',
-    icon: Icons.work_outline_rounded,
-    iconBg: Color(0xFFFFF3E0),
-    iconColor: AppColors.orange,
-    type: _NType.job,
-    isRead: true,
-  ),
-];
