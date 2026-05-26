@@ -5,8 +5,9 @@ import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/main.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
-import 'package:jobgo/presentation/pages/employer/messages/employer_messages_page.dart';
+import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile_page.dart';
+import 'dart:math';
 
 class ApplicantCard extends StatelessWidget {
   final JobApplicantModel application;
@@ -177,23 +178,28 @@ class ApplicantCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    final rootNavigator = navigatorKey.currentState;
-                    if (rootNavigator == null) return;
+                    final seed = application.candidate.displayName.isEmpty
+                        ? 1
+                        : application.candidate.displayName.codeUnits
+                            .reduce((a, b) => a + b);
+                    final random = Random(seed);
+                    final color = Color.fromARGB(
+                      255,
+                      80 + random.nextInt(140),
+                      80 + random.nextInt(140),
+                      80 + random.nextInt(140),
+                    );
 
-                    rootNavigator.popUntil((route) => route.isFirst);
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      final shellContext = navigatorKey.currentContext;
-                      if (shellContext != null &&
-                          AppShell.goToMessages(shellContext)) {
-                        return;
-                      }
-
-                      rootNavigator.push(
-                        MaterialPageRoute(
-                          builder: (_) => const EmployerMessagesPage(),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChatDetailPage(
+                          otherUserId: application.candidate.uId,
+                          otherUserName: application.candidate.displayName,
+                          avatarColor: color,
                         ),
-                      );
-                    });
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.message, size: 18),
                   label: Text(loc.message),

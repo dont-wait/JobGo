@@ -10,6 +10,8 @@ import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/data/repositories/job_application_repository.dart';
 import 'package:jobgo/data/services/gemini_cv_analysis_service.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/interview_schedule_page.dart';
+import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
+import 'dart:math';
 
 class CandidateProfilePage extends StatefulWidget {
   final CandidateSupabaseModel candidate;
@@ -203,6 +205,35 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.chat_bubble_outline_rounded,
+              color: AppColors.textSecondary,
+            ),
+            onPressed: () {
+              final seed = _candidate.displayName.isEmpty
+                  ? 1
+                  : _candidate.displayName.codeUnits.reduce((a, b) => a + b);
+              final random = Random(seed);
+              final color = Color.fromARGB(
+                255,
+                80 + random.nextInt(140),
+                80 + random.nextInt(140),
+                80 + random.nextInt(140),
+              );
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChatDetailPage(
+                    otherUserId: _candidate.uId,
+                    otherUserName: _candidate.displayName,
+                    avatarColor: color,
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(
               Icons.share_outlined,

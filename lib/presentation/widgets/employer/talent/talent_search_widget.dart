@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
-import 'package:jobgo/presentation/pages/main/app_shell.dart';
+import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
+import 'dart:math';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
 
@@ -315,7 +316,27 @@ class TalentSearchWidget extends StatelessWidget {
           candidate: candidate,
           onViewProfile: () => onCandidateTap(candidate),
           onMessage: () {
-            AppShell.goToMessages(context);
+            final seed = candidate.displayName.isEmpty
+                ? 1
+                : candidate.displayName.codeUnits.reduce((a, b) => a + b);
+            final random = Random(seed);
+            final color = Color.fromARGB(
+              255,
+              80 + random.nextInt(140),
+              80 + random.nextInt(140),
+              80 + random.nextInt(140),
+            );
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatDetailPage(
+                  otherUserId: candidate.uId,
+                  otherUserName: candidate.displayName,
+                  avatarColor: color,
+                ),
+              ),
+            );
           },
         );
       },
