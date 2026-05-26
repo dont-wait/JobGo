@@ -466,6 +466,21 @@ class JobSearchProvider extends ChangeNotifier {
       tags: tags.isEmpty ? null : tags,
       applicants: applicants > 0 ? applicants : null,
       status: _stringValue(json['j_status'] ?? json['status'] ?? 'open'),
+      employerUserId: _intValue(json['employer_user_id'] ?? json['u_id'] ?? employerMap['u_id']) > 0
+          ? _intValue(json['employer_user_id'] ?? json['u_id'] ?? employerMap['u_id'])
+          : null,
+      employerCompanyEmail: _stringValue(json['employer_company_email'] ?? employerMap['e_email']).isEmpty
+          ? null
+          : _stringValue(json['employer_company_email'] ?? employerMap['e_email']),
+      employerCompanyPhone: _stringValue(json['employer_company_phone'] ?? employerMap['e_phone']).isEmpty
+          ? null
+          : _stringValue(json['employer_company_phone'] ?? employerMap['e_phone']),
+      employerWebsite: _stringValue(json['employer_website'] ?? employerMap['e_website']).isEmpty
+          ? null
+          : _stringValue(json['employer_website'] ?? employerMap['e_website']),
+      employerIndustry: _stringValue(json['employer_industry'] ?? employerMap['e_industry']).isEmpty
+          ? null
+          : _stringValue(json['employer_industry'] ?? employerMap['e_industry']),
     );
   }
 

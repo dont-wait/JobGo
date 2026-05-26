@@ -188,7 +188,7 @@ class _JobApplicantsPageState extends State<JobApplicantsPage> {
     if (_analyzingApplicationIds.contains(appId)) return;
     final loc = AppLocalizations.of(context);
     final cvUrl = application.cvUrl.trim();
-    if (!GeminiCvAnalysisService.isPdfUrl(cvUrl)) {
+    if (!GeminiCvAnalysisService.isSupportedCvUrl(cvUrl)) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(loc.aiAnalysisSupportsPdfOnly)));

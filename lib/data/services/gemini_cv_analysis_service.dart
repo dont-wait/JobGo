@@ -9,11 +9,13 @@ class GeminiCvAnalysisService {
   static const String _defaultModel = 'gemini-2.5-flash';
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  static bool isPdfUrl(String url) {
+  static bool isSupportedCvUrl(String url) {
     final lower = url.toLowerCase().trim();
     if (lower.isEmpty) return false;
     final normalized = lower.split('?').first.split('#').first;
-    return normalized.endsWith('.pdf');
+    return normalized.endsWith('.pdf') ||
+        normalized.endsWith('.docx') ||
+        normalized.endsWith('.txt');
   }
 
   Future<AiCvAnalysisModel> analyzeCv({
@@ -28,8 +30,8 @@ class GeminiCvAnalysisService {
   }) async {
     final normalizedLanguageCode = _normalizeLanguageCode(languageCode);
 
-    if (!isPdfUrl(cvUrl)) {
-      throw UnsupportedError('AI analysis supports PDF only for now.');
+    if (!isSupportedCvUrl(cvUrl)) {
+      throw UnsupportedError('AI analysis supports PDF, DOCX, TXT only.');
     }
 
     final response = await _supabase.functions.invoke(

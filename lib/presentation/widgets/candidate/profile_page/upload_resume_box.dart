@@ -114,7 +114,7 @@ class _UploadResumeBoxState extends State<UploadResumeBox> {
           ),
           const SizedBox(height: 4),
           const Text(
-            'PDF, DOCX up to 10MB',
+            'PDF, DOCX, TXT up to 10MB',
             style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
           const SizedBox(height: 12),
@@ -141,7 +141,7 @@ class _UploadResumeBoxState extends State<UploadResumeBox> {
       // Chọn file
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'docx'],
+        allowedExtensions: ['pdf', 'docx', 'txt'],
       );
 
       if (result == null) return;
