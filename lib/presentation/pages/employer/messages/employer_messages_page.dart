@@ -8,6 +8,7 @@ import 'package:jobgo/data/models/conversation_model.dart';
 import 'package:jobgo/presentation/providers/chat_provider.dart';
 import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 /// Trang nhắn tin của Employer — realtime qua ChatProvider.
 class EmployerMessagesPage extends StatefulWidget {
@@ -22,6 +23,7 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       body: Stack(
@@ -52,7 +54,7 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
                       if (conversations.isNotEmpty) ...[
                         SliverToBoxAdapter(
                           child: _buildSectionHeader(
-                              'All Messages', conversations.length),
+                              loc.allMessagesSection, conversations.length),
                         ),
                         SliverList(
                           delegate: SliverChildBuilderDelegate(
@@ -92,26 +94,27 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
   // ── Header ──
 
   Widget _buildHeader() {
+    final loc = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Messages',
-                  style: TextStyle(
+                  loc.messagesPageTitle,
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Chat with candidates & partners',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  loc.chatWithCandidatesPartners,
+                  style: const TextStyle(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -130,6 +133,7 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
   // ── Search ──
 
   Widget _buildSearch() {
+    final loc = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 6, 20, 12),
       child: Container(
@@ -153,10 +157,10 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
             Expanded(
               child: TextField(
                 onChanged: (value) => setState(() => _searchQuery = value),
-                decoration: const InputDecoration(
-                  hintText: 'Search messages, users...',
+                decoration: InputDecoration(
+                  hintText: loc.messageSearchPlaceholder,
                   border: InputBorder.none,
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: const TextStyle(color: AppColors.textHint),
                 ),
               ),
             ),
@@ -205,6 +209,7 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
   // ── Empty state ──
 
   Widget _buildEmpty() {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -212,9 +217,9 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
           Icon(Icons.chat_bubble_outline,
               size: 64, color: AppColors.textHint.withValues(alpha: 0.4)),
           const SizedBox(height: 12),
-          const Text(
-            'No messages yet',
-            style: TextStyle(
+          Text(
+            loc.noMessagesDescription,
+            style: const TextStyle(
               fontSize: 15,
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w500,
@@ -226,6 +231,7 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
   }
 
   Widget _buildError(String message) {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -235,9 +241,9 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
             Icon(Icons.error_outline,
                 size: 64, color: AppColors.error.withValues(alpha: 0.7)),
             const SizedBox(height: 12),
-            const Text(
-              'Unable to load messages',
-              style: TextStyle(
+            Text(
+              loc.unableToLoadMessages,
+              style: const TextStyle(
                 fontSize: 15,
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -254,7 +260,7 @@ class _EmployerMessagesPageState extends State<EmployerMessagesPage> {
             ElevatedButton(
               onPressed: () =>
                   context.read<ChatProvider>().loadConversations(),
-              child: const Text('Retry'),
+              child: Text(loc.retryButton),
             ),
           ],
         ),
@@ -310,6 +316,7 @@ class _ConversationTile extends StatelessWidget {
     final name = conversation.displayName;
     final lastMsg = conversation.lastMessage;
     final color = _colorFromName(name);
+    final loc = AppLocalizations.of(context);
 
     return GestureDetector(
       onTap: () {
@@ -363,7 +370,7 @@ class _ConversationTile extends StatelessWidget {
                         ),
                         if (lastMsg != null)
                           Text(
-                            _formatTime(lastMsg.sentAt),
+                            _formatTime(context, lastMsg.sentAt),
                             style: const TextStyle(
                               fontSize: 12,
                               color: AppColors.textHint,
@@ -377,7 +384,7 @@ class _ConversationTile extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            lastMsg?.content ?? 'Chưa có tin nhắn',
+                            lastMsg?.content ?? loc.noMessagesDescription,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -420,19 +427,24 @@ class _ConversationTile extends StatelessWidget {
     );
   }
 
-  String _formatTime(DateTime dateTime) {
+  String _formatTime(BuildContext context, DateTime dateTime) {
     final now = DateTime.now();
     final diff = now.difference(dateTime);
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+
     if (diff.inMinutes < 60) {
       return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     }
     if (diff.inDays == 0) {
       return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     }
-    if (diff.inDays == 1) return 'Yesterday';
+    if (diff.inDays == 1) {
+      return isVi ? 'Hôm qua' : 'Yesterday';
+    }
     if (diff.inDays < 7) {
-      const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      return labels[dateTime.weekday - 1];
+      final labelsVi = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+      final labelsEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      return isVi ? labelsVi[dateTime.weekday - 1] : labelsEn[dateTime.weekday - 1];
     }
     return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}';
   }

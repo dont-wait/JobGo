@@ -5,6 +5,7 @@ import 'package:jobgo/data/models/interview_schedule_model.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/edit_interview_page.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class InterviewDetailPage extends StatefulWidget {
   final InterviewScheduleModel schedule;
@@ -43,12 +44,12 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
     }
   }
 
-  String get _statusText {
+  String _getStatusText(AppLocalizations loc) {
     switch (_schedule.status) {
-      case 'accepted': return 'Ứng viên đã xác nhận';
-      case 'rejected': return 'Ứng viên đã từ chối';
-      case 'reschedule': return 'Ứng viên yêu cầu đổi lịch';
-      default: return 'Chờ phản hồi từ ứng viên';
+      case 'accepted': return loc.candidateConfirmed;
+      case 'rejected': return loc.candidateRejected;
+      case 'reschedule': return loc.candidateReschedule;
+      default: return loc.candidatePending;
     }
   }
 
@@ -63,10 +64,13 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text('Chi tiết lịch hẹn'),
+        title: Text(loc.interviewDetailTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
@@ -105,12 +109,14 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                 children: [
                   Icon(_statusIcon, color: _statusColor, size: 28),
                   const SizedBox(width: 12),
-                  Text(
-                    _statusText,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: _statusColor,
+                  Expanded(
+                    child: Text(
+                      _getStatusText(loc),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: _statusColor,
+                      ),
                     ),
                   ),
                 ],
@@ -131,17 +137,17 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Thông tin ứng viên'),
+                  _buildSectionTitle(isVi ? 'Thông tin ứng viên' : 'Candidate Information'),
                   _buildRow(
                     icon: Icons.person_outline,
                     iconColor: AppColors.primary,
-                    label: 'Ứng viên',
+                    label: isVi ? 'Ứng viên' : 'Candidate',
                     value: _schedule.candidateName,
                   ),
                   _buildRow(
                     icon: Icons.work_outline,
                     iconColor: AppColors.primary,
-                    label: 'Vị trí',
+                    label: loc.position,
                     value: _schedule.jobTitle,
                   ),
                 ],
@@ -162,37 +168,37 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle('Thông tin lịch hẹn'),
+                  _buildSectionTitle(isVi ? 'Thông tin lịch hẹn' : 'Appointment Information'),
                   _buildRow(
                     icon: Icons.calendar_today_rounded,
                     iconColor: AppColors.primary,
-                    label: 'Ngày giờ',
+                    label: isVi ? 'Ngày giờ' : 'Date & Time',
                     value: '${_schedule.date.day}/${_schedule.date.month}/${_schedule.date.year} • '
                         '${_schedule.date.hour}:${_schedule.date.minute.toString().padLeft(2, '0')}',
                   ),
                   _buildRow(
                     icon: Icons.videocam_outlined,
                     iconColor: Colors.blueAccent,
-                    label: 'Hình thức',
+                    label: loc.interviewTypeLabel,
                     value: _schedule.type,
                   ),
                   _buildRow(
                     icon: Icons.location_on_rounded,
                     iconColor: Colors.redAccent,
-                    label: 'Địa điểm',
-                    value: _schedule.location.isNotEmpty ? _schedule.location : 'Chưa có',
+                    label: isVi ? 'Địa điểm' : 'Location',
+                    value: _schedule.location.isNotEmpty ? _schedule.location : (isVi ? 'Chưa có' : 'Not set'),
                   ),
                   _buildRow(
                     icon: Icons.person_outline,
                     iconColor: Colors.blueAccent,
-                    label: 'Người liên hệ',
+                    label: isVi ? 'Người liên hệ' : 'Contact Person',
                     value: _schedule.contactPerson.isNotEmpty ? _schedule.contactPerson : 'N/A',
                   ),
                   if (_schedule.note.isNotEmpty)
                     _buildRow(
                       icon: Icons.note_alt_outlined,
                       iconColor: Colors.orange,
-                      label: 'Ghi chú',
+                      label: isVi ? 'Ghi chú' : 'Notes',
                       value: _schedule.note,
                     ),
                 ],
@@ -213,13 +219,13 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.schedule, color: Colors.orange),
-                        SizedBox(width: 8),
+                        const Icon(Icons.schedule, color: Colors.orange),
+                        const SizedBox(width: 8),
                         Text(
-                          'Ứng viên yêu cầu đổi lịch',
-                          style: TextStyle(
+                          loc.candidateReschedule,
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: Colors.orange,
@@ -229,7 +235,7 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Ngày/giờ đề xuất: '
+                      '${loc.rescheduleProposal}'
                       '${_schedule.requestedDate!.day}/${_schedule.requestedDate!.month}/${_schedule.requestedDate!.year} • '
                       '${_schedule.requestedDate!.hour}:${_schedule.requestedDate!.minute.toString().padLeft(2, '0')}',
                       style: const TextStyle(
@@ -245,7 +251,7 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                           child: OutlinedButton.icon(
                             onPressed: () => _rejectReschedule(context),
                             icon: const Icon(Icons.close, color: Colors.red),
-                            label: const Text('Từ chối', style: TextStyle(color: Colors.red)),
+                            label: Text(isVi ? 'Từ chối' : 'Reject', style: const TextStyle(color: Colors.red)),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.red),
                             ),
@@ -256,7 +262,7 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                           child: ElevatedButton.icon(
                             onPressed: () => _confirmReschedule(context),
                             icon: const Icon(Icons.check),
-                            label: const Text('Xác nhận'),
+                            label: Text(isVi ? 'Xác nhận' : 'Confirm'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
@@ -317,13 +323,14 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
   }
 
   Future<void> _confirmReschedule(BuildContext context) async {
+    final loc = AppLocalizations.of(context);
     try {
       await context.read<InterviewProvider>().confirmReschedule(_schedule.id);
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã xác nhận đổi lịch!'),
+          SnackBar(
+            content: Text(loc.rescheduleConfirmSuccess),
             backgroundColor: Colors.green,
           ),
         );
@@ -331,20 +338,21 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
+          SnackBar(content: Text('${loc.errorMessage}$e')),
         );
       }
     }
   }
 
   Future<void> _rejectReschedule(BuildContext context) async {
+    final loc = AppLocalizations.of(context);
     try {
       await context.read<InterviewProvider>().rejectReschedule(_schedule.id);
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã từ chối yêu cầu đổi lịch'),
+          SnackBar(
+            content: Text(loc.rescheduleRejectSuccess),
             backgroundColor: Colors.red,
           ),
         );
@@ -352,7 +360,7 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
+          SnackBar(content: Text('${loc.errorMessage}$e')),
         );
       }
     }

@@ -5,6 +5,7 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/utils/app_logger.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/employer_provider.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class EmployerEditProfilePage extends StatefulWidget {
   const EmployerEditProfilePage({super.key});
@@ -57,6 +58,8 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
 
   Future<void> _pickAndUploadLogo() async {
     try {
+      if (!mounted) return;
+      final loc = AppLocalizations.of(context);
       final ImageSource? source = await showModalBottomSheet<ImageSource>(
         context: context,
         backgroundColor: Colors.white,
@@ -68,9 +71,9 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Chọn ảnh đại diện',
-                style: TextStyle(
+              Text(
+                loc.chooseProfileImage,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -87,7 +90,7 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                   child: const Icon(Icons.camera_alt_rounded,
                       color: AppColors.primary),
                 ),
-                title: const Text('Chụp ảnh mới'),
+                title: Text(loc.takeNewPhoto),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
               ),
               ListTile(
@@ -100,7 +103,7 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                   child: const Icon(Icons.photo_library_rounded,
                       color: AppColors.primary),
                 ),
-                title: const Text('Chọn từ thư viện'),
+                title: Text(loc.chooseFromLibrary),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
               ),
               const SizedBox(height: 10),
@@ -125,17 +128,15 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
 
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Logo uploaded successfully!'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).logoUploadSuccess),
               backgroundColor: AppColors.success,
             ),
           );
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Failed to upload logo. Please check Supabase Storage permissions.',
-              ),
+            SnackBar(
+              content: Text(AppLocalizations.of(context).logoUploadFailed),
               backgroundColor: AppColors.error,
             ),
           );
@@ -167,11 +168,12 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
       final success = await provider.updateProfile(updatedEmployer);
 
       if (mounted) {
+        final loc = AppLocalizations.of(context);
         if (success) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Company profile updated successfully!'),
+              content: Text(loc.profileUpdateSuccess),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -181,8 +183,8 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to update profile. Please try again.'),
+            SnackBar(
+              content: Text(loc.profileUpdateFailed),
             ),
           );
         }
@@ -192,6 +194,7 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Consumer<EmployerProvider>(
       builder: (context, provider, child) {
         return Scaffold(
@@ -205,9 +208,9 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
               onPressed: () => Navigator.pop(context),
             ),
             centerTitle: true,
-            title: const Text(
-              'Edit Profile',
-              style: TextStyle(
+            title: Text(
+              loc.editProfile,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -225,45 +228,45 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                       _buildAvatar(provider),
                       const SizedBox(height: 28),
                       _buildField(
-                        label: 'Company Name',
+                        label: loc.companyName,
                         controller: _companyCtrl,
                         icon: Icons.business_outlined,
                       ),
                       _buildField(
-                        label: 'Company Address',
+                        label: loc.addressLabel,
                         controller: _addressCtrl,
                         icon: Icons.location_on_outlined,
                       ),
                       _buildField(
-                        label: 'Industry',
+                        label: loc.industryLabel,
                         controller: _industryCtrl,
                         icon: Icons.category_outlined,
                       ),
                       _buildField(
-                        label: 'Company Size',
+                        label: loc.companySize,
                         controller: _companySizeCtrl,
                         icon: Icons.people_outline_rounded,
                       ),
                       _buildField(
-                        label: 'Phone',
+                        label: loc.phoneLabel,
                         controller: _phoneCtrl,
                         icon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
                       ),
                       _buildField(
-                        label: 'Email',
+                        label: loc.emailLabel,
                         controller: _emailCtrl,
                         icon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       _buildField(
-                        label: 'Website',
+                        label: loc.websiteLabel,
                         controller: _websiteCtrl,
                         icon: Icons.language_outlined,
                         keyboardType: TextInputType.url,
                       ),
                       _buildField(
-                        label: 'Description',
+                        label: loc.description,
                         controller: _descriptionCtrl,
                         icon: Icons.info_outline_rounded,
                         maxLines: 4,
@@ -291,9 +294,9 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Text(
-                                  'Save Changes',
-                                  style: TextStyle(
+                              : Text(
+                                  loc.saveChanges,
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -437,7 +440,7 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
               ),
             ),
             validator: (v) =>
-                v == null || v.trim().isEmpty ? '$label is required' : null,
+                v == null || v.trim().isEmpty ? '$label ${AppLocalizations.of(context).isFieldsRequired}' : null,
           ),
         ],
       ),

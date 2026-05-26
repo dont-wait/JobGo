@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:jobgo/data/models/interview_schedule_model.dart';
 import 'package:jobgo/core/utils/app_logger.dart';
 import '../../../../core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class InterviewCard extends StatelessWidget {
   final InterviewScheduleModel schedule;
@@ -20,6 +20,8 @@ class InterviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return InkWell(
       onTap: onTap, // xử lý click ở đây
       borderRadius: BorderRadius.circular(16),
@@ -55,17 +57,19 @@ class InterviewCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  //const SizedBox(width: 6),
                   // Status badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: _statusColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: _statusColor),
                     ),
                     child: Text(
-                      _statusText,
+                      _getStatusText(loc),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -126,10 +130,7 @@ class InterviewCard extends StatelessWidget {
               // Candidate + Job
               Text(
                 "${schedule.candidateName} • ${schedule.jobTitle}",
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textHint,
-                ),
+                style: const TextStyle(fontSize: 13, color: AppColors.textHint),
               ),
 
               const SizedBox(height: 14),
@@ -151,7 +152,7 @@ class InterviewCard extends StatelessWidget {
                 iconColor: Colors.redAccent,
                 text: schedule.location.isNotEmpty
                     ? schedule.location
-                    : 'No location',
+                    : loc.noLocationText,
               ),
 
               const SizedBox(height: 8),
@@ -161,7 +162,7 @@ class InterviewCard extends StatelessWidget {
                 icon: Icons.person_outline,
                 iconColor: Colors.blueAccent,
                 text:
-                    "Liên hệ: ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : 'N/A'}",
+                    "${loc.contactLabel} ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : 'N/A'}",
               ),
 
               //  Note
@@ -202,22 +203,30 @@ class InterviewCard extends StatelessWidget {
       ],
     );
   }
-  
-Color get _statusColor {
-  switch (schedule.status) {
-    case 'accepted': return Colors.green;
-    case 'rejected': return Colors.red;
-    case 'reschedule': return Colors.orange;
-    default: return Colors.grey;
-  }
-}
 
-String get _statusText {
-  switch (schedule.status) {
-    case 'accepted': return 'Đã xác nhận';
-    case 'rejected': return 'Từ chối';
-    case 'reschedule': return 'Đổi lịch';
-    default: return 'Chờ phản hồi';
+  Color get _statusColor {
+    switch (schedule.status) {
+      case 'accepted':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'reschedule':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
   }
-}
+
+  String _getStatusText(AppLocalizations loc) {
+    switch (schedule.status) {
+      case 'accepted':
+        return loc.statusAccepted;
+      case 'rejected':
+        return loc.statusRejected;
+      case 'reschedule':
+        return loc.statusReschedule;
+      default:
+        return loc.statusPending;
+    }
+  }
 }
