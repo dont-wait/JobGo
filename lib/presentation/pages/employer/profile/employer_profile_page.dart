@@ -79,7 +79,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(loc.translate('Could not load company profile')),
+                  Text(loc.couldNotLoadCompanyProfile),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => provider.loadProfile(),

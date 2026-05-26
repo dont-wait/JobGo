@@ -110,7 +110,6 @@ final Map<String, String> englishStrings = {
   'tryAgain': 'Try Again',
   'noInternetConnection': 'No Internet Connection',
   'somethingWentWrong': 'Something went wrong',
-  'close': 'Close',
   'open': 'Open',
   'yes': 'Yes',
   'no': 'No',
@@ -247,8 +246,7 @@ final Map<String, String> englishStrings = {
   'analyze': 'Analyze',
   'analyzeCv': 'Analyze CV',
   'reanalyze': 'Re-analyze',
-  'aiAnalysisSupportsPdfOnly':
-      'AI analysis supports PDF, DOCX, and TXT only.',
+  'aiAnalysisSupportsPdfOnly': 'AI analysis supports PDF, DOCX, and TXT only.',
   'missingJobDetailsForAiAnalysis': 'Missing job details for AI analysis.',
   'noAiAnalysisYet':
       'No AI analysis yet. Run analysis to get fit score and interview insights.',
@@ -306,7 +304,6 @@ final Map<String, String> englishStrings = {
   'scheduleConfirmedMessage': 'Schedule confirmed!',
   'scheduleDeclinedMessage': 'Schedule declined',
   'rescheduleRequestedMessage': 'Reschedule requested',
-  'contactLabel': 'Contact:',
   'noLocationText': 'No location',
   'notAvailable': 'N/A',
 
@@ -489,7 +486,6 @@ final Map<String, String> englishStrings = {
   'statusDraft': 'DRAFT',
   'statusClosed': 'CLOSED',
   'statusActive': 'ACTIVE',
-  'statusPending': 'PENDING',
   'couldNotSaveJob': 'Could not save the job post.',
   'experienceLevel': 'Experience Level',
   'entryLevel': 'Entry',
@@ -567,7 +563,8 @@ final Map<String, String> englishStrings = {
   'activeNow': 'Active now',
   'employerAccountNotFound': 'Could not find this employer\'s account.',
   'emailSubjectQuery': 'Inquiry about job position',
-  'featureInDevelopment': 'This feature is currently under development. Please check back later!',
+  'featureInDevelopment':
+      'This feature is currently under development. Please check back later!',
   'featureInDevelopmentTitle': 'Coming Soon',
   //kinh nghiệm - kĩ năng
   'addExperience': 'Add Experience',
@@ -618,6 +615,31 @@ final Map<String, String> englishStrings = {
   'profileUpdateSuccess': 'Company profile updated successfully!',
   'profileUpdateFailed': 'Failed to update profile. Please try again.',
   'isFieldsRequired': 'is required',
+  'goodMorning': 'Good Morning',
+  'goodAfternoon': 'Good Afternoon',
+  'goodEvening': 'Good Evening',
+  'employerDashboardTitle': 'Employer Dashboard',
+  'activeLabel': 'Active',
+  'newProfiles': 'New Profiles',
+  'viewsStatistics': 'Views Statistics',
+  'totalReachThisWeek': 'Total reach this week',
+  'totalViews': 'Total Views',
+  'companyIntro': 'Introduction',
+  'noCompanyData': 'No company data',
+  'couldNotLoadCompanyProfile': 'Could not load company profile',
+  'companyDetail': 'Company details',
+  'unnamedCompany': 'Unnamed company',
+  'noCompanyDescription': 'No description yet',
+  'noCompanyAddress': 'No address yet',
+  'noCompanyWebsite': 'No website yet',
+  'noCompanyEmail': 'No email yet',
+  'noCompanyPhone': 'No phone number yet',
+  'noCompanySize': 'No company size yet',
+  'deleteCompanyProfileTitle': 'Confirm delete',
+  'deleteCompanyProfileConfirm':
+      'Are you sure you want to delete this company profile?',
+  'companyProfileDeleted': 'Company profile deleted',
+  'deleteErrorPrefix': 'Delete failed: ',
 
   // Employer Messages
   'allMessagesSection': 'All Messages',
@@ -627,6 +649,7 @@ final Map<String, String> englishStrings = {
 
   // Employer Applicants / Candidate Profile
   'profileSummary': 'Profile Summary',
+  'candidateProfileTitle': 'Candidate Profile',
   'noProfileSummary': 'No profile summary provided.',
   'seniorityLabel': 'Seniority',
   'roleLabel': 'Role',
@@ -647,9 +670,17 @@ final Map<String, String> englishStrings = {
   'shortlistSuccess': 'Candidate shortlisted successfully.',
   'shortlistFailed': 'Failed to shortlist candidate. Please try again.',
   'rejectCandidateTitle': 'Reject candidate?',
-  'rejectCandidateConfirm': 'This will mark the candidate as rejected for the current job.',
+  'rejectCandidateConfirm':
+      'This will mark the candidate as rejected for the current job.',
   'rejectSuccess': 'Candidate rejected successfully.',
   'rejectFailed': 'Failed to reject candidate. Please try again.',
+  'noCoverLetterSubmitted':
+      'No cover letter was submitted for this application.',
+  'internalNotes': 'Internal Notes',
+  'applicationActions': 'Application actions',
+  'rejectAction': 'Reject',
+  'shortlistAction': 'Shortlist',
+  'scheduleAction': 'Schedule',
 
   // Employer Job Applicants
   'applicantsSubtitle': 'APPLICANTS',
@@ -671,11 +702,14 @@ final Map<String, String> englishStrings = {
   'noCandidatesMatching': 'No candidates found matching your criteria.',
   'resetFilters': 'Reset filters',
   'noSkillsListed': 'No skills listed',
+  'refresh': 'Refresh',
+  'unableToLoadCandidates': 'Unable to load candidate list.',
 
   // Employer Interview Schedule / Detail / Edit / Create
   'createInterviewTitle': 'Create Interview',
   'editInterviewTitle': 'Edit Interview',
   'interviewDetailTitle': 'Interview Details',
+  'createNow': 'Create now',
   'pleaseSelectJob': 'Please select job',
   'pleaseSelectCandidate': 'Please select candidate',
   'pleaseSelectDateTime': 'Please select date and time',
@@ -688,6 +722,14 @@ final Map<String, String> englishStrings = {
   'interviewTimeLabel': 'Interview Time *',
   'selectTimeHint': 'Select time',
   'interviewTypeLabel': 'Type',
+  'candidateInformation': 'Candidate Information',
+  'appointmentInformation': 'Appointment Information',
+  'candidateLabel': 'Candidate',
+  'dateTimeLabel': 'Date & Time',
+  'contactPersonLabel': 'Contact Person',
+  'notesLabel': 'Notes',
+  'notSet': 'Not set',
+  'updateSchedule': 'Update Schedule',
   'locationHint': 'Enter location',
   'contactPersonHint': 'Contact person name',
   'notesHint': 'Additional notes',
@@ -702,4 +744,15 @@ final Map<String, String> englishStrings = {
   'rescheduleProposal': 'Proposed Date: ',
   'rescheduleConfirmSuccess': 'Reschedule confirmed!',
   'rescheduleRejectSuccess': 'Reschedule request declined',
+
+  // Employer Payment
+  'vnpayPaymentTitle': 'VNPay Payment',
+  'paymentSuccess': 'Payment successful!',
+  'paymentFailedOrCanceled': 'Payment failed or was canceled!',
+  'unableToOpenPaymentBrowser': 'Unable to open browser for payment!',
+  'completePaymentTitle': 'Complete payment',
+  'completePaymentMessage':
+      'Please complete the payment in your browser. When finished, select "Confirm paid" to continue.',
+  'confirmPaid': 'Confirm paid',
+  'openingPaymentBrowser': 'Opening browser for payment...',
 };

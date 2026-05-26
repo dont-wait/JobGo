@@ -177,7 +177,7 @@ class PublishedJobCard extends StatelessWidget {
       case 'archived':
         return loc.statusClosed;
       case 'pending':
-        return loc.statusPending;
+        return loc.jobPendingStatus;
       case 'draft':
       case 'saved':
       default:

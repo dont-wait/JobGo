@@ -54,3 +54,4 @@ flake.lock
 .agents
 .gemini
 .skillkit
+.dart_tool

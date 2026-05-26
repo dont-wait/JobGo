@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile_page.dart';
@@ -40,7 +41,6 @@ class _TalentPageState extends State<TalentPage> {
       final candidates = await _repository.fetchCandidates();
 
       if (!mounted) return;
-
       setState(() {
         _allCandidates = candidates;
         _errorMessage = null;
@@ -48,10 +48,11 @@ class _TalentPageState extends State<TalentPage> {
       _applyFilters();
     } catch (e) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context);
 
       setState(() {
         if (_allCandidates.isEmpty) {
-          _errorMessage = 'Không tải được danh sách ứng viên.';
+          _errorMessage = loc.unableToLoadCandidates;
           _displayedCandidates = [];
         }
       });
@@ -59,7 +60,7 @@ class _TalentPageState extends State<TalentPage> {
       if (_allCandidates.isNotEmpty) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Refresh thất bại: $e')));
+        ).showSnackBar(SnackBar(content: Text('${loc.refreshFailed}: $e')));
       }
     } finally {
       if (!mounted) return;

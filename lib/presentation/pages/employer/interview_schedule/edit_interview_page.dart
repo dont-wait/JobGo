@@ -57,18 +57,18 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
   }
 
   Future<void> _pickTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _time,
-    );
+    final picked = await showTimePicker(context: context, initialTime: _time);
     if (picked != null) setState(() => _time = picked);
   }
 
   Future<void> _submit() async {
     final loc = AppLocalizations.of(context);
     final dateTime = DateTime(
-      _date.year, _date.month, _date.day,
-      _time.hour, _time.minute,
+      _date.year,
+      _date.month,
+      _date.day,
+      _time.hour,
+      _time.minute,
     );
 
     await context.read<InterviewProvider>().updateSchedule(
@@ -93,8 +93,6 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
-
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -149,7 +147,8 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
               onTap: _pickTime,
               child: _buildInfoBox(
                 icon: Icons.access_time,
-                text: '${_time.hour}:${_time.minute.toString().padLeft(2, '0')}',
+                text:
+                    '${_time.hour}:${_time.minute.toString().padLeft(2, '0')}',
               ),
             ),
 
@@ -169,17 +168,17 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
 
             const SizedBox(height: 16),
 
-            _buildLabel(isVi ? 'Địa điểm' : 'Location'),
+            _buildLabel(loc.location),
             _buildTextField(_locationCtrl, loc.locationHint),
 
             const SizedBox(height: 16),
 
-            _buildLabel(isVi ? 'Người liên hệ' : 'Contact Person'),
+            _buildLabel(loc.contactPersonLabel),
             _buildTextField(_contactCtrl, loc.contactPersonHint),
 
             const SizedBox(height: 16),
 
-            _buildLabel(isVi ? 'Ghi chú' : 'Notes'),
+            _buildLabel(loc.notesLabel),
             _buildTextField(_noteCtrl, loc.notesHint, maxLines: 3),
 
             const SizedBox(height: 32),
@@ -197,8 +196,11 @@ class _EditInterviewPageState extends State<EditInterviewPage> {
                   ),
                 ),
                 child: Text(
-                  isVi ? 'Cập nhật lịch' : 'Update Schedule',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  loc.updateSchedule,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
