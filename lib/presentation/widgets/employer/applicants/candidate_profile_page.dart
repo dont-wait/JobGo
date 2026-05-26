@@ -29,7 +29,6 @@ class CandidateProfilePage extends StatefulWidget {
 
 class _CandidateProfilePageState extends State<CandidateProfilePage> {
   int _currentTab = 0;
-  final List<String> _tabs = ['About', 'Experience', 'Skills', 'Resume'];
   CandidateSupabaseModel? _fullCandidate;
   final AiCvAnalysisRepository _analysisRepository = AiCvAnalysisRepository();
   final GeminiCvAnalysisService _geminiService = GeminiCvAnalysisService();
@@ -185,6 +184,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     final hasApplication = widget.application != null;
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
@@ -195,9 +195,9 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Candidate Profile',
-          style: TextStyle(
+        title: Text(
+          isVi ? 'Hồ sơ ứng viên' : 'Candidate Profile',
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
           ),
@@ -254,6 +254,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     final candidate = _candidate;
 
     final application = widget.application;
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
 
     return Container(
       color: AppColors.white,
@@ -353,7 +354,9 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   Text(
                     application.coverLetter.isNotEmpty
                         ? application.coverLetter
-                        : 'No cover letter was submitted for this application.',
+                        : (isVi
+                            ? 'Không có thư xin việc nào được nộp cho đơn ứng tuyển này.'
+                            : 'No cover letter was submitted for this application.'),
                     style: const TextStyle(
                       height: 1.6,
                       color: AppColors.textSecondary,
@@ -361,9 +364,9 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   ),
                   if ((application.internalNotes ?? '').trim().isNotEmpty) ...[
                     const SizedBox(height: 12),
-                    const Text(
-                      'Internal Notes',
-                      style: TextStyle(
+                    Text(
+                      isVi ? 'Ghi chú nội bộ' : 'Internal Notes',
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
@@ -389,6 +392,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   }
 
   Widget _buildApplicantActionBar() {
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: BoxDecoration(
@@ -406,11 +410,11 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(bottom: 10),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
             child: Text(
-              'Application actions',
-              style: TextStyle(
+              isVi ? 'Thao tác hồ sơ' : 'Application actions',
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textSecondary,
@@ -421,7 +425,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
             children: [
               Expanded(
                 child: _buildActionButton(
-                  'Reject',
+                  isVi ? 'Từ chối' : 'Reject',
                   AppColors.error,
                   Icons.close,
                   _confirmRejectCandidate,
@@ -430,7 +434,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildActionButton(
-                  'Shortlist',
+                  isVi ? 'Tiềm năng' : 'Shortlist',
                   AppColors.white,
                   null,
                   _shortlistCandidate,
@@ -440,7 +444,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildActionButton(
-                  'Schedule',
+                  isVi ? 'Đặt lịch' : 'Schedule',
                   AppColors.primary,
                   null,
                   _openInterviewSchedule,
@@ -643,10 +647,17 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   }
 
   Widget _buildTabBar() {
+    final loc = AppLocalizations.of(context);
+    final tabsList = [
+      loc.about,
+      loc.experience,
+      loc.skills,
+      loc.resume,
+    ];
     return Container(
       color: AppColors.white,
       child: Row(
-        children: _tabs.asMap().entries.map((e) {
+        children: tabsList.asMap().entries.map((e) {
           final index = e.key;
           final title = e.value;
           final isActive = index == _currentTab;
@@ -706,91 +717,82 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   }
 
   Widget _buildAboutTab() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Profile Summary',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          loc.profileSummary,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         _buildSectionCard(
-          // child: widget.candidate.hasSummary
           child: _candidate.hasSummary
               ? Text(
-                  // widget.candidate.cleanSummary,
                   _candidate.cleanSummary,
                   style: const TextStyle(
                     height: 1.6,
                     color: AppColors.textSecondary,
                   ),
                 )
-              : const Text(
-                  'No profile summary provided.',
-                  style: TextStyle(height: 1.6, color: AppColors.textSecondary),
+              : Text(
+                  loc.noProfileSummary,
+                  style: const TextStyle(height: 1.6, color: AppColors.textSecondary),
                 ),
         ),
         const SizedBox(height: 20),
-        const Text(
-          'Overview',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          loc.overview,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         _buildFactGrid([
           (
-            label: 'Role',
-            // value: widget.candidate.roleLabel,
+            label: loc.roleLabel,
             value: _candidate.roleLabel,
             icon: Icons.badge_outlined,
           ),
           (
-            label: 'Seniority',
-            // value: widget.candidate.seniorityLabel,
+            label: loc.seniorityLabel,
             value: _candidate.seniorityLabel,
             icon: Icons.trending_up_outlined,
           ),
           (
-            label: 'Education',
-            // value: widget.candidate.displayEducation,
+            label: loc.educationLabel,
             value: _candidate.displayEducation,
             icon: Icons.school_outlined,
           ),
           (
-            label: 'Salary',
-            // value: widget.candidate.salaryLabel,
+            label: loc.salaryLabel,
             value: _candidate.salaryLabel,
             icon: Icons.payments_outlined,
           ),
         ]),
         const SizedBox(height: 20),
-        const Text(
-          'Contact',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          loc.contactLabel,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         _buildFactGrid([
           (
-            label: 'Phone',
-            // value: widget.candidate.displayPhone,
+            label: loc.phoneLabel,
             value: _candidate.displayPhone,
             icon: Icons.phone_outlined,
           ),
           (
-            label: 'Email',
-            // value: widget.candidate.displayEmail,
+            label: loc.emailLabel,
             value: _candidate.displayEmail,
             icon: Icons.email_outlined,
           ),
           (
-            label: 'Location',
-            // value: widget.candidate.displayLocation,
+            label: loc.location,
             value: _candidate.displayLocation,
             icon: Icons.location_on_outlined,
           ),
           (
-            label: 'Date of Birth',
-            // value: widget.candidate.dateOfBirth ?? 'Not provided',
-            value: _candidate.dateOfBirth ?? 'Not provided',
+            label: loc.dateOfBirthLabel,
+            value: _candidate.dateOfBirth ?? loc.notProvided,
             icon: Icons.cake_outlined,
           ),
         ]),
@@ -845,26 +847,22 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   //   );
   // }
   Widget _buildExperienceTab() {
-    // print(widget.candidate.experiences);
-    // print('Candidate ID: ${widget.candidate.cId}');
-    // print('Experiences: ${widget.candidate.experiences}');
-    // print('Skills: ${widget.candidate.skills}');
-    // final experiences = widget.candidate.experiences;
     final experiences = _candidate.experiences;
+    final loc = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Work Experience',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          loc.workExperience,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         if (experiences == null || experiences.isEmpty)
           _buildSectionCard(
-            child: const Text(
-              'No experience provided yet.',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              loc.noExperienceProvided,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           )
         else
@@ -935,33 +933,29 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
             }).toList(),
           ),
         const SizedBox(height: 20),
-        const Text(
-          'Background',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          loc.backgroundSection,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         _buildFactGrid([
           (
-            label: 'Role Match',
-            // value: widget.candidate.roleLabel,
+            label: loc.roleMatchLabel,
             value: _candidate.roleLabel,
             icon: Icons.work_outline,
           ),
           (
-            label: 'Seniority',
-            // value: widget.candidate.seniorityLabel,
+            label: loc.seniorityLabel,
             value: _candidate.seniorityLabel,
             icon: Icons.bar_chart_outlined,
           ),
           (
-            label: 'Gender',
-            // value: widget.candidate.gender ?? 'Not provided',
-            value: _candidate.gender ?? "Not provided",
+            label: loc.genderLabel,
+            value: _candidate.gender ?? loc.notProvided,
             icon: Icons.wc_outlined,
           ),
           (
-            label: 'User ID',
-            // value: widget.candidate.uId.toString(),
+            label: loc.userIdLabel,
             value: _candidate.uId.toString(),
             icon: Icons.confirmation_number_outlined,
           ),
@@ -970,50 +964,25 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     );
   }
 
-  // Widget _buildSkillsTab() {
-  //   final skillList = widget.candidate.skillList;
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const Text(
-  //         'Skills',
-  //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-  //       ),
-  //       const SizedBox(height: 12),
-  //       if (skillList.isEmpty)
-  //         _buildSectionCard(
-  //           child: const Text(
-  //             'No skills were provided for this profile yet.',
-  //             style: TextStyle(color: AppColors.textSecondary),
-  //           ),
-  //         )
-  //       else
-  //         Wrap(
-  //           spacing: 8,
-  //           runSpacing: 8,
-  //           children: skillList.map((skill) => _buildSkillChip(skill)).toList(),
-  //         ),
-  //     ],
-  //   );
-  // }
   Widget _buildSkillsTab() {
-    // final skills = widget.candidate.skills;
     final skills = _candidate.skills;
+    final loc = AppLocalizations.of(context);
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+    final yearsText = isVi ? 'năm' : 'yrs';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Skills',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          loc.skills,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         if (skills == null || skills.isEmpty)
           _buildSectionCard(
-            child: const Text(
-              'No skills were provided for this profile yet.',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              loc.noSkillsProvided,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           )
         else
@@ -1024,7 +993,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                 .map(
                   (skill) => _buildSkillChip(
                     skill.csYears != null
-                        ? '${skill.skName} • ${skill.csYears} yrs'
+                        ? '${skill.skName} • ${skill.csYears} $yearsText'
                         : skill.skName,
                   ),
                 )
@@ -1036,20 +1005,21 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
   Widget _buildResumeTab() {
     final resumeUrl = _resumeUrl;
+    final loc = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Resume',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          loc.resume,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         if (resumeUrl == null)
           _buildSectionCard(
-            child: const Text(
-              'No resume has been uploaded yet.',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              loc.noResumeUploaded,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           )
         else
@@ -1063,7 +1033,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  // widget.candidate.resumeFileName,
                   _candidate.resumeFileName,
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.w600),
@@ -1078,7 +1047,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                 TextButton.icon(
                   onPressed: _copyResumeLink,
                   icon: const Icon(Icons.copy_outlined),
-                  label: const Text('Copy Resume Link'),
+                  label: Text(loc.copyResumeLink),
                 ),
               ],
             ),
@@ -1190,8 +1159,9 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     await Clipboard.setData(ClipboardData(text: resumeUrl));
 
     if (!mounted) return;
+    final loc = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Resume link copied to clipboard')),
+      SnackBar(content: Text(loc.resumeLinkCopied)),
     );
   }
 
@@ -1214,6 +1184,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
   Future<void> _shortlistCandidate() async {
     if (widget.application == null) return;
+    final loc = AppLocalizations.of(context);
 
     try {
       final repository = JobApplicationRepository();
@@ -1224,14 +1195,14 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
       if (mounted) {
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Candidate shortlisted successfully.'),
+            SnackBar(
+              content: Text(loc.shortlistSuccess),
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to shortlist candidate. Please try again.'),
+            SnackBar(
+              content: Text(loc.shortlistFailed),
             ),
           );
         }
@@ -1240,31 +1211,31 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
       }
     }
   }
 
   Future<void> _confirmRejectCandidate() async {
     if (widget.application == null) return;
+    final loc = AppLocalizations.of(context);
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
 
     final shouldReject = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reject candidate?'),
-        content: const Text(
-          'This will mark the candidate as rejected for the current job.',
-        ),
+        title: Text(loc.rejectCandidateTitle),
+        content: Text(loc.rejectCandidateConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Reject',
-              style: TextStyle(color: AppColors.error),
+            child: Text(
+              isVi ? 'Từ chối' : 'Reject',
+              style: const TextStyle(color: AppColors.error),
             ),
           ),
         ],
@@ -1281,14 +1252,14 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         if (mounted) {
           if (success) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Candidate rejected successfully.')),
+              SnackBar(content: Text(loc.rejectSuccess)),
             );
             // Go back to applicants list after rejection
             Navigator.pop(context, true);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Failed to reject candidate. Please try again.'),
+              SnackBar(
+                content: Text(loc.rejectFailed),
               ),
             );
           }
@@ -1297,7 +1268,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
         }
       }
     }

@@ -5,6 +5,7 @@ import 'package:jobgo/data/models/candidate_supabase_model.dart';
 import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 import 'package:jobgo/presentation/widgets/employer/talent/candidate_card_widget.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class TalentSearchWidget extends StatelessWidget {
   final List<CandidateSupabaseModel> candidates;
@@ -46,14 +47,15 @@ class TalentSearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppColors.lightBackground,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
-            _buildSearchBar(),
+            _buildHeader(context),
+            _buildSearchBar(context),
             _buildFilterChips(),
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -61,7 +63,7 @@ class TalentSearchWidget extends StatelessWidget {
                 vertical: 12.0,
               ),
               child: Text(
-                'RECOMMENDED CANDIDATES (${candidates.length})',
+                '${loc.recommendedCandidates} (${candidates.length})',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -70,22 +72,23 @@ class TalentSearchWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(child: _buildCandidateList()),
+            Expanded(child: _buildCandidateList(context)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Find Talent',
-            style: TextStyle(
+          Text(
+            loc.findTalentTitle,
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -96,7 +99,7 @@ class TalentSearchWidget extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.tune, color: AppColors.textPrimary),
                 onPressed: onRetry,
-                tooltip: 'Refresh candidates',
+                tooltip: loc.refreshCandidatesTooltip,
               ),
               const ProfileAvatar(role: UserRole.employer),
             ],
@@ -106,7 +109,8 @@ class TalentSearchWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
@@ -122,14 +126,14 @@ class TalentSearchWidget extends StatelessWidget {
           ],
         ),
         child: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Skills, Job Title or Name',
-            hintStyle: TextStyle(color: AppColors.textHint),
-            prefixIcon: Icon(Icons.search, color: AppColors.primary),
+          decoration: InputDecoration(
+            hintText: loc.searchTalentHint,
+            hintStyle: const TextStyle(color: AppColors.textHint),
+            prefixIcon: const Icon(Icons.search, color: AppColors.primary),
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           ),
           onChanged: onSearchChanged,
         ),
@@ -226,7 +230,9 @@ class TalentSearchWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCandidateList() {
+  Widget _buildCandidateList(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -256,7 +262,7 @@ class TalentSearchWidget extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: Text(loc.retryButton),
               ),
             ],
           ),
@@ -277,10 +283,10 @@ class TalentSearchWidget extends StatelessWidget {
                 color: AppColors.textHint,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'No candidates found matching your criteria.',
+              Text(
+                loc.noCandidatesMatching,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary),
+                style: const TextStyle(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 16),
               Wrap(
@@ -291,12 +297,12 @@ class TalentSearchWidget extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onClearFilters,
                     icon: const Icon(Icons.tune),
-                    label: const Text('Reset filters'),
+                    label: Text(loc.resetFilters),
                   ),
                   ElevatedButton.icon(
                     onPressed: onRetry,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Refresh'),
+                    label: Text(isVi ? 'Tải lại' : 'Refresh'),
                   ),
                 ],
               ),

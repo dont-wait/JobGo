@@ -33,6 +33,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -41,9 +42,9 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
         scrolledUnderElevation: 0.5,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
+        title: Text(
+          loc.profile,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -78,11 +79,11 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Could not load company profile'),
+                  Text(loc.translate('Could not load company profile')),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => provider.loadProfile(),
-                    child: const Text('Retry'),
+                    child: Text(loc.retryButton),
                   ),
                 ],
               ),
@@ -97,23 +98,23 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                 _buildProfileHeader(context, provider),
                 const SizedBox(height: 28),
 
-                _buildSectionTitle('COMPANY MANAGEMENT'),
+                _buildSectionTitle(loc.companyManagement),
                 const SizedBox(height: 10),
                 _buildMenuCard([
                   _SettingsItem(
                     icon: Icons.account_balance_rounded,
                     iconBg: const Color(0xFFE3F2FD),
                     iconColor: AppColors.primary,
-                    label: 'Company Profile',
-                    subtitle: 'View public company page',
+                    label: loc.companyProfile,
+                    subtitle: loc.viewPublicCompanyPage,
                     onTap: () => _navigateToCompanyProfile(context),
                   ),
                   _SettingsItem(
                     icon: Icons.schedule,
                     iconBg: const Color(0xFFE3F2FD),
                     iconColor: AppColors.primary,
-                    label: 'Lịch hẹn phỏng vấn',
-                    subtitle: 'Quản lý lịch phỏng vấn',
+                    label: loc.interviewScheduleTitle,
+                    subtitle: loc.interviewDetailTitle,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -127,30 +128,30 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                     icon: Icons.business_outlined,
                     iconBg: const Color(0xFFE3F2FD),
                     iconColor: AppColors.primary,
-                    label: 'Company Information',
-                    subtitle: 'Logo, banner, and description',
+                    label: loc.companyInformation,
+                    subtitle: loc.logoBannerDescription,
                     onTap: () => _navigateToEdit(context),
                   ),
                   _SettingsItem(
                     icon: Icons.people_outline_rounded,
                     iconBg: const Color(0xFFEDE7F6),
                     iconColor: const Color(0xFF6A1B9A),
-                    label: 'Team Management',
-                    subtitle: 'Manage recruiters and permissions',
+                    label: loc.teamManagement,
+                    subtitle: loc.manageRecruitersPermissions,
                     onTap: () {},
                   ),
                 ]),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('BILLING & SECURITY'),
+                _buildSectionTitle(loc.billingAndSecurity),
                 const SizedBox(height: 10),
                 _buildMenuCard([
                   _SettingsItem(
                     icon: Icons.credit_card_rounded,
                     iconBg: const Color(0xFFFFF3E0),
                     iconColor: AppColors.orange,
-                    label: 'Billing & Subscription',
-                    subtitle: 'Manage plans and invoices',
+                    label: loc.billingSubscription,
+                    subtitle: loc.managePlansInvoices,
                     onTap: () {},
                     trailing: _buildDotBadge(),
                   ),
@@ -158,30 +159,30 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                     icon: Icons.lock_outline_rounded,
                     iconBg: const Color(0xFFE8F5E9),
                     iconColor: AppColors.success,
-                    label: 'Account Security',
-                    subtitle: 'Password, 2FA, login activity',
+                    label: loc.accountSecurity,
+                    subtitle: loc.password2faActivity,
                     onTap: () {},
                   ),
                 ]),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('SUPPORT'),
+                _buildSectionTitle(loc.support),
                 const SizedBox(height: 10),
                 _buildMenuCard([
                   _SettingsItem(
                     icon: Icons.help_outline_rounded,
                     iconBg: const Color(0xFFE3F2FD),
                     iconColor: AppColors.primary,
-                    label: 'Help Center',
-                    subtitle: 'Documentation and live chat',
+                    label: loc.help,
+                    subtitle: loc.helpCenterDesc,
                     onTap: () {},
                   ),
                   _SettingsItem(
                     icon: Icons.mail_outline_rounded,
                     iconBg: const Color(0xFFFCE4EC),
                     iconColor: AppColors.error,
-                    label: 'Contact Us',
-                    subtitle: 'Get in touch with support',
+                    label: loc.contactUs,
+                    subtitle: loc.contactUsDesc,
                     onTap: () {},
                   ),
                 ]),
@@ -192,7 +193,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
                     icon: Icons.logout_rounded,
                     iconBg: const Color(0xFFFFEBEE),
                     iconColor: AppColors.error,
-                    label: 'Logout',
+                    label: loc.logout,
                     subtitle: null,
                     onTap: () {
                       Navigator.pushNamedAndRemoveUntil(
@@ -214,6 +215,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
   }
 
   Widget _buildProfileHeader(BuildContext context, EmployerProvider provider) {
+    final loc = AppLocalizations.of(context);
     final employer = provider.employer!;
     final color = Color(int.parse(employer.logoColor));
 
@@ -256,7 +258,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
           const SizedBox(height: 14),
           // Name from Users join (e.g. HR_Sang)
           Text(
-            employer.contactName ?? 'Recruiter',
+            employer.contactName ?? loc.recruiter,
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -266,7 +268,7 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
           const SizedBox(height: 4),
           // Company details using SQL fields
           Text(
-            '${employer.companyName} • ${employer.address ?? 'Headquarters'}',
+            '${employer.companyName} • ${employer.address ?? (Localizations.localeOf(context).languageCode == 'vi' ? 'Trụ sở chính' : 'Headquarters')}',
             style: const TextStyle(
               fontSize: 14,
               color: AppColors.textSecondary,
@@ -280,9 +282,9 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: AppColors.primary.withOpacity(0.2)),
             ),
-            child: const Text(
-              'Verified Employer',
-              style: TextStyle(
+            child: Text(
+              loc.verifiedEmployer,
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: AppColors.primary,
@@ -490,15 +492,15 @@ class _EmployerProfilePageState extends State<EmployerProfilePage> {
 
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Logo uploaded successfully!'),
+            SnackBar(
+              content: Text(loc.logoUploadSuccess),
               backgroundColor: AppColors.success,
             ),
           );
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to upload logo. Please try again.'),
+            SnackBar(
+              content: Text(loc.logoUploadFailed),
               backgroundColor: AppColors.error,
             ),
           );

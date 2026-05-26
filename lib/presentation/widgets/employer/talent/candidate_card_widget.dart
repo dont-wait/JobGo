@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/candidate_supabase_model.dart';
 import 'package:jobgo/core/utils/app_logger.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class CandidateCardWidget extends StatelessWidget {
   final CandidateSupabaseModel candidate;
@@ -17,8 +18,9 @@ class CandidateCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final skills = candidate.skillList.isEmpty
-        ? const ['No skills listed']
+        ? [loc.noSkillsListed]
         : candidate.skillList.take(4).toList();
     final hasSummary = candidate.hasSummary;
 
@@ -128,9 +130,9 @@ class CandidateCardWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'View Profile',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      child: Text(
+                        loc.viewProfile,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
