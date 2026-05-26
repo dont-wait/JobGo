@@ -1,84 +1,29 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/data/models/conversation_model.dart';
+import 'package:jobgo/presentation/providers/chat_provider.dart';
+import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
-class MessagesPage extends StatelessWidget {
+/// Candidate Messages page — realtime qua ChatProvider.
+class MessagesPage extends StatefulWidget {
   const MessagesPage({super.key});
 
-  static const List<_MessageThread> _threads = [
-    _MessageThread(
-      name: 'Anh Khoa',
-      company: 'VietFin Bank',
-      role: 'Senior Flutter Dev',
-      lastMessage: 'Anh đã xem CV. Em có thể phỏng vấn thứ 6?',
-      time: '09:12',
-      unreadCount: 2,
-      isPinned: true,
-      isOnline: true,
-      hasAttachment: true,
-      avatarColor: Color(0xFF0A73B7),
-    ),
-    _MessageThread(
-      name: 'Chi Hanh',
-      company: 'Sunrise Studio',
-      role: 'UI/UX Designer',
-      lastMessage: 'Gửi giúp portfolio dạng PDF nhé.',
-      time: '08:41',
-      unreadCount: 0,
-      isPinned: true,
-      isOnline: false,
-      hasAttachment: false,
-      avatarColor: Color(0xFF10B981),
-    ),
-    _MessageThread(
-      name: 'Mr. Toan',
-      company: 'Aster Tech',
-      role: 'Mobile Engineer',
-      lastMessage: 'Lịch phỏng vấn: Thứ 5, 2:00 PM',
-      time: 'Yesterday',
-      unreadCount: 1,
-      isPinned: false,
-      isOnline: true,
-      hasAttachment: false,
-      avatarColor: Color(0xFFF59E0B),
-    ),
-    _MessageThread(
-      name: 'Ms. Linh',
-      company: 'Blue Ocean',
-      role: 'QA Engineer',
-      lastMessage: 'Cảm ơn bạn! Chúng tôi sẽ phản hồi sớm.',
-      time: 'Tue',
-      unreadCount: 0,
-      isPinned: false,
-      isOnline: false,
-      hasAttachment: false,
-      avatarColor: Color(0xFF6366F1),
-    ),
-    _MessageThread(
-      name: 'Recruitment',
-      company: 'NovaWorks',
-      role: 'Product Intern',
-      lastMessage: 'Bạn có thể bắt đầu tuần tới không?',
-      time: 'Mon',
-      unreadCount: 3,
-      isPinned: false,
-      isOnline: true,
-      hasAttachment: true,
-      avatarColor: Color(0xFFEF4444),
-    ),
-  ];
+  @override
+  State<MessagesPage> createState() => _MessagesPageState();
+}
+
+class _MessagesPageState extends State<MessagesPage> {
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final pinned = _threads
-        .where((thread) => thread.isPinned)
-        .toList(growable: false);
-    final others = _threads
-        .where((thread) => !thread.isPinned)
-        .toList(growable: false);
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
@@ -86,38 +31,65 @@ class MessagesPage extends StatelessWidget {
         children: [
           _buildBackground(),
           SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _buildHeader(loc)),
-                SliverToBoxAdapter(child: _buildSearch(loc)),
-                SliverToBoxAdapter(child: _buildFilters(loc)),
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader(loc.pinnedLabel, pinned.length),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) =>
-                        _MessageTile(thread: pinned[index], loc: loc),
-                    childCount: pinned.length,
+            child: Consumer<ChatProvider>(
+              builder: (context, chatProvider, _) {
+                if (chatProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (chatProvider.error != null &&
+                    chatProvider.conversations.isEmpty) {
+                  return _buildError(chatProvider.error!, loc);
+                }
+
+                final conversations = _filteredConversations(
+                  chatProvider.conversations,
+                );
+
+                return RefreshIndicator(
+                  onRefresh: () => chatProvider.loadConversations(),
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(child: _buildHeader(loc)),
+                      SliverToBoxAdapter(child: _buildSearch(loc)),
+                      if (conversations.isNotEmpty) ...[
+                        SliverToBoxAdapter(
+                          child: _buildSectionHeader(
+                              loc.messagesTitle, conversations.length),
+                        ),
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (_, i) => _ConversationTile(
+                              conversation: conversations[i],
+                              currentUserId:
+                                  chatProvider.currentUserId ?? 0,
+                            ),
+                            childCount: conversations.length,
+                          ),
+                        ),
+                      ],
+                      if (conversations.isEmpty)
+                        SliverFillRemaining(child: _buildEmpty()),
+                      const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                    ],
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildSectionHeader(loc.allLabel, others.length),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) =>
-                        _MessageTile(thread: others[index], loc: loc),
-                    childCount: others.length,
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
+  }
+
+  List<ConversationModel> _filteredConversations(
+      List<ConversationModel> conversations) {
+    if (_searchQuery.isEmpty) return conversations;
+    final query = _searchQuery.toLowerCase();
+    return conversations.where((c) {
+      final name = c.displayName.toLowerCase();
+      return name.contains(query);
+    }).toList();
   }
 
   Widget _buildBackground() {
@@ -129,8 +101,8 @@ class MessagesPage extends StatelessWidget {
           colors: [Color(0xFFF8FAFF), AppColors.lightBackground],
         ),
       ),
-      child: Stack(
-        children: const [
+      child: const Stack(
+        children: [
           Positioned(
             top: -80,
             right: -40,
@@ -183,7 +155,7 @@ class MessagesPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 6, 20, 12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
@@ -201,30 +173,18 @@ class MessagesPage extends StatelessWidget {
             const Icon(Icons.search, color: AppColors.textHint),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(
-                loc.searchMessagesHint,
-                style: const TextStyle(color: AppColors.textHint),
+              child: TextField(
+                onChanged: (value) => setState(() => _searchQuery = value),
+                decoration: InputDecoration(
+                  hintText: loc.searchMessagesHint,
+                  border: InputBorder.none,
+                  hintStyle: const TextStyle(color: AppColors.textHint),
+                ),
               ),
             ),
             const Icon(Icons.mic_none, color: AppColors.textHint),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildFilters(AppLocalizations loc) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: [
-          _FilterChip(label: loc.unreadFilter, isActive: true),
-          _FilterChip(label: loc.urgentFilter, isActive: false),
-          _FilterChip(label: loc.interviewedFilter, isActive: false),
-          _FilterChip(label: loc.savedFilter, isActive: false),
-        ],
       ),
     );
   }
@@ -262,254 +222,242 @@ class MessagesPage extends StatelessWidget {
       ),
     );
   }
-}
 
-class _MessageTile extends StatelessWidget {
-  const _MessageTile({required this.thread, required this.loc});
+  Widget _buildEmpty() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.chat_bubble_outline,
+              size: 64, color: AppColors.textHint.withValues(alpha: 0.4)),
+          const SizedBox(height: 12),
+          const Text(
+            'No messages yet',
+            style: TextStyle(
+              fontSize: 15,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  final _MessageThread thread;
-  final AppLocalizations loc;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+  Widget _buildError(String message, AppLocalizations loc) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline,
+                size: 64, color: AppColors.error.withValues(alpha: 0.7)),
+            const SizedBox(height: 12),
+            const Text(
+              'Unable to load messages',
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              message,
+              style: const TextStyle(fontSize: 12, color: AppColors.textHint),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () =>
+                  context.read<ChatProvider>().loadConversations(),
+              child: const Text('Retry'),
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _AvatarBadge(
-              name: thread.name,
-              color: thread.avatarColor,
-              isOnline: thread.isOnline,
+      ),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  WIDGETS
+// ══════════════════════════════════════════════════════════════
+
+/// Tile hiển thị 1 conversation.
+class _ConversationTile extends StatelessWidget {
+  const _ConversationTile({
+    required this.conversation,
+    required this.currentUserId,
+  });
+
+  final ConversationModel conversation;
+  final int currentUserId;
+
+  @override
+  Widget build(BuildContext context) {
+    final name = conversation.displayName;
+    final lastMsg = conversation.lastMessage;
+    final color = _colorFromName(name);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatDetailPage(
+              otherUserId: conversation.otherUserId,
+              otherUserName: name,
+              avatarColor: color,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          thread.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        thread.time,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textHint,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${thread.company} • ${thread.role}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (thread.hasAttachment)
-                        const Padding(
-                          padding: EdgeInsets.only(right: 6),
-                          child: Icon(
-                            Icons.attach_file,
-                            size: 16,
-                            color: AppColors.textHint,
-                          ),
-                        ),
-                      Expanded(
-                        child: Text(
-                          thread.lastMessage,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: thread.unreadCount > 0
-                                ? AppColors.textPrimary
-                                : AppColors.textSecondary,
-                            fontWeight: thread.unreadCount > 0
-                                ? FontWeight.w600
-                                : FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      if (thread.unreadCount > 0)
-                        Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _AvatarBadge(name: name, color: color),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Name + time
+                    Row(
+                      children: [
+                        Expanded(
                           child: Text(
-                            '${thread.unreadCount}',
+                            name,
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (thread.isPinned)
-                        _Tag(
-                          label: loc.pinnedLabel,
-                          color: const Color(0xFFEFF6FF),
+                        if (lastMsg != null)
+                          Text(
+                            _formatTime(lastMsg.sentAt),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textHint,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Last message + unread badge
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            lastMsg?.content ?? 'Chưa có tin nhắn',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: conversation.unreadCount > 0
+                                  ? AppColors.textPrimary
+                                  : AppColors.textSecondary,
+                              fontWeight: conversation.unreadCount > 0
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                            ),
+                          ),
                         ),
-                      _Tag(
-                        label: loc.respondsIn24h,
-                        color: const Color(0xFFEFFAF3),
-                      ),
-                    ],
-                  ),
-                ],
+                        if (conversation.unreadCount > 0)
+                          Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.error,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${conversation.unreadCount}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.isActive});
+  String _formatTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+    if (diff.inDays == 0) {
+      return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    }
+    if (diff.inDays == 1) return 'Yesterday';
+    if (diff.inDays < 7) {
+      const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      return labels[dateTime.weekday - 1];
+    }
+    return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}';
+  }
 
-  final String label;
-  final bool isActive;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isActive ? AppColors.primary : AppColors.border,
-        ),
-        boxShadow: [
-          if (isActive)
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-        ],
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isActive ? Colors.white : AppColors.textSecondary,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-      ),
+  Color _colorFromName(String name) {
+    final seed = name.isEmpty ? 1 : name.codeUnits.reduce((a, b) => a + b);
+    final random = Random(seed);
+    return Color.fromARGB(
+      255,
+      80 + random.nextInt(140),
+      80 + random.nextInt(140),
+      80 + random.nextInt(140),
     );
   }
 }
 
-class _Tag extends StatelessWidget {
-  const _Tag({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
-        ),
-      ),
-    );
-  }
-}
+// ── Small shared widgets ──
 
 class _AvatarBadge extends StatelessWidget {
-  const _AvatarBadge({
-    required this.name,
-    required this.color,
-    required this.isOnline,
-  });
+  const _AvatarBadge({required this.name, required this.color});
 
   final String name;
   final Color color;
-  final bool isOnline;
 
   @override
   Widget build(BuildContext context) {
     final initial = name.isNotEmpty ? name.characters.first : '?';
-    return Stack(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: color,
-          child: Text(
-            initial.toUpperCase(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+    return CircleAvatar(
+      radius: 24,
+      backgroundColor: color,
+      child: Text(
+        initial.toUpperCase(),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
         ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: isOnline ? AppColors.success : AppColors.textHint,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -555,30 +503,4 @@ class _GlowCircle extends StatelessWidget {
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
-}
-
-class _MessageThread {
-  const _MessageThread({
-    required this.name,
-    required this.company,
-    required this.role,
-    required this.lastMessage,
-    required this.time,
-    required this.unreadCount,
-    required this.isPinned,
-    required this.isOnline,
-    required this.hasAttachment,
-    required this.avatarColor,
-  });
-
-  final String name;
-  final String company;
-  final String role;
-  final String lastMessage;
-  final String time;
-  final int unreadCount;
-  final bool isPinned;
-  final bool isOnline;
-  final bool hasAttachment;
-  final Color avatarColor;
 }

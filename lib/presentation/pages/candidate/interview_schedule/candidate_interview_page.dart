@@ -31,7 +31,10 @@ class _CandidateInterviewPageState extends State<CandidateInterviewPage> {
         title: Text(loc.interviewScheduleTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Consumer<InterviewProvider>(
         builder: (context, provider, _) {

@@ -23,6 +23,8 @@ import 'package:jobgo/core/utils/app_logger.dart';
 
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/bookmark_provider.dart';
+import 'package:jobgo/presentation/providers/chat_provider.dart';
+import 'package:jobgo/presentation/providers/notification_provider.dart';
 
 import 'package:jobgo/presentation/providers/employer_provider.dart';
 import 'package:jobgo/presentation/providers/job_search_controller.dart';
@@ -85,6 +87,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ApplicationProvider()),
         ChangeNotifierProvider(create: (_) => AdminProvider()),
         ChangeNotifierProvider(create: (_) => JobSearchProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: const MainApp(),
     ),
@@ -123,6 +127,10 @@ class _MainAppState extends State<MainApp> {
                 context.read<BookmarkProvider>().loadInitialBookmarks();
                 context.read<ProfileProvider>().loadProfile();
                 context.read<EmployerProvider>().loadProfile();
+
+                // Init realtime subscriptions
+                context.read<ChatProvider>().initRealtimeSubscriptions();
+                context.read<NotificationProvider>().initRealtimeSubscriptions();
 
                 // ── Tự động nhận diện Role khi Login ──
                 try {
@@ -170,6 +178,8 @@ class _MainAppState extends State<MainApp> {
                 context.read<ProfileProvider>().clearProfile();
                 context.read<EmployerProvider>().clearEmployer();
                 context.read<ApplicationProvider>().clearApplications();
+                context.read<ChatProvider>().clearChat();
+                context.read<NotificationProvider>().clearNotifications();
                 context.read<InterviewProvider>().clearSchedules();
 
                 navigatorKey.currentState?.pushNamedAndRemoveUntil(

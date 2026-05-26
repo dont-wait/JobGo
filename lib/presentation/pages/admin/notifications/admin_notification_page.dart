@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/presentation/providers/chat_provider.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 /// Admin Notifications page — system alerts, reports & moderation updates.
@@ -18,7 +21,7 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -29,6 +32,7 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -37,9 +41,9 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
         scrolledUnderElevation: 0.5,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          loc.notifications,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -48,11 +52,11 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
         actions: [
           IconButton(
             icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
-            tooltip: 'Mark all as read',
+            tooltip: loc.markAllAsRead,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('All notifications marked as read'),
+                SnackBar(
+                  content: Text(loc.allMarkedAsReadMessage),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -70,10 +74,40 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'System'),
-            Tab(text: 'Reports'),
+          tabs: [
+            Tab(text: loc.allLabel),
+            Tab(text: loc.systemTabLabel),
+            Tab(text: loc.reportsTabLabel),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(loc.messagesTitle),
+                  Consumer<ChatProvider>(
+                    builder: (context, chatProvider, _) {
+                      final count = chatProvider.totalUnread;
+                      if (count <= 0) return const SizedBox.shrink();
+                      return Container(
+                        margin: const EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -87,12 +121,16 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
           _buildNotificationList(
             _allNotifications.where((n) => n.type == _NType.report).toList(),
           ),
+          _buildNotificationList(
+            _allNotifications.where((n) => n.type == _NType.message).toList(),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildNotificationList(List<_NotificationItem> items) {
+    final loc = AppLocalizations.of(context);
     if (items.isEmpty) {
       return Center(
         child: Column(
@@ -101,9 +139,9 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
             Icon(Icons.notifications_off_outlined,
                 size: 64, color: AppColors.textHint.withValues(alpha: 0.5)),
             const SizedBox(height: 12),
-            const Text(
-              'No notifications yet',
-              style: TextStyle(
+            Text(
+              loc.noNotificationsMessage,
+              style: const TextStyle(
                 fontSize: 15,
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
@@ -181,7 +219,7 @@ class _AdminNotificationPageState extends State<AdminNotificationPage>
 
 // ── Mock data ──
 
-enum _NType { system, report, moderation }
+enum _NType { system, report, moderation, message }
 
 class _NotificationItem {
   final String title;
