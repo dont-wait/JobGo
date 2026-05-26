@@ -28,15 +28,33 @@ class _JobModerationPageState extends State<JobModerationPage> {
   void _showRejectionDialog(
     JobModerationItem job,
     AdminProvider adminProvider,
-  ) {
-    showDialog(
+  ) async {
+    List<String>? submittedReasons;
+
+    final reasons = await showDialog<List<String>>(
       context: context,
-      builder: (context) => RejectionDialog(
+      builder: (dialogContext) => RejectionDialog(
         onSubmit: (reasons) {
-          _handleRejection(job, reasons, adminProvider);
+          // CHỈ LƯU LÝ DO, KHÔNG GỌI POP Ở ĐÂY NỮA
+          // Tránh xung đột với lệnh Navigator.pop() đã có sẵn bên trong RejectionDialog
+          submittedReasons = reasons;
         },
       ),
     );
+    final finalReasons = reasons ?? submittedReasons;
+    if (finalReasons != null && finalReasons.isNotEmpty) {
+      final success = await _handleRejection(job, finalReasons, adminProvider);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success
+              ? 'Job "${job.title}" has been rejected'
+              : 'Reject failed: unable to update job status'),
+          backgroundColor: success ? AppColors.success : AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   void _handleApproval(
@@ -73,39 +91,25 @@ class _JobModerationPageState extends State<JobModerationPage> {
     }
   }
 
-  void _handleRejection(
+  Future<bool> _handleRejection(
     JobModerationItem job,
     List<String> reasons,
     AdminProvider adminProvider,
   ) async {
     try {
-      Navigator.of(context).pop();
       final success = await adminProvider.rejectJob(job.id, reasons, null);
-      if (success) {
+      return success;
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Job "${job.title}" has been rejected'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Reject failed: unable to update job status'),
+            content: Text('Error rejecting job: $e'),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error rejecting job: $e'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      return false;
     }
   }
 
@@ -115,16 +119,16 @@ class _JobModerationPageState extends State<JobModerationPage> {
   ) async {
     final shouldDelete = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Delete job post?'),
         content: Text('This will permanently remove "${job.title}".'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text('Delete'),
           ),

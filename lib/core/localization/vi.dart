@@ -32,6 +32,7 @@ final Map<String, String> vietStrings = {
   'emailRequired': 'Email là bắt buộc',
   'invalidEmailFormat': 'Định dạng email không hợp lệ',
   'passwordRequired': 'Mật khẩu là bắt buộc',
+  'accountBlocked': 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
 
   // Profile
   'profile': 'Hồ sơ',
