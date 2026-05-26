@@ -186,8 +186,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     final hasApplication = widget.application != null;
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
-
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -198,7 +196,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          isVi ? 'Hồ sơ ứng viên' : 'Candidate Profile',
+          loc.candidateProfileTitle,
           style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -285,8 +283,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     final candidate = _candidate;
 
     final application = widget.application;
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
-
     return Container(
       color: AppColors.white,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
@@ -385,9 +381,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   Text(
                     application.coverLetter.isNotEmpty
                         ? application.coverLetter
-                        : (isVi
-                            ? 'Không có thư xin việc nào được nộp cho đơn ứng tuyển này.'
-                            : 'No cover letter was submitted for this application.'),
+                        : loc.noCoverLetterSubmitted,
                     style: const TextStyle(
                       height: 1.6,
                       color: AppColors.textSecondary,
@@ -396,7 +390,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   if ((application.internalNotes ?? '').trim().isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Text(
-                      isVi ? 'Ghi chú nội bộ' : 'Internal Notes',
+                      loc.internalNotes,
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -423,7 +417,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   }
 
   Widget _buildApplicantActionBar() {
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+    final loc = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: BoxDecoration(
@@ -444,7 +438,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(
-              isVi ? 'Thao tác hồ sơ' : 'Application actions',
+              loc.applicationActions,
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -456,7 +450,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
             children: [
               Expanded(
                 child: _buildActionButton(
-                  isVi ? 'Từ chối' : 'Reject',
+                  loc.rejectAction,
                   AppColors.error,
                   Icons.close,
                   _confirmRejectCandidate,
@@ -465,7 +459,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildActionButton(
-                  isVi ? 'Tiềm năng' : 'Shortlist',
+                  loc.shortlistAction,
                   AppColors.white,
                   null,
                   _shortlistCandidate,
@@ -475,7 +469,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildActionButton(
-                  isVi ? 'Đặt lịch' : 'Schedule',
+                  loc.scheduleAction,
                   AppColors.primary,
                   null,
                   _openInterviewSchedule,
@@ -679,12 +673,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
   Widget _buildTabBar() {
     final loc = AppLocalizations.of(context);
-    final tabsList = [
-      loc.about,
-      loc.experience,
-      loc.skills,
-      loc.resume,
-    ];
+    final tabsList = [loc.about, loc.experience, loc.skills, loc.resume];
     return Container(
       color: AppColors.white,
       child: Row(
@@ -768,7 +757,10 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                 )
               : Text(
                   loc.noProfileSummary,
-                  style: const TextStyle(height: 1.6, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                    height: 1.6,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
         ),
         const SizedBox(height: 20),
@@ -1191,9 +1183,9 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
     if (!mounted) return;
     final loc = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(loc.resumeLinkCopied)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(loc.resumeLinkCopied)));
   }
 
   Widget _buildSkillChip(String skill) {
@@ -1225,17 +1217,13 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
       if (mounted) {
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(loc.shortlistSuccess),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(loc.shortlistSuccess)));
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(loc.shortlistFailed),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(loc.shortlistFailed)));
         }
       }
     } catch (e) {
@@ -1250,7 +1238,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   Future<void> _confirmRejectCandidate() async {
     if (widget.application == null) return;
     final loc = AppLocalizations.of(context);
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
 
     final shouldReject = await showDialog<bool>(
       context: context,
@@ -1265,7 +1252,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
-              isVi ? 'Từ chối' : 'Reject',
+              loc.rejectAction,
               style: const TextStyle(color: AppColors.error),
             ),
           ),
@@ -1282,17 +1269,15 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
         if (mounted) {
           if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(loc.rejectSuccess)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(loc.rejectSuccess)));
             // Go back to applicants list after rejection
             Navigator.pop(context, true);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(loc.rejectFailed),
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(loc.rejectFailed)));
           }
         }
       } catch (e) {

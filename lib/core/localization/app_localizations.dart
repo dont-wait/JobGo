@@ -597,6 +597,33 @@ class AppLocalizations {
   String get profileUpdateSuccess => translate('profileUpdateSuccess');
   String get profileUpdateFailed => translate('profileUpdateFailed');
   String get isFieldsRequired => translate('isFieldsRequired');
+  String get goodMorning => translate('goodMorning');
+  String get goodAfternoon => translate('goodAfternoon');
+  String get goodEvening => translate('goodEvening');
+  String get employerDashboardTitle => translate('employerDashboardTitle');
+  String get activeLabel => translate('activeLabel');
+  String get newProfiles => translate('newProfiles');
+  String get viewsStatistics => translate('viewsStatistics');
+  String get totalReachThisWeek => translate('totalReachThisWeek');
+  String get totalViews => translate('totalViews');
+  String get companyIntro => translate('companyIntro');
+  String get noCompanyData => translate('noCompanyData');
+  String get couldNotLoadCompanyProfile =>
+      translate('couldNotLoadCompanyProfile');
+  String get companyDetail => translate('companyDetail');
+  String get unnamedCompany => translate('unnamedCompany');
+  String get noCompanyDescription => translate('noCompanyDescription');
+  String get noCompanyAddress => translate('noCompanyAddress');
+  String get noCompanyWebsite => translate('noCompanyWebsite');
+  String get noCompanyEmail => translate('noCompanyEmail');
+  String get noCompanyPhone => translate('noCompanyPhone');
+  String get noCompanySize => translate('noCompanySize');
+  String get deleteCompanyProfileTitle =>
+      translate('deleteCompanyProfileTitle');
+  String get deleteCompanyProfileConfirm =>
+      translate('deleteCompanyProfileConfirm');
+  String get companyProfileDeleted => translate('companyProfileDeleted');
+  String get deleteErrorPrefix => translate('deleteErrorPrefix');
 
   // Employer Messages
   String get allMessagesSection => translate('allMessagesSection');
@@ -607,6 +634,7 @@ class AppLocalizations {
 
   // Employer Applicants / Candidate Profile
   String get profileSummary => translate('profileSummary');
+  String get candidateProfileTitle => translate('candidateProfileTitle');
   String get noProfileSummary => translate('noProfileSummary');
   String get seniorityLabel => translate('seniorityLabel');
   String get roleLabel => translate('roleLabel');
@@ -629,6 +657,12 @@ class AppLocalizations {
   String get rejectCandidateConfirm => translate('rejectCandidateConfirm');
   String get rejectSuccess => translate('rejectSuccess');
   String get rejectFailed => translate('rejectFailed');
+  String get noCoverLetterSubmitted => translate('noCoverLetterSubmitted');
+  String get internalNotes => translate('internalNotes');
+  String get applicationActions => translate('applicationActions');
+  String get rejectAction => translate('rejectAction');
+  String get shortlistAction => translate('shortlistAction');
+  String get scheduleAction => translate('scheduleAction');
 
   // Employer Job Applicants
   String get applicantsSubtitle => translate('applicantsSubtitle');
@@ -650,11 +684,14 @@ class AppLocalizations {
   String get noCandidatesMatching => translate('noCandidatesMatching');
   String get resetFilters => translate('resetFilters');
   String get noSkillsListed => translate('noSkillsListed');
+  String get refresh => translate('refresh');
+  String get unableToLoadCandidates => translate('unableToLoadCandidates');
 
   // Employer Interview Schedule / Detail / Edit / Create
   String get createInterviewTitle => translate('createInterviewTitle');
   String get editInterviewTitle => translate('editInterviewTitle');
   String get interviewDetailTitle => translate('interviewDetailTitle');
+  String get createNow => translate('createNow');
   String get pleaseSelectJob => translate('pleaseSelectJob');
   String get pleaseSelectCandidate => translate('pleaseSelectCandidate');
   String get pleaseSelectDateTime => translate('pleaseSelectDateTime');
@@ -667,6 +704,14 @@ class AppLocalizations {
   String get interviewTimeLabel => translate('interviewTimeLabel');
   String get selectTimeHint => translate('selectTimeHint');
   String get interviewTypeLabel => translate('interviewTypeLabel');
+  String get candidateInformation => translate('candidateInformation');
+  String get appointmentInformation => translate('appointmentInformation');
+  String get candidateLabel => translate('candidateLabel');
+  String get dateTimeLabel => translate('dateTimeLabel');
+  String get contactPersonLabel => translate('contactPersonLabel');
+  String get notesLabel => translate('notesLabel');
+  String get notSet => translate('notSet');
+  String get updateSchedule => translate('updateSchedule');
   String get locationHint => translate('locationHint');
   String get contactPersonHint => translate('contactPersonHint');
   String get notesHint => translate('notesHint');
@@ -681,6 +726,17 @@ class AppLocalizations {
   String get rescheduleProposal => translate('rescheduleProposal');
   String get rescheduleConfirmSuccess => translate('rescheduleConfirmSuccess');
   String get rescheduleRejectSuccess => translate('rescheduleRejectSuccess');
+
+  // Employer Payment
+  String get vnpayPaymentTitle => translate('vnpayPaymentTitle');
+  String get paymentSuccess => translate('paymentSuccess');
+  String get paymentFailedOrCanceled => translate('paymentFailedOrCanceled');
+  String get unableToOpenPaymentBrowser =>
+      translate('unableToOpenPaymentBrowser');
+  String get completePaymentTitle => translate('completePaymentTitle');
+  String get completePaymentMessage => translate('completePaymentMessage');
+  String get confirmPaid => translate('confirmPaid');
+  String get openingPaymentBrowser => translate('openingPaymentBrowser');
 }
 
 class _AppLocalizationsDelegate

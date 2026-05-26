@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/presentation/pages/employer/interview_schedule/create_interview_page.dart';
@@ -13,8 +12,7 @@ class InterviewSchedulePage extends StatefulWidget {
   const InterviewSchedulePage({super.key});
 
   @override
-  State<InterviewSchedulePage> createState() =>
-      _InterviewSchedulePageState();
+  State<InterviewSchedulePage> createState() => _InterviewSchedulePageState();
 }
 
 class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
@@ -31,7 +29,6 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
@@ -49,9 +46,7 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const CreateInterviewPage(),
-            ),
+            MaterialPageRoute(builder: (_) => const CreateInterviewPage()),
           );
 
           // reload sau khi tạo xong
@@ -73,8 +68,11 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.event_busy,
-                      size: 60, color: AppColors.textHint),
+                  const Icon(
+                    Icons.event_busy,
+                    size: 60,
+                    color: AppColors.textHint,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     loc.noInterviewsMessage,
@@ -93,12 +91,10 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
                         ),
                       );
 
-                      context
-                          .read<InterviewProvider>()
-                          .loadSchedules();
+                      context.read<InterviewProvider>().loadSchedules();
                     },
-                    child: Text(isVi ? "Tạo lịch ngay" : "Create now"),
-                  )
+                    child: Text(loc.createNow),
+                  ),
                 ],
               ),
             );
@@ -112,64 +108,64 @@ class _InterviewSchedulePageState extends State<InterviewSchedulePage> {
               final schedule = provider.schedules[index];
 
               return InterviewCard(
-                  schedule: schedule,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => InterviewDetailPage(schedule: schedule),
-                      ),
-                    );
-                  },
-                  onDelete: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: Text(loc.deleteInterviewTitle),
-                        content: Text(loc.deleteInterviewConfirm),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(loc.cancel),
+                schedule: schedule,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => InterviewDetailPage(schedule: schedule),
+                    ),
+                  );
+                },
+                onDelete: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: Text(loc.deleteInterviewTitle),
+                      content: Text(loc.deleteInterviewConfirm),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(loc.cancel),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+
+                            await context
+                                .read<InterviewProvider>()
+                                .deleteSchedule(schedule.id);
+
+                            // reload
+                            context.read<InterviewProvider>().loadSchedules();
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(loc.deleteSuccessMsg)),
+                              );
+                            }
+                          },
+                          child: Text(
+                            loc.delete,
+                            style: const TextStyle(color: Colors.red),
                           ),
-                          TextButton(
-                            onPressed: () async {
-                              Navigator.pop(context);
-
-                              await context
-                                  .read<InterviewProvider>()
-                                  .deleteSchedule(schedule.id);
-
-                              // reload
-                              context.read<InterviewProvider>().loadSchedules();
-
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(loc.deleteSuccessMsg)),
-                                );
-                              }
-                            },
-                            child: Text(
-                              loc.delete,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  onEdit: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EditInterviewPage(schedule: schedule),
-                      ),
-                    );
-                    if (context.mounted) {
-                        context.read<InterviewProvider>().loadSchedules();
-                      }                  
-                  },
-                );
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                onEdit: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditInterviewPage(schedule: schedule),
+                    ),
+                  );
+                  if (context.mounted) {
+                    context.read<InterviewProvider>().loadSchedules();
+                  }
+                },
+              );
             },
           );
         },

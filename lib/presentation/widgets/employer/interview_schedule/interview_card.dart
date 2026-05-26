@@ -162,7 +162,7 @@ class InterviewCard extends StatelessWidget {
                 icon: Icons.person_outline,
                 iconColor: Colors.blueAccent,
                 text:
-                    "${loc.contactLabel} ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : 'N/A'}",
+                    "${loc.contactLabel}: ${schedule.contactPerson.isNotEmpty ? schedule.contactPerson : 'N/A'}",
               ),
 
               //  Note

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
@@ -56,19 +55,20 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
       if (!mounted) return;
       setState(() {
         _jobs = jobs.map((j) => {'id': j.id, 'title': j.title}).toList();
-        _candidates = candidates.map((c) => {'id': c.cId, 'name': c.fullName}).toList();
+        _candidates = candidates
+            .map((c) => {'id': c.cId, 'name': c.fullName})
+            .toList();
         _isLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
       final loc = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${loc.errorMessage}$e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
     }
   }
-
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -91,21 +91,21 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
   Future<void> _submit() async {
     final loc = AppLocalizations.of(context);
     if (_selectedJobId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(loc.pleaseSelectJob)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.pleaseSelectJob)));
       return;
     }
     if (_selectedCandidateId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(loc.pleaseSelectCandidate)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.pleaseSelectCandidate)));
       return;
     }
     if (_date == null || _time == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(loc.pleaseSelectDateTime)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.pleaseSelectDateTime)));
       return;
     }
 
@@ -134,8 +134,6 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
-
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -197,7 +195,10 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today, color: AppColors.primary),
+                          const Icon(
+                            Icons.calendar_today,
+                            color: AppColors.primary,
+                          ),
                           const SizedBox(width: 12),
                           Text(
                             _date == null
@@ -229,7 +230,10 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.access_time, color: AppColors.primary),
+                          const Icon(
+                            Icons.access_time,
+                            color: AppColors.primary,
+                          ),
                           const SizedBox(width: 12),
                           Text(
                             _time == null
@@ -254,7 +258,10 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
                     value: _type,
                     items: const [
                       DropdownMenuItem(value: 'Online', child: Text('Online')),
-                      DropdownMenuItem(value: 'Offline', child: Text('Offline')),
+                      DropdownMenuItem(
+                        value: 'Offline',
+                        child: Text('Offline'),
+                      ),
                     ],
                     onChanged: (v) => setState(() => _type = v!),
                     decoration: _inputDecoration(),
@@ -263,19 +270,19 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
                   const SizedBox(height: 16),
 
                   // Địa điểm
-                  _buildLabel(isVi ? 'Địa điểm' : 'Location'),
+                  _buildLabel(loc.location),
                   _buildTextField(_locationCtrl, loc.locationHint),
 
                   const SizedBox(height: 16),
 
                   // Người liên hệ
-                  _buildLabel(isVi ? 'Người liên hệ' : 'Contact Person'),
+                  _buildLabel(loc.contactPersonLabel),
                   _buildTextField(_contactCtrl, loc.contactPersonHint),
 
                   const SizedBox(height: 16),
 
                   // Ghi chú
-                  _buildLabel(isVi ? 'Ghi chú' : 'Notes'),
+                  _buildLabel(loc.notesLabel),
                   _buildTextField(_noteCtrl, loc.notesHint, maxLines: 3),
 
                   const SizedBox(height: 32),

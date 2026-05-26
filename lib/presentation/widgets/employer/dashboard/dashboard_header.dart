@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/dashboard_model.dart';
 
 class DashboardHeader extends StatelessWidget {
   final DashboardStats stats;
 
-  const DashboardHeader({
-    super.key,
-    required this.stats,
-  });
+  const DashboardHeader({super.key, required this.stats});
 
-  String _getGreeting() {
+  String _getGreeting(AppLocalizations loc) {
     final hour = DateTime.now().hour;
     if (hour < 12) {
-      return 'Good Morning';
+      return loc.goodMorning;
     } else if (hour < 18) {
-      return 'Good Afternoon';
+      return loc.goodAfternoon;
     } else {
-      return 'Good Evening';
+      return loc.goodEvening;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -30,10 +30,7 @@ class DashboardHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary,
-            AppColors.primary.withOpacity(0.8),
-          ],
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
         ),
       ),
       child: Column(
@@ -47,7 +44,7 @@ class DashboardHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _getGreeting(),
+                      _getGreeting(loc),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -55,9 +52,9 @@ class DashboardHeader extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Employer Dashboard',
-                      style: TextStyle(
+                    Text(
+                      loc.employerDashboardTitle,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -76,10 +73,7 @@ class DashboardHeader extends StatelessWidget {
                   onPressed: () {
                     // TODO: Refresh dashboard
                   },
-                  icon: const Icon(
-                    Icons.refresh_outlined,
-                    color: Colors.white,
-                  ),
+                  icon: const Icon(Icons.refresh_outlined, color: Colors.white),
                 ),
               ),
             ],
@@ -90,15 +84,13 @@ class DashboardHeader extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-              ),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildHeaderStat(
-                  label: 'Active',
+                  label: loc.activeLabel,
                   value: stats.activePostings.toString(),
                 ),
                 Container(
@@ -107,7 +99,7 @@ class DashboardHeader extends StatelessWidget {
                   color: Colors.white.withOpacity(0.3),
                 ),
                 _buildHeaderStat(
-                  label: 'New Profiles',
+                  label: loc.newProfiles,
                   value: stats.newProfiles.toString(),
                 ),
               ],

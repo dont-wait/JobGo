@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/interview_schedule_model.dart';
@@ -25,10 +24,10 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
     _schedule = widget.schedule;
     Future.microtask(() async {
       await context.read<InterviewProvider>().loadSchedules();
-      final updated = context.read<InterviewProvider>()
-          .schedules
-          .firstWhere((s) => s.id == widget.schedule.id,
-              orElse: () => widget.schedule);
+      final updated = context.read<InterviewProvider>().schedules.firstWhere(
+        (s) => s.id == widget.schedule.id,
+        orElse: () => widget.schedule,
+      );
       if (mounted) {
         setState(() => _schedule = updated);
       }
@@ -37,35 +36,46 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
 
   Color get _statusColor {
     switch (_schedule.status) {
-      case 'accepted': return Colors.green;
-      case 'rejected': return Colors.red;
-      case 'reschedule': return Colors.orange;
-      default: return Colors.grey;
+      case 'accepted':
+        return Colors.green;
+      case 'rejected':
+        return Colors.red;
+      case 'reschedule':
+        return Colors.orange;
+      default:
+        return Colors.grey;
     }
   }
 
   String _getStatusText(AppLocalizations loc) {
     switch (_schedule.status) {
-      case 'accepted': return loc.candidateConfirmed;
-      case 'rejected': return loc.candidateRejected;
-      case 'reschedule': return loc.candidateReschedule;
-      default: return loc.candidatePending;
+      case 'accepted':
+        return loc.candidateConfirmed;
+      case 'rejected':
+        return loc.candidateRejected;
+      case 'reschedule':
+        return loc.candidateReschedule;
+      default:
+        return loc.candidatePending;
     }
   }
 
   IconData get _statusIcon {
     switch (_schedule.status) {
-      case 'accepted': return Icons.check_circle_outline;
-      case 'rejected': return Icons.cancel_outlined;
-      case 'reschedule': return Icons.schedule;
-      default: return Icons.hourglass_empty;
+      case 'accepted':
+        return Icons.check_circle_outline;
+      case 'rejected':
+        return Icons.cancel_outlined;
+      case 'reschedule':
+        return Icons.schedule;
+      default:
+        return Icons.hourglass_empty;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
@@ -137,11 +147,11 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle(isVi ? 'Thông tin ứng viên' : 'Candidate Information'),
+                  _buildSectionTitle(loc.candidateInformation),
                   _buildRow(
                     icon: Icons.person_outline,
                     iconColor: AppColors.primary,
-                    label: isVi ? 'Ứng viên' : 'Candidate',
+                    label: loc.candidateLabel,
                     value: _schedule.candidateName,
                   ),
                   _buildRow(
@@ -168,12 +178,13 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle(isVi ? 'Thông tin lịch hẹn' : 'Appointment Information'),
+                  _buildSectionTitle(loc.appointmentInformation),
                   _buildRow(
                     icon: Icons.calendar_today_rounded,
                     iconColor: AppColors.primary,
-                    label: isVi ? 'Ngày giờ' : 'Date & Time',
-                    value: '${_schedule.date.day}/${_schedule.date.month}/${_schedule.date.year} • '
+                    label: loc.dateTimeLabel,
+                    value:
+                        '${_schedule.date.day}/${_schedule.date.month}/${_schedule.date.year} • '
                         '${_schedule.date.hour}:${_schedule.date.minute.toString().padLeft(2, '0')}',
                   ),
                   _buildRow(
@@ -185,20 +196,24 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                   _buildRow(
                     icon: Icons.location_on_rounded,
                     iconColor: Colors.redAccent,
-                    label: isVi ? 'Địa điểm' : 'Location',
-                    value: _schedule.location.isNotEmpty ? _schedule.location : (isVi ? 'Chưa có' : 'Not set'),
+                    label: loc.location,
+                    value: _schedule.location.isNotEmpty
+                        ? _schedule.location
+                        : loc.notSet,
                   ),
                   _buildRow(
                     icon: Icons.person_outline,
                     iconColor: Colors.blueAccent,
-                    label: isVi ? 'Người liên hệ' : 'Contact Person',
-                    value: _schedule.contactPerson.isNotEmpty ? _schedule.contactPerson : 'N/A',
+                    label: loc.contactPersonLabel,
+                    value: _schedule.contactPerson.isNotEmpty
+                        ? _schedule.contactPerson
+                        : 'N/A',
                   ),
                   if (_schedule.note.isNotEmpty)
                     _buildRow(
                       icon: Icons.note_alt_outlined,
                       iconColor: Colors.orange,
-                      label: isVi ? 'Ghi chú' : 'Notes',
+                      label: loc.notesLabel,
                       value: _schedule.note,
                     ),
                 ],
@@ -206,7 +221,8 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
             ),
 
             // ✅ Phần xác nhận/từ chối đổi lịch
-            if (_schedule.status == 'reschedule' && _schedule.requestedDate != null) ...[
+            if (_schedule.status == 'reschedule' &&
+                _schedule.requestedDate != null) ...[
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
@@ -251,7 +267,10 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                           child: OutlinedButton.icon(
                             onPressed: () => _rejectReschedule(context),
                             icon: const Icon(Icons.close, color: Colors.red),
-                            label: Text(isVi ? 'Từ chối' : 'Reject', style: const TextStyle(color: Colors.red)),
+                            label: Text(
+                              loc.rejectAction,
+                              style: const TextStyle(color: Colors.red),
+                            ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.red),
                             ),
@@ -262,7 +281,7 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                           child: ElevatedButton.icon(
                             onPressed: () => _confirmReschedule(context),
                             icon: const Icon(Icons.check),
-                            label: Text(isVi ? 'Xác nhận' : 'Confirm'),
+                            label: Text(loc.ok),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
@@ -312,8 +331,21 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textHint)),
-                Text(value, style: const TextStyle(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textHint,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ),
           ),
@@ -337,9 +369,9 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${loc.errorMessage}$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
       }
     }
   }
@@ -359,9 +391,9 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${loc.errorMessage}$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
       }
     }
   }

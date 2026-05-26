@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -13,7 +14,8 @@ import 'dart:io';
 class VNPayConfig {
   static String get tmnCode => dotenv.env['VNPAY_TMN_CODE'] ?? '';
   static String get hashSecret => dotenv.env['VNPAY_HASH_SECRET'] ?? '';
-  static const String url = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
+  static const String url =
+      'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html';
   static const String returnUrl = 'jobgo://vnpay-return';
 }
 
@@ -44,7 +46,9 @@ class VNPayService {
     for (String key in sortedKeys) {
       final value = vnpParams[key]!;
       // Dùng encodeQueryComponent thay vì encodeComponent để xử lý đúng chuẩn
-      queryData.add('${Uri.encodeQueryComponent(key)}=${Uri.encodeQueryComponent(value)}');
+      queryData.add(
+        '${Uri.encodeQueryComponent(key)}=${Uri.encodeQueryComponent(value)}',
+      );
     }
     String queryString = queryData.join('&');
 
@@ -58,7 +62,6 @@ class VNPayService {
 }
 
 // ...existing code...
-
 
 class PaymentPage extends StatefulWidget {
   final double amount;
@@ -97,15 +100,22 @@ class _PaymentPageState extends State<PaymentPage> {
               if (request.url.startsWith(VNPayConfig.returnUrl)) {
                 final uri = Uri.parse(request.url);
                 final responseCode = uri.queryParameters['vnp_ResponseCode'];
+                final loc = AppLocalizations.of(context);
 
                 if (responseCode == '00') {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Thanh toán thành công!'), backgroundColor: Colors.green),
+                    SnackBar(
+                      content: Text(loc.paymentSuccess),
+                      backgroundColor: Colors.green,
+                    ),
                   );
                   Navigator.pop(context, true);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Thanh toán thất bại hoặc bị hủy!'), backgroundColor: Colors.red),
+                    SnackBar(
+                      content: Text(loc.paymentFailedOrCanceled),
+                      backgroundColor: Colors.red,
+                    ),
                   );
                   Navigator.pop(context, false);
                 }
@@ -130,8 +140,12 @@ class _PaymentPageState extends State<PaymentPage> {
       }
     } else {
       if (mounted) {
+        final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể mở trình duyệt để thanh toán!'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(loc.unableToOpenPaymentBrowser),
+            backgroundColor: Colors.red,
+          ),
         );
         Navigator.pop(context, false);
       }
@@ -139,26 +153,27 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   void _showReturnDialog() {
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Hoàn tất thanh toán'),
-        content: const Text('Vui lòng hoàn tất thanh toán trên trình duyệt. Sau khi xong, nhấn "Xác nhận đã thanh toán" để tiếp tục.'),
+        title: Text(loc.completePaymentTitle),
+        content: Text(loc.completePaymentMessage),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               Navigator.of(context).pop(true); // Giả định thanh toán thành công
             },
-            child: const Text('Xác nhận đã thanh toán'),
+            child: Text(loc.confirmPaid),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               Navigator.of(context).pop(false); // Hủy
             },
-            child: const Text('Hủy'),
+            child: Text(loc.cancel),
           ),
         ],
       ),
@@ -167,11 +182,13 @@ class _PaymentPageState extends State<PaymentPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     if (Platform.isWindows) {
       // Hiển thị loading hoặc hướng dẫn trên Windows
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Thanh toán VNPay'),
+          title: Text(loc.vnpayPaymentTitle),
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 0.5,
@@ -180,15 +197,13 @@ class _PaymentPageState extends State<PaymentPage> {
             onPressed: () => Navigator.pop(context, false),
           ),
         ),
-        body: const Center(
-          child: Text('Đang mở trình duyệt để thanh toán...'),
-        ),
+        body: Center(child: Text(loc.openingPaymentBrowser)),
       );
     }
     // Android/iOS: vẫn dùng WebView
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thanh toán VNPay'),
+        title: Text(loc.vnpayPaymentTitle),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.5,
@@ -201,9 +216,7 @@ class _PaymentPageState extends State<PaymentPage> {
         children: [
           WebViewWidget(controller: _controller),
           if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(color: Colors.blue),
-            ),
+            const Center(child: CircularProgressIndicator(color: Colors.blue)),
         ],
       ),
     );
