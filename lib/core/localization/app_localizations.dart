@@ -560,6 +560,17 @@ class AppLocalizations {
   String get add => translate('add');
   String get skillLabel => translate('skillLabel');
   String get skillSearchHint => translate('skillSearchHint');
+
+  // Tab labels for notification pages
+  String get responsesTabLabel => translate('responsesTabLabel');
+  String get systemTabLabel => translate('systemTabLabel');
+  String get reportsTabLabel => translate('reportsTabLabel');
+
+  // Notifications Page strings
+  String get noNotificationsMessage => translate('noNotificationsMessage');
+  String get unableToLoadNotifications => translate('unableToLoadNotifications');
+  String get markAllAsRead => translate('markAllAsRead');
+  String get allMarkedAsReadMessage => translate('allMarkedAsReadMessage');
 }
 
 class _AppLocalizationsDelegate

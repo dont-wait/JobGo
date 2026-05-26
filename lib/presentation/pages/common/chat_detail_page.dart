@@ -194,7 +194,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     }
 
     return StreamBuilder<List<ChatMessageModel>>(
-      stream: context.read<ChatProvider>().streamMessages(widget.otherUserId),
+      stream: context.read<ChatProvider>().streamMessages(_currentUserId!, widget.otherUserId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -253,6 +253,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     5;
 
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (showTime) _buildTimeDivider(msg.sentAt),
                 _MessageBubble(message: msg, isMe: isMe),

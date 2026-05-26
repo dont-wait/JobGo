@@ -14,6 +14,7 @@ class ChatRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   int? _cachedUserId;
+  String? _cachedAuthUid;
 
   /// Public getter cho cached user ID.
   int? get cachedUserId => _cachedUserId;
@@ -21,10 +22,16 @@ class ChatRepository {
   // ── Lấy u_id hiện tại ──
 
   Future<int?> getCurrentUserId() async {
-    if (_cachedUserId != null) return _cachedUserId;
-
     final authUser = _supabase.auth.currentUser;
-    if (authUser == null) return null;
+    if (authUser == null) {
+      _cachedUserId = null;
+      _cachedAuthUid = null;
+      return null;
+    }
+
+    if (_cachedUserId != null && _cachedAuthUid == authUser.id) {
+      return _cachedUserId;
+    }
 
     final userRow = await _supabase
         .from('users')
@@ -34,10 +41,14 @@ class ChatRepository {
 
     if (userRow == null) return null;
     _cachedUserId = _toInt(userRow['u_id']);
+    _cachedAuthUid = authUser.id;
     return _cachedUserId;
   }
 
-  void clearCache() => _cachedUserId = null;
+  void clearCache() {
+    _cachedUserId = null;
+    _cachedAuthUid = null;
+  }
 
   // ── Conversations (derived từ bảng messages) ──
 
@@ -135,10 +146,7 @@ class ChatRepository {
   // ── Messages ──
 
   /// Stream realtime messages giữa current user và [otherUserId].
-  Stream<List<ChatMessageModel>> streamMessages(int otherUserId) {
-    final userId = _cachedUserId;
-    if (userId == null) return const Stream.empty();
-
+  Stream<List<ChatMessageModel>> streamMessages(int currentUserId, int otherUserId) {
     return _supabase
         .from('messages')
         .stream(primaryKey: ['m_id'])
@@ -146,8 +154,8 @@ class ChatRepository {
         .map((rows) => rows
             .map((r) => ChatMessageModel.fromJson(Map<String, dynamic>.from(r)))
             .where((m) =>
-                (m.senderId == userId && m.receiverId == otherUserId) ||
-                (m.senderId == otherUserId && m.receiverId == userId))
+                (m.senderId == currentUserId && m.receiverId == otherUserId) ||
+                (m.senderId == otherUserId && m.receiverId == currentUserId))
             .toList());
   }
 

@@ -587,4 +587,11 @@ final Map<String, String> englishStrings = {
   'add': 'Add',
   'skillLabel': 'Skill',
   'skillSearchHint': 'Type to search skill...',
+  'responsesTabLabel': 'Responses',
+  'systemTabLabel': 'System',
+  'reportsTabLabel': 'Reports',
+  'noNotificationsMessage': 'No notifications yet',
+  'unableToLoadNotifications': 'Unable to load notifications',
+  'markAllAsRead': 'Mark all as read',
+  'allMarkedAsReadMessage': 'All notifications marked as read',
 };

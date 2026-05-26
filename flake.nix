@@ -1,5 +1,5 @@
 {
-  description = "Flutter Full Stack for NixOS - Optimized for Emulator";
+  description = "Flutter Full Stack for NixOS - Linux Desktop & Emulator";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
@@ -98,6 +98,18 @@
               glib
               libsecret
               sysprof
+              # Flutter Linux desktop deps
+              libepoxy
+              pcre2
+              harfbuzz
+              pango
+              cairo
+              gdk-pixbuf
+              atk
+              xorg.libXdamage
+              xorg.libXcomposite
+              xorg.libXcursor
+              xorg.libXinerama
             ]
             ++ emulatorLibs;
 
@@ -127,7 +139,8 @@
                                                echo "✅ Flutter dev shell ready!"
                                                echo "   ANDROID_HOME : $ANDROID_HOME"
                                                echo "   LD_LIBRARY_PATH set for emulator"
-                        export CHROME_EXECUTABLE="$HOME/.nix-profile/bin/firefox"          '';
+                                                echo "   Run: flutter run -d linux"
+          '';
         };
       }
     );

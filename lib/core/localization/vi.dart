@@ -586,4 +586,11 @@ final Map<String, String> vietStrings = {
   'add': 'Thêm',
   'skillLabel': 'Kỹ năng',
   'skillSearchHint': 'Gõ để tìm kỹ năng...',
+  'responsesTabLabel': 'Phản hồi',
+  'systemTabLabel': 'Hệ thống',
+  'reportsTabLabel': 'Báo cáo',
+  'noNotificationsMessage': 'Chưa có thông báo nào',
+  'unableToLoadNotifications': 'Không thể tải thông báo',
+  'markAllAsRead': 'Đánh dấu tất cả là đã đọc',
+  'allMarkedAsReadMessage': 'Đã đánh dấu tất cả thông báo là đã đọc',
 };

@@ -4,6 +4,8 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/notification_model.dart';
 import 'package:jobgo/presentation/providers/notification_provider.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
+import 'package:jobgo/presentation/providers/chat_provider.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 
 /// Employer Notifications page — realtime qua NotificationProvider.
@@ -22,7 +24,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -33,6 +35,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
       appBar: AppBar(
@@ -41,9 +44,9 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
         scrolledUnderElevation: 0.5,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          loc.notifications,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -52,12 +55,12 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
         actions: [
           IconButton(
             icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
-            tooltip: 'Mark all as read',
+            tooltip: loc.markAllAsRead,
             onPressed: () {
               context.read<NotificationProvider>().markAllAsRead();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('All notifications marked as read'),
+                SnackBar(
+                  content: Text(loc.allMarkedAsReadMessage),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -76,11 +79,41 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Applicants'),
-            Tab(text: 'Responses'),
-            Tab(text: 'System'),
+          tabs: [
+            Tab(text: loc.allLabel),
+            Tab(text: loc.applicants),
+            Tab(text: loc.responsesTabLabel),
+            Tab(text: loc.systemTabLabel),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(loc.messagesTitle),
+                  Consumer<ChatProvider>(
+                    builder: (context, chatProvider, _) {
+                      final count = chatProvider.totalUnread;
+                      if (count <= 0) return const SizedBox.shrink();
+                      return Container(
+                        margin: const EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -91,6 +124,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
           _buildNotificationTab(_NType.applicant),
           _buildNotificationTab(_NType.response),
           _buildNotificationTab(_NType.system),
+          _buildNotificationTab(_NType.message),
         ],
       ),
     );
@@ -120,6 +154,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
   }
 
   Widget _buildErrorState(String message) {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -129,9 +164,9 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             Icon(Icons.error_outline,
                 size: 56, color: AppColors.error.withValues(alpha: 0.7)),
             const SizedBox(height: 12),
-            const Text(
-              'Unable to load notifications',
-              style: TextStyle(
+            Text(
+              loc.unableToLoadNotifications,
+              style: const TextStyle(
                 fontSize: 15,
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -148,7 +183,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             ElevatedButton(
               onPressed: () =>
                   context.read<NotificationProvider>().loadNotifications(),
-              child: const Text('Retry'),
+              child: Text(loc.retryButton),
             ),
           ],
         ),
@@ -160,6 +195,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     List<_NotificationItem> items,
     NotificationProvider provider,
   ) {
+    final loc = AppLocalizations.of(context);
     if (items.isEmpty) {
       return RefreshIndicator(
         onRefresh: () => provider.loadNotifications(),
@@ -176,9 +212,9 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
                         size: 64,
                         color: AppColors.textHint.withValues(alpha: 0.5)),
                     const SizedBox(height: 12),
-                    const Text(
-                      'No notifications yet',
-                      style: TextStyle(
+                    Text(
+                      loc.noNotificationsMessage,
+                      style: const TextStyle(
                         fontSize: 15,
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
@@ -290,6 +326,10 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
       return _NType.response;
     }
 
+    if (normalized.contains('message') || normalized.contains('chat')) {
+      return _NType.message;
+    }
+
     return _NType.system;
   }
 
@@ -321,6 +361,12 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
           icon: Icons.schedule_outlined,
           iconBg: Color(0xFFFFF8E1),
           iconColor: AppColors.warning,
+        );
+      case _NType.message:
+        return const _NotificationVisual(
+          icon: Icons.chat_bubble_outline,
+          iconBg: Color(0xFFE8F5E9),
+          iconColor: AppColors.success,
         );
       case _NType.system:
         return const _NotificationVisual(
@@ -355,7 +401,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
 
 // ── Data classes ──
 
-enum _NType { all, applicant, response, system }
+enum _NType { all, applicant, response, system, message }
 
 class _NotificationVisual {
   final IconData icon;

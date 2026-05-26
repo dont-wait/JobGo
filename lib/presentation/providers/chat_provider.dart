@@ -111,8 +111,8 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// Stream messages giữa current user và [otherUserId].
-  Stream<List<ChatMessageModel>> streamMessages(int otherUserId) {
-    return _repository.streamMessages(otherUserId);
+  Stream<List<ChatMessageModel>> streamMessages(int currentUserId, int otherUserId) {
+    return _repository.streamMessages(currentUserId, otherUserId);
   }
 
   /// Lấy userId hiện tại.
