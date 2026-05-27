@@ -207,7 +207,7 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
                     label: loc.contactPersonLabel,
                     value: _schedule.contactPerson.isNotEmpty
                         ? _schedule.contactPerson
-                        : 'N/A',
+                        : loc.notSet,
                   ),
                   if (_schedule.note.isNotEmpty)
                     _buildRow(
@@ -371,7 +371,7 @@ class _InterviewDetailPageState extends State<InterviewDetailPage> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
+        ).showSnackBar(SnackBar(content: Text(loc.errorMessage)));
       }
     }
   }

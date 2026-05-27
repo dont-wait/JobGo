@@ -223,7 +223,7 @@ class CompanyDetailPage extends StatelessWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${loc.deleteErrorPrefix}$e')),
+                    SnackBar(content: Text(loc.somethingWentWrong)),
                   );
                 }
               }

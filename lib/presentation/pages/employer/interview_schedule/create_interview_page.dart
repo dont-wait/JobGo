@@ -256,12 +256,9 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
                   _buildLabel(loc.interviewTypeLabel),
                   DropdownButtonFormField<String>(
                     value: _type,
-                    items: const [
-                      DropdownMenuItem(value: 'Online', child: Text('Online')),
-                      DropdownMenuItem(
-                        value: 'Offline',
-                        child: Text('Offline'),
-                      ),
+                    items: [
+                        DropdownMenuItem(value: 'Online', child: Text(loc.translate('online'))),
+                        DropdownMenuItem(value: 'Offline', child: Text(loc.translate('offline'))),
                     ],
                     onChanged: (v) => setState(() => _type = v!),
                     decoration: _inputDecoration(),

@@ -93,9 +93,9 @@ class _CompanyProfilePageState extends State<CompanyProfilePage> {
                 location:
                     employer!['e_company_address'] ?? loc.noCompanyAddress,
                 website: employer!['e_website'] ?? loc.noCompanyWebsite,
-                email: employer!['e_email'] ?? '',
-                phone: employer!['e_phone'] ?? '',
-                companySize: employer!['e_company_size'] ?? '',
+                email: employer!['e_email'] ?? loc.noCompanyEmail,
+                phone: employer!['e_phone'] ?? loc.noCompanyPhone,
+                companySize: employer!['e_company_size'] ?? loc.noCompanySize,
               ),
             ),
     );
