@@ -4,6 +4,7 @@ import 'package:jobgo/data/models/candidate_supabase_model.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile_page.dart';
 import 'package:jobgo/presentation/widgets/employer/talent/talent_search_widget.dart';
+import 'package:jobgo/core/utils/app_logger.dart';
 
 class TalentPage extends StatefulWidget {
   const TalentPage({super.key});
@@ -46,7 +47,8 @@ class _TalentPageState extends State<TalentPage> {
         _errorMessage = null;
       });
       _applyFilters();
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.error('Lỗi tải danh sách ứng viên', error: e, stackTrace: st);
       if (!mounted) return;
       final loc = AppLocalizations.of(context);
 
@@ -60,7 +62,7 @@ class _TalentPageState extends State<TalentPage> {
       if (_allCandidates.isNotEmpty) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${loc.refreshFailed}: $e')));
+        ).showSnackBar(SnackBar(content: Text(loc.refreshFailed)));
       }
     } finally {
       if (!mounted) return;
