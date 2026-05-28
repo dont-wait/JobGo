@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 
 class ViewsStatisticsChart extends StatelessWidget {
   final List<double> weeklyData;
   final int totalViews;
   final String? trendLabel;
   final bool trendPositive;
-  final String title;
-  final String subtitle;
-  final String totalLabel;
+  final String? title;
+  final String? subtitle;
+  final String? totalLabel;
 
   const ViewsStatisticsChart({
     super.key,
@@ -16,26 +17,24 @@ class ViewsStatisticsChart extends StatelessWidget {
     this.totalViews = 1240,
     this.trendLabel,
     this.trendPositive = true,
-    this.title = 'Views Statistics',
-    this.subtitle = 'Total reach this week',
-    this.totalLabel = 'Total Views',
+    this.title,
+    this.subtitle,
+    this.totalLabel,
   });
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     double maxValue = weeklyData.reduce((a, b) => a > b ? a : b);
     double minValue = weeklyData.reduce((a, b) => a < b ? a : b);
     double range = maxValue - minValue;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.border,
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -51,7 +50,7 @@ class ViewsStatisticsChart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                title ?? loc.viewsStatistics,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -60,7 +59,7 @@ class ViewsStatisticsChart extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                subtitle,
+                subtitle ?? loc.totalReachThisWeek,
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -77,7 +76,7 @@ class ViewsStatisticsChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    totalLabel,
+                    totalLabel ?? loc.totalViews,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -97,12 +96,12 @@ class ViewsStatisticsChart extends StatelessWidget {
               ),
               if (trendLabel != null && trendLabel!.trim().isNotEmpty)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: (trendPositive
-                            ? AppColors.success
-                            : AppColors.error)
+                    color: (trendPositive ? AppColors.success : AppColors.error)
                         .withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -136,7 +135,7 @@ class ViewsStatisticsChart extends StatelessWidget {
     double range,
   ) {
     const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    
+
     return Stack(
       children: [
         // Line chart with area fill
@@ -255,9 +254,7 @@ class LineChartPainter extends CustomPainter {
       );
 
       final paint = Paint()
-        ..shader = gradient.createShader(
-          Rect.fromLTWH(0, 0, width, height),
-        );
+        ..shader = gradient.createShader(Rect.fromLTWH(0, 0, width, height));
 
       canvas.drawPath(fillPath, paint);
     }
@@ -319,4 +316,3 @@ class LineChartPainter extends CustomPainter {
     return oldDelegate.data != data;
   }
 }
-

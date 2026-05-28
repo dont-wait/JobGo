@@ -134,7 +134,10 @@ class TalentSearchWidget extends StatelessWidget {
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 15,
+            ),
           ),
           onChanged: onSearchChanged,
         ),
@@ -233,7 +236,6 @@ class TalentSearchWidget extends StatelessWidget {
 
   Widget _buildCandidateList(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final isVi = Localizations.localeOf(context).languageCode == 'vi';
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -303,7 +305,7 @@ class TalentSearchWidget extends StatelessWidget {
                   ElevatedButton.icon(
                     onPressed: onRetry,
                     icon: const Icon(Icons.refresh),
-                    label: Text(isVi ? 'Tải lại' : 'Refresh'),
+                    label: Text(loc.refresh),
                   ),
                 ],
               ),

@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import '../../../../core/configs/theme/app_colors.dart';
 
 class CompanyProfileCard extends StatelessWidget {
@@ -26,6 +26,7 @@ class CompanyProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final isNetwork = imagePath.startsWith('http');
 
     return Container(
@@ -38,7 +39,7 @@ class CompanyProfileCard extends StatelessWidget {
             color: Colors.black.withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -49,10 +50,7 @@ class CompanyProfileCard extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  AppColors.primary.withOpacity(0.7),
-                ],
+                colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)],
               ),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
@@ -88,15 +86,15 @@ class CompanyProfileCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Giới thiệu",
-                  style: TextStyle(
+                Text(
+                  loc.companyIntro,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
                 ),
                 const SizedBox(height: 8),
-               
+
                 SizedBox(
                   height: 120, // giới hạn chiều cao phần mô tả
                   child: SingleChildScrollView(
@@ -137,6 +135,7 @@ class CompanyProfileCard extends StatelessWidget {
       ),
     );
   }
+
   Widget _info(IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),

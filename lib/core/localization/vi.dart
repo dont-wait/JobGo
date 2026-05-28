@@ -111,7 +111,6 @@ final Map<String, String> vietStrings = {
   'tryAgain': 'Thử lại',
   'noInternetConnection': 'Không có kết nối Internet',
   'somethingWentWrong': 'Có gì đó không ổn',
-  'close': 'Đóng',
   'open': 'Mở',
   'yes': 'Có',
   'no': 'Không',
@@ -307,7 +306,6 @@ final Map<String, String> vietStrings = {
   'scheduleConfirmedMessage': 'Đã xác nhận lịch phỏng vấn!',
   'scheduleDeclinedMessage': 'Đã từ chối lịch phỏng vấn',
   'rescheduleRequestedMessage': 'Đã yêu cầu đổi lịch',
-  'contactLabel': 'Liên hệ:',
   'noLocationText': 'Không có địa điểm',
   'notAvailable': 'Không có sẵn',
 
@@ -488,7 +486,6 @@ final Map<String, String> vietStrings = {
   'statusDraft': 'NHÁP',
   'statusClosed': 'ĐÃ ĐÓNG',
   'statusActive': 'ĐANG MỞ',
-  'statusPending': 'CHỜ DUYỆT',
   'couldNotSaveJob': 'Không thể lưu tin tuyển dụng.',
   'experienceLevel': 'Cấp bậc kinh nghiệm',
   'entryLevel': 'Mới bắt đầu',
@@ -550,7 +547,8 @@ final Map<String, String> vietStrings = {
   'contactInfo': 'Thông tin liên hệ',
   'copyAddressSuccess': 'Sao chép địa chỉ thành công!',
   'chatWithEmployer': 'Nhắn tin với nhà tuyển dụng',
-  'noDescriptionProvided': 'Nhà tuyển dụng chưa cập nhật thông tin giới thiệu chi tiết.',
+  'noDescriptionProvided':
+      'Nhà tuyển dụng chưa cập nhật thông tin giới thiệu chi tiết.',
   'phoneLabel': 'Số điện thoại',
   'emailLabel': 'Email',
   'websiteLabel': 'Website',
@@ -566,7 +564,8 @@ final Map<String, String> vietStrings = {
   'activeNow': 'Đang hoạt động',
   'employerAccountNotFound': 'Không tìm thấy tài khoản nhà tuyển dụng này.',
   'emailSubjectQuery': 'Hỏi về vị trí tuyển dụng',
-  'featureInDevelopment': 'Tính năng này đang trong quá trình phát triển. Vui lòng quay lại sau!',
+  'featureInDevelopment':
+      'Tính năng này đang trong quá trình phát triển. Vui lòng quay lại sau!',
   'featureInDevelopmentTitle': 'Sắp ra mắt',
   // kinh nghiệm + kĩ năng
   'addExperience': 'Thêm kinh nghiệm',
@@ -617,6 +616,31 @@ final Map<String, String> vietStrings = {
   'profileUpdateSuccess': 'Cập nhật hồ sơ công ty thành công!',
   'profileUpdateFailed': 'Cập nhật hồ sơ thất bại. Vui lòng thử lại.',
   'isFieldsRequired': 'là bắt buộc',
+  'goodMorning': 'Chào buổi sáng',
+  'goodAfternoon': 'Chào buổi chiều',
+  'goodEvening': 'Chào buổi tối',
+  'employerDashboardTitle': 'Bảng điều khiển nhà tuyển dụng',
+  'activeLabel': 'Đang hoạt động',
+  'newProfiles': 'Hồ sơ mới',
+  'viewsStatistics': 'Thống kê lượt xem',
+  'totalReachThisWeek': 'Tổng lượt tiếp cận tuần này',
+  'totalViews': 'Tổng lượt xem',
+  'companyIntro': 'Giới thiệu',
+  'noCompanyData': 'Không có dữ liệu công ty',
+  'couldNotLoadCompanyProfile': 'Không thể tải hồ sơ công ty',
+  'companyDetail': 'Chi tiết công ty',
+  'unnamedCompany': 'Chưa có tên công ty',
+  'noCompanyDescription': 'Chưa có mô tả',
+  'noCompanyAddress': 'Chưa có địa chỉ',
+  'noCompanyWebsite': 'Chưa có website',
+  'noCompanyEmail': 'Chưa có email',
+  'noCompanyPhone': 'Chưa có số điện thoại',
+  'noCompanySize': 'Chưa có quy mô',
+  'deleteCompanyProfileTitle': 'Xác nhận xóa',
+  'deleteCompanyProfileConfirm':
+      'Bạn có chắc muốn xóa hồ sơ công ty này không?',
+  'companyProfileDeleted': 'Đã xóa hồ sơ công ty',
+  'deleteErrorPrefix': 'Lỗi khi xóa: ',
 
   // Employer Messages
   'allMessagesSection': 'Tất cả tin nhắn',
@@ -626,6 +650,7 @@ final Map<String, String> vietStrings = {
 
   // Employer Applicants / Candidate Profile
   'profileSummary': 'Tóm tắt hồ sơ',
+  'candidateProfileTitle': 'Hồ sơ ứng viên',
   'noProfileSummary': 'Chưa cập nhật tóm tắt hồ sơ.',
   'seniorityLabel': 'Cấp bậc',
   'roleLabel': 'Vai trò',
@@ -646,9 +671,17 @@ final Map<String, String> vietStrings = {
   'shortlistSuccess': 'Đã đưa ứng viên vào danh sách tiềm năng.',
   'shortlistFailed': 'Không thể đưa ứng viên vào danh sách tiềm năng.',
   'rejectCandidateTitle': 'Từ chối ứng viên?',
-  'rejectCandidateConfirm': 'Hành động này sẽ đánh dấu ứng viên là đã bị từ chối cho công việc này.',
+  'rejectCandidateConfirm':
+      'Hành động này sẽ đánh dấu ứng viên là đã bị từ chối cho công việc này.',
   'rejectSuccess': 'Đã từ chối ứng viên thành công.',
   'rejectFailed': 'Từ chối ứng viên thất bại.',
+  'noCoverLetterSubmitted':
+      'Không có thư xin việc nào được nộp cho đơn ứng tuyển này.',
+  'internalNotes': 'Ghi chú nội bộ',
+  'applicationActions': 'Thao tác hồ sơ',
+  'rejectAction': 'Từ chối',
+  'shortlistAction': 'Tiềm năng',
+  'scheduleAction': 'Đặt lịch',
 
   // Employer Job Applicants
   'applicantsSubtitle': 'ỨNG VIÊN',
@@ -667,14 +700,18 @@ final Map<String, String> vietStrings = {
   'findTalentTitle': 'Tìm kiếm nhân tài',
   'refreshCandidatesTooltip': 'Tải lại danh sách ứng viên',
   'searchTalentHint': 'Kỹ năng, chức danh hoặc tên',
-  'noCandidatesMatching': 'Không tìm thấy ứng viên nào phù hợp với tiêu chí của bạn.',
+  'noCandidatesMatching':
+      'Không tìm thấy ứng viên nào phù hợp với tiêu chí của bạn.',
   'resetFilters': 'Đặt lại bộ lọc',
   'noSkillsListed': 'Chưa cập nhật kỹ năng',
+  'refresh': 'Tải lại',
+  'unableToLoadCandidates': 'Không tải được danh sách ứng viên.',
 
   // Employer Interview Schedule / Detail / Edit / Create
   'createInterviewTitle': 'Tạo lịch phỏng vấn',
   'editInterviewTitle': 'Sửa lịch phỏng vấn',
   'interviewDetailTitle': 'Chi tiết lịch hẹn',
+  'createNow': 'Tạo lịch ngay',
   'pleaseSelectJob': 'Vui lòng chọn job',
   'pleaseSelectCandidate': 'Vui lòng chọn ứng viên',
   'pleaseSelectDateTime': 'Vui lòng chọn ngày và giờ',
@@ -687,6 +724,14 @@ final Map<String, String> vietStrings = {
   'interviewTimeLabel': 'Giờ phỏng vấn *',
   'selectTimeHint': 'Chọn giờ',
   'interviewTypeLabel': 'Hình thức',
+  'candidateInformation': 'Thông tin ứng viên',
+  'appointmentInformation': 'Thông tin lịch hẹn',
+  'candidateLabel': 'Ứng viên',
+  'dateTimeLabel': 'Ngày giờ',
+  'contactPersonLabel': 'Người liên hệ',
+  'notesLabel': 'Ghi chú',
+  'notSet': 'Chưa có',
+  'updateSchedule': 'Cập nhật lịch',
   'locationHint': 'Nhập địa điểm',
   'contactPersonHint': 'Tên người liên hệ',
   'notesHint': 'Ghi chú thêm',
@@ -701,4 +746,15 @@ final Map<String, String> vietStrings = {
   'rescheduleProposal': 'Ngày/giờ đề xuất: ',
   'rescheduleConfirmSuccess': 'Đã xác nhận đổi lịch!',
   'rescheduleRejectSuccess': 'Đã từ chối yêu cầu đổi lịch',
+
+  // Employer Payment
+  'vnpayPaymentTitle': 'Thanh toán VNPay',
+  'paymentSuccess': 'Thanh toán thành công!',
+  'paymentFailedOrCanceled': 'Thanh toán thất bại hoặc bị hủy!',
+  'unableToOpenPaymentBrowser': 'Không thể mở trình duyệt để thanh toán!',
+  'completePaymentTitle': 'Hoàn tất thanh toán',
+  'completePaymentMessage':
+      'Vui lòng hoàn tất thanh toán trên trình duyệt. Sau khi xong, nhấn "Xác nhận đã thanh toán" để tiếp tục.',
+  'confirmPaid': 'Xác nhận đã thanh toán',
+  'openingPaymentBrowser': 'Đang mở trình duyệt để thanh toán...',
 };

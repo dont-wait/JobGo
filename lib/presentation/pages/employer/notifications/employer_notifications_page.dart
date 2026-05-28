@@ -95,7 +95,10 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
                       if (count <= 0) return const SizedBox.shrink();
                       return Container(
                         margin: const EdgeInsets.only(left: 6),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.error,
                           borderRadius: BorderRadius.circular(10),
@@ -141,9 +144,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
           return _buildErrorState(provider.error!);
         }
 
-        final items = provider.notifications
-            .map(_toNotificationItem)
-            .toList();
+        final items = provider.notifications.map(_toNotificationItem).toList();
         final filtered = type == _NType.all
             ? items
             : items.where((item) => item.type == type).toList();
@@ -161,8 +162,11 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline,
-                size: 56, color: AppColors.error.withValues(alpha: 0.7)),
+            Icon(
+              Icons.error_outline,
+              size: 56,
+              color: AppColors.error.withValues(alpha: 0.7),
+            ),
             const SizedBox(height: 12),
             Text(
               loc.unableToLoadNotifications,
@@ -208,9 +212,11 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.notifications_off_outlined,
-                        size: 64,
-                        color: AppColors.textHint.withValues(alpha: 0.5)),
+                    Icon(
+                      Icons.notifications_off_outlined,
+                      size: 64,
+                      color: AppColors.textHint.withValues(alpha: 0.5),
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       loc.noNotificationsMessage,
@@ -249,8 +255,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
     return Container(
       color: item.isRead ? Colors.white : const Color(0xFFF0F7FF),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           width: 44,
           height: 44,
@@ -384,10 +389,21 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
   }
 
   String _formatTimeAgo(DateTime? createdAt) {
-    if (createdAt == null) return 'Just now';
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+    if (createdAt == null) return isVi ? 'Vừa xong' : 'Just now';
 
     final now = DateTime.now();
     final diff = now.difference(createdAt);
+
+    if (isVi) {
+      if (diff.inMinutes < 1) return 'Vừa xong';
+      if (diff.inMinutes < 60) return '${diff.inMinutes} phút trước';
+      if (diff.inHours < 24) return '${diff.inHours} giờ trước';
+      if (diff.inDays < 7) return '${diff.inDays} ngày trước';
+      if (diff.inDays < 30) return '${(diff.inDays / 7).floor()} tuần trước';
+      if (diff.inDays < 365) return '${(diff.inDays / 30).floor()} tháng trước';
+      return '${(diff.inDays / 365).floor()} năm trước';
+    }
 
     if (diff.inMinutes < 1) return 'Just now';
     if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
