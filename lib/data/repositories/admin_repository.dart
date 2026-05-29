@@ -1046,69 +1046,57 @@ class AdminRepository {
   Future<bool> deleteJob(String jobId) async {
     final numericId = int.tryParse(jobId);
 
-    Future<bool> markJobAsRemoved(dynamic targetId) async {
-      final now = DateTime.now().toIso8601String();
-      final adminUid = _supabase.auth.currentUser?.id;
-
+    Future<bool> performDelete(dynamic targetId) async {
       try {
+        // 1. Thử xóa vĩnh viễn (Hard delete) khỏi bảng jobs
         final rows = await _supabase
             .from('jobs')
-            .update({'j_moderation_status': 'rejected', 'j_status': 'inactive'})
+            .delete()
             .eq('j_id', targetId)
             .select('j_id');
-        final ok = (rows as List).isNotEmpty;
-        if (!ok) return false;
-
+            
+        if ((rows as List).isNotEmpty) return true;
+        
+        // Fallback cho schema cột id cũ
+        final legacyRows = await _supabase
+            .from('jobs')
+            .delete()
+            .eq('id', targetId)
+            .select('id');
+        return (legacyRows as List).isNotEmpty;
+      } catch (e) {
+        dev.log('Hard delete job failed (dính khóa ngoại): $e');
+        
+        // 2. Nếu xóa bị chặn bởi khóa ngoại, tiến hành Xóa Ảo (Soft delete)
+        // Cập nhật thành trạng thái 'deleted' để bộ lọc loại bỏ nó vĩnh viễn
         try {
-          await _supabase
+          final softRows = await _supabase
               .from('jobs')
-              .update({
-                'j_rejection_note': 'Removed by admin',
-                'j_rejected_at': now,
-                'j_rejected_by': adminUid,
-              })
-              .eq('j_id', targetId);
-        } catch (_) {}
-
-        return true;
-      } catch (_) {
-        try {
-          final rows = await _supabase
-              .from('jobs')
-              .update({'status': 'rejected'})
+              .update({'j_moderation_status': 'deleted', 'j_status': 'deleted'})
               .eq('j_id', targetId)
               .select('j_id');
-          final ok = (rows as List).isNotEmpty;
-          if (!ok) return false;
-
+          return (softRows as List).isNotEmpty;
+        } catch (softErr) {
           try {
-            await _supabase
+            final legacySoftRows = await _supabase
                 .from('jobs')
-                .update({
-                  'rejection_note': 'Removed by admin',
-                  'rejected_at': now,
-                  'rejected_by': adminUid,
-                })
-                .eq('j_id', targetId);
-          } catch (_) {}
-
-          return true;
-        } catch (e) {
-          dev.log('Error marking job as removed: $e');
-          return false;
+                .update({'status': 'deleted'})
+                .eq('id', targetId)
+                .select('id');
+            return (legacySoftRows as List).isNotEmpty;
+          } catch (legacySoftErr) {
+            return false;
+          }
         }
       }
     }
 
     final targets = <dynamic>[jobId, if (numericId != null) numericId];
     for (final target in targets) {
-      final ok = await markJobAsRemoved(target);
-      if (ok) {
-        return true;
-      }
+      if (await performDelete(target)) return true;
     }
 
-    dev.log('Remove-from-approved failed for jobId=$jobId');
+    dev.log('Delete job failed for jobId=$jobId');
     return false;
   }
 
