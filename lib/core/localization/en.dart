@@ -420,8 +420,7 @@ final Map<String, String> englishStrings = {
   'positionsTooLarge': 'Open positions cannot exceed 1000',
   'chooseDeadline': 'Please choose an application deadline',
   'deadlineCannotBePast': 'Application deadline cannot be in the past',
-  'addSalaryRange':
-      'Please add a salary range or mark the salary as negotiable',
+  'addSalaryRange': 'Please add a salary range',
   'chooseAtLeastOneBenefit': 'Please choose at least one benefit',
   'salaryInvalidNumber': 'Salary must be a valid number',
   'salaryMustBePositive': 'Salary must be greater than 0',
@@ -779,4 +778,5 @@ final Map<String, String> englishStrings = {
 
   'yearsExperienceMustBePositive':
       'Years of experience must be a number greater than 0',
+  'salaryRequiredForPublish': 'Please add a salary range',
 };

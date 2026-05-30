@@ -399,6 +399,7 @@ class AppLocalizations {
   String get chooseDeadline => translate('chooseDeadline');
   String get deadlineCannotBePast => translate('deadlineCannotBePast');
   String get addSalaryRange => translate('addSalaryRange');
+  String get salaryRequiredForPublish => translate('salaryRequiredForPublish');
   String get chooseAtLeastOneBenefit => translate('chooseAtLeastOneBenefit');
   String get salaryInvalidNumber => translate('salaryInvalidNumber');
   String get salaryMustBePositive => translate('salaryMustBePositive');
