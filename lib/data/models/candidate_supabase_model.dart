@@ -1,366 +1,338 @@
-import 'package:jobgo/data/models/experience_model.dart';
-import 'package:jobgo/data/models/skill_model.dart';
+  import 'package:jobgo/data/models/experience_model.dart';
+  import 'package:jobgo/data/models/skill_model.dart';
 
-class CandidateSupabaseModel {
-  final int cId;
-  final String? fullName;
-  final String? dateOfBirth;
-  final String? gender;
-  final String? address;
-  // final String? skill;
-  final String? phone;
-  final String? avatarUrl;
-  final String? education;
-  // final String? experience;
-  final List<String>? resumes;
-  final double? desiredSalaryMin;
-  final double? desiredSalaryMax;
-  final int uId;
-  final String? email;
-  final String? role;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final String? title;
-  final String? summary;
-  final List<SkillModel>? skills;       
-  final List<ExperienceModel>? experiences; 
+  class CandidateSupabaseModel {
+    final int cId;
+    final String? fullName;
+    final String? dateOfBirth;
+    final String? gender;
+    final String? address;
+    // final String? skill;
+    final String? phone;
+    final String? avatarUrl;
+    final String? education;
+    // final String? experience;
+    final List<String>? resumes;
+    final double? desiredSalaryMin;
+    final double? desiredSalaryMax;
+    final int uId;
+    final String? email;
+    final String? role;
+    final DateTime? createdAt;
+    final DateTime? updatedAt;
+    final String? title;
+    final String? summary;
+    final List<SkillModel>? skills;       
+    final List<ExperienceModel>? experiences; 
 
-  CandidateSupabaseModel({
-    required this.cId,
-    this.fullName,
-    this.dateOfBirth,
-    this.gender,
-    this.address,
-    // this.skill,
-    this.phone,
-    this.avatarUrl,
-    this.education,
-    // this.experience,
-    this.resumes,
-    this.desiredSalaryMin,
-    this.desiredSalaryMax,
-    required this.uId,
-    this.email,
-    this.role,
-    this.createdAt,
-    this.updatedAt,
-    this.title,
-    this.summary,
-    this.skills,
-    this.experiences,
-  });
+    CandidateSupabaseModel({
+      required this.cId,
+      this.fullName,
+      this.dateOfBirth,
+      this.gender,
+      this.address,
+      // this.skill,
+      this.phone,
+      this.avatarUrl,
+      this.education,
+      // this.experience,
+      this.resumes,
+      this.desiredSalaryMin,
+      this.desiredSalaryMax,
+      required this.uId,
+      this.email,
+      this.role,
+      this.createdAt,
+      this.updatedAt,
+      this.title,
+      this.summary,
+      this.skills,
+      this.experiences,
+    });
 
-  factory CandidateSupabaseModel.fromJson(Map<String, dynamic> json) {
-    final user = json['users'] as Map<String, dynamic>?;
-    return CandidateSupabaseModel(
-      cId: _toInt(json['c_id']) ?? 0,
-      fullName: _nullableStringValue(
-        json['c_full_name'] ?? json['fullName'] ?? user?['u_name'],
-      ),
-      dateOfBirth: _nullableStringValue(json['c_date_of_birth']),
-      gender: _nullableStringValue(json['c_gender']),
-      address: _nullableStringValue(json['c_address']),
-      // skill: _nullableStringValue(json['c_skill']),
-      phone: _nullableStringValue(json['c_phone'] ?? user?['u_phone']),
-      avatarUrl: _nullableStringValue(json['c_avatar_url']),
-      education: _nullableStringValue(json['c_education']),
-      // experience: _nullableStringValue(json['c_experience']),
-      resumes: _toList(json['c_resume'] ?? json['resume']),
-      desiredSalaryMin: _toDouble(json['c_desired_salary_min']),
-      desiredSalaryMax: _toDouble(json['c_desired_salary_max']),
-      uId: _toInt(json['u_id']) ?? 0,
-      email: _nullableStringValue(user?['u_email'] ?? json['u_email']),
-      role: _nullableStringValue(user?['u_role'] ?? json['u_role']),
-      createdAt: _toDateTime(json['c_created_at'] ?? json['created_at']),
-      updatedAt: _toDateTime(json['c_updated_at'] ?? json['updated_at']),
-      title: _nullableStringValue(json['c_title']),
-      summary: _nullableStringValue(json['c_summary']),
-      // skills: (json['candidates_skill'] as List?)
-      //     ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
-      //     .toList(),
-      skills: (json['candidates_skill'] as List?)
-        ?.map((e) {
-          final item = e as Map<String, dynamic>;
-          final skillData = item['skill'] as Map<String, dynamic>?;
-          if (skillData == null) return null;
-          final name = (skillData['sk_name'] as String? ?? '').trim();
-          if (name.isEmpty) return null;
-          return SkillModel(
-            skId: skillData['sk_id'] as int,
-            skName: name,
-            skDescription: skillData['sk_description'] as String?,
-            csYears: item['cs_years'] as int?,
-          );
-        })
-        .whereType<SkillModel>()
-        .toList(),
-     
+    factory CandidateSupabaseModel.fromJson(Map<String, dynamic> json) {
+      final user = json['users'] as Map<String, dynamic>?;
+      return CandidateSupabaseModel(
+        cId: _toInt(json['c_id']) ?? 0,
+        fullName: _nullableStringValue(
+          json['c_full_name'] ?? json['fullName'] ?? user?['u_name'],
+        ),
+        dateOfBirth: _nullableStringValue(json['c_date_of_birth']),
+        gender: _nullableStringValue(json['c_gender']),
+        address: _nullableStringValue(json['c_address']),
+        // skill: _nullableStringValue(json['c_skill']),
+        phone: _nullableStringValue(json['c_phone'] ?? user?['u_phone']),
+        avatarUrl: _nullableStringValue(json['c_avatar_url']),
+        education: _nullableStringValue(json['c_education']),
+        // experience: _nullableStringValue(json['c_experience']),
+        resumes: _toList(json['c_resume'] ?? json['resume']),
+        desiredSalaryMin: _toDouble(json['c_desired_salary_min']),
+        desiredSalaryMax: _toDouble(json['c_desired_salary_max']),
+        uId: _toInt(json['u_id']) ?? 0,
+        email: _nullableStringValue(user?['u_email'] ?? json['u_email']),
+        role: _nullableStringValue(user?['u_role'] ?? json['u_role']),
+        createdAt: _toDateTime(json['c_created_at'] ?? json['created_at']),
+        updatedAt: _toDateTime(json['c_updated_at'] ?? json['updated_at']),
+        title: _nullableStringValue(json['c_title']),
+        summary: _nullableStringValue(json['c_summary']),
+        // skills: (json['candidates_skill'] as List?)
+        //     ?.map((e) => SkillModel.fromJson(e as Map<String, dynamic>))
+        //     .toList(),
+        skills: (json['candidates_skill'] as List?)
+          ?.map((e) {
+            final item = e as Map<String, dynamic>;
+            final skillData = item['skill'] as Map<String, dynamic>?;
+            if (skillData == null) return null;
+            final name = (skillData['sk_name'] as String? ?? '').trim();
+            if (name.isEmpty) return null;
+            return SkillModel(
+              skId: skillData['sk_id'] as int,
+              skName: name,
+              skDescription: skillData['sk_description'] as String?,
+              csYears: item['cs_years'] as int?,
+            );
+          })
+          .whereType<SkillModel>()
+          .toList(),
+      
 
-      // experiences: (json['experiences'] as List?)
-      //     ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
-      //     .toList(),
-      experiences: (json['experiences'] as List?)
-        ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
-        .toList(),
+        // experiences: (json['experiences'] as List?)
+        //     ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
+        //     .toList(),
+        experiences: (json['experiences'] as List?)
+          ?.map((e) => ExperienceModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      
+      );
+      
+    }
     
-    );
-    
-  }
-  
 
-  CandidateSupabaseModel copyWith({
-    int? cId,
-    String? fullName,
-    String? dateOfBirth,
-    String? gender,
-    String? address,
-    // String? skill,
-    String? phone,
-    String? avatarUrl,
-    String? education,
-    String? experience,
-    List<String>? resumes,
-    double? desiredSalaryMin,
-    double? desiredSalaryMax,
-    int? uId,
-    String? email,
-    String? role,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    String? title,
-    String? summary,
-    List<SkillModel>? skills,
-    List<ExperienceModel>? experiences,
-  }) {
-    return CandidateSupabaseModel(
-      cId: cId ?? this.cId,
-      fullName: fullName ?? this.fullName,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      gender: gender ?? this.gender,
-      address: address ?? this.address,
-      // skill: skill ?? this.skill,
-      phone: phone ?? this.phone,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-      education: education ?? this.education,
-      // experience: experience ?? this.experience,
-      resumes: resumes ?? this.resumes,
-      desiredSalaryMin: desiredSalaryMin ?? this.desiredSalaryMin,
-      desiredSalaryMax: desiredSalaryMax ?? this.desiredSalaryMax,
-      uId: uId ?? this.uId,
-      email: email ?? this.email,
-      role: role ?? this.role,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      title: title ?? this.title,
-      summary: summary ?? this.summary,
-      skills: skills ?? this.skills,
-      experiences: experiences ?? this.experiences,
-    );
-  }
+    CandidateSupabaseModel copyWith({
+      int? cId,
+      String? fullName,
+      String? dateOfBirth,
+      String? gender,
+      String? address,
+      // String? skill,
+      String? phone,
+      String? avatarUrl,
+      String? education,
+      String? experience,
+      List<String>? resumes,
+      double? desiredSalaryMin,
+      double? desiredSalaryMax,
+      int? uId,
+      String? email,
+      String? role,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      String? title,
+      String? summary,
+      List<SkillModel>? skills,
+      List<ExperienceModel>? experiences,
+    }) {
+      return CandidateSupabaseModel(
+        cId: cId ?? this.cId,
+        fullName: fullName ?? this.fullName,
+        dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+        gender: gender ?? this.gender,
+        address: address ?? this.address,
+        // skill: skill ?? this.skill,
+        phone: phone ?? this.phone,
+        avatarUrl: avatarUrl ?? this.avatarUrl,
+        education: education ?? this.education,
+        // experience: experience ?? this.experience,
+        resumes: resumes ?? this.resumes,
+        desiredSalaryMin: desiredSalaryMin ?? this.desiredSalaryMin,
+        desiredSalaryMax: desiredSalaryMax ?? this.desiredSalaryMax,
+        uId: uId ?? this.uId,
+        email: email ?? this.email,
+        role: role ?? this.role,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        title: title ?? this.title,
+        summary: summary ?? this.summary,
+        skills: skills ?? this.skills,
+        experiences: experiences ?? this.experiences,
+      );
+    }
 
-  String get displayName => _cleanValue(fullName, fallback: 'Candidate');
+    String get displayName => _cleanValue(fullName, fallback: 'Candidate');
 
-  // String get displayExperience =>
-  //     _cleanValue(experience, fallback: 'Open to opportunities');
-  String get displayExperience {
-  if (experiences == null || experiences!.isEmpty) {
-    return 'Open to opportunities';
-  }
-  return experiences!.map((e) => '${e.position} tại ${e.companyName}').join(', ');
-}
-
-  String get displayTitle {
-    final titleText = _cleanValue(title, fallback: '');
-    if (titleText.isNotEmpty) return titleText;
-
-    final summaryText = _cleanValue(summary, fallback: '');
-    if (summaryText.isNotEmpty) return summaryText;
-
-    return 'Open to opportunities';
+    // String get displayExperience =>
+    //     _cleanValue(experience, fallback: 'Open to opportunities');
+    String get displayExperience {
+    if (experiences == null || experiences!.isEmpty) {
+      return 'Open to opportunities';
+    }
+    return experiences!.map((e) => '${e.position} tại ${e.companyName}').join(', ');
   }
 
-  String get cleanSummary => _cleanValue(summary, fallback: '');
+    String get displayTitle {
+      final titleText = _cleanValue(title, fallback: '');
+      if (titleText.isNotEmpty) return titleText;
 
-  bool get hasSummary => cleanSummary.isNotEmpty;
+      final summaryText = _cleanValue(summary, fallback: '');
+      if (summaryText.isNotEmpty) return summaryText;
 
-  String get displaySummary => cleanSummary;
-
-  String get displayHeadline {
-    return displayTitle;
-  }
-
-  String get displayLocation =>
-      _cleanValue(address, fallback: 'Location not set');
-
-  String get displayEducation =>
-      _cleanValue(education, fallback: 'Education not provided');
-
-  String get displayEmail =>
-      _cleanValue(email, fallback: 'Email not available');
-
-  String get displayPhone =>
-      _cleanValue(phone, fallback: 'Phone not available');
-
-  // List<String> get skillList => _splitSkillList(skill);
-  List<String> get skillList => skills?.map((s) => s.skName).toList() ?? [];
-
-
-  String get roleLabel {
-    final searchBlob =
-      '${title ?? ''} ${summary ?? ''} ${skillList.join(' ')}'.toLowerCase();
-    if (searchBlob.contains('design') ||
-        searchBlob.contains('figma') ||
-        searchBlob.contains('ui/ux') ||
-        searchBlob.contains('ux')) {
-      return 'Designer';
+      return 'Open to opportunities';
     }
 
-    if (searchBlob.contains('devops') ||
-        searchBlob.contains('engineer') ||
-        searchBlob.contains('aws') ||
-        searchBlob.contains('docker') ||
-        searchBlob.contains('linux')) {
-      return 'Engineer';
+    String get cleanSummary => _cleanValue(summary, fallback: '');
+
+    bool get hasSummary => cleanSummary.isNotEmpty;
+
+    String get displaySummary => cleanSummary;
+
+    String get displayHeadline {
+      return displayTitle;
     }
 
-    if (searchBlob.contains('flutter') ||
-        searchBlob.contains('dart') ||
-        searchBlob.contains('react') ||
-        searchBlob.contains('node') ||
-        searchBlob.contains('developer') ||
-        searchBlob.contains('full stack')) {
-      return 'Developer';
+    String get displayLocation =>
+        _cleanValue(address, fallback: 'Location not set');
+
+    String get displayEducation =>
+        _cleanValue(education, fallback: 'Education not provided');
+
+    String get displayEmail =>
+        _cleanValue(email, fallback: 'Email not available');
+
+    String get displayPhone =>
+        _cleanValue(phone, fallback: 'Phone not available');
+
+    // List<String> get skillList => _splitSkillList(skill);
+    List<String> get skillList => skills?.map((s) => s.skName).toList() ?? [];
+
+
+    String get roleLabel {
+      final searchBlob =
+        '${title ?? ''} ${summary ?? ''} ${skillList.join(' ')}'.toLowerCase();
+      if (searchBlob.contains('design') ||
+          searchBlob.contains('figma') ||
+          searchBlob.contains('ui/ux') ||
+          searchBlob.contains('ux')) {
+        return 'Designer';
+      }
+
+      if (searchBlob.contains('devops') ||
+          searchBlob.contains('engineer') ||
+          searchBlob.contains('aws') ||
+          searchBlob.contains('docker') ||
+          searchBlob.contains('linux')) {
+        return 'Engineer';
+      }
+
+      if (searchBlob.contains('flutter') ||
+          searchBlob.contains('dart') ||
+          searchBlob.contains('react') ||
+          searchBlob.contains('node') ||
+          searchBlob.contains('developer') ||
+          searchBlob.contains('full stack')) {
+        return 'Developer';
+      }
+
+      if (searchBlob.contains('product')) {
+        return 'Product';
+      }
+
+      if (searchBlob.contains('marketing')) {
+        return 'Marketing';
+      }
+
+      return 'Professional';
     }
 
-    if (searchBlob.contains('product')) {
-      return 'Product';
+    String get seniorityLabel {
+      final searchBlob =
+        '${title ?? ''} ${summary ?? ''} ${skillList.join(' ')}'.toLowerCase();
+              
+      if (searchBlob.contains('intern')) {
+        return 'Intern';
+      }
+      if (searchBlob.contains('junior') || searchBlob.contains('entry')) {
+        return 'Junior';
+      }
+      if (searchBlob.contains('senior') ||
+          searchBlob.contains('lead') ||
+          searchBlob.contains('principal')) {
+        return 'Senior';
+      }
+      return 'Mid';
     }
 
-    if (searchBlob.contains('marketing')) {
-      return 'Marketing';
+    String get salaryLabel {
+      if (desiredSalaryMin != null && desiredSalaryMax != null) {
+        return '${_formatMoney(desiredSalaryMin!)} - ${_formatMoney(desiredSalaryMax!)}';
+      }
+
+      if (desiredSalaryMin != null) {
+        return 'From ${_formatMoney(desiredSalaryMin!)}';
+      }
+
+      if (desiredSalaryMax != null) {
+        return 'Up to ${_formatMoney(desiredSalaryMax!)}';
+      }
+
+      return 'Negotiable';
     }
 
-    return 'Professional';
-  }
+    String get searchableText => [
+      displayName,
+      displayTitle,
+      displaySummary,
+      // displayExperience,
+      displayLocation,
+      displayEducation,
+      displayEmail,
+      displayPhone,
+      roleLabel,
+      seniorityLabel,
+      skillList.join(' '),
+      experiences?.map((e) => '${e.companyName} ${e.position}').join(' ') ?? '',
 
-  String get seniorityLabel {
-    final searchBlob =
-      '${title ?? ''} ${summary ?? ''} ${skillList.join(' ')}'.toLowerCase();
-            
-    if (searchBlob.contains('intern')) {
-      return 'Intern';
-    }
-    if (searchBlob.contains('junior') || searchBlob.contains('entry')) {
-      return 'Junior';
-    }
-    if (searchBlob.contains('senior') ||
-        searchBlob.contains('lead') ||
-        searchBlob.contains('principal')) {
-      return 'Senior';
-    }
-    return 'Mid';
-  }
+    ].join(' ').toLowerCase();
 
-  String get salaryLabel {
-    if (desiredSalaryMin != null && desiredSalaryMax != null) {
-      return '${_formatMoney(desiredSalaryMin!)} - ${_formatMoney(desiredSalaryMax!)}';
-    }
+    String? get resume =>
+        (resumes != null && resumes!.isNotEmpty) ? resumes!.first : null;
 
-    if (desiredSalaryMin != null) {
-      return 'From ${_formatMoney(desiredSalaryMin!)}';
-    }
-
-    if (desiredSalaryMax != null) {
-      return 'Up to ${_formatMoney(desiredSalaryMax!)}';
+    String get initials {
+      final parts = displayName
+          .split(RegExp(r'\s+'))
+          .where((part) => part.trim().isNotEmpty)
+          .toList();
+      if (parts.isEmpty) return 'C';
+      if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+      return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
+          .toUpperCase();
     }
 
-    return 'Negotiable';
-  }
+    String get resumeFileName {
+      final rawResume = (resumes != null && resumes!.isNotEmpty)
+          ? resumes!.first
+          : '';
+      if (rawResume.isEmpty) {
+        return '${displayName.toLowerCase().replaceAll(RegExp(r'\s+'), '_')}_resume.pdf';
+      }
 
-  String get searchableText => [
-    displayName,
-    displayTitle,
-    displaySummary,
-    // displayExperience,
-    displayLocation,
-    displayEducation,
-    displayEmail,
-    displayPhone,
-    roleLabel,
-    seniorityLabel,
-    skillList.join(' '),
-    experiences?.map((e) => '${e.companyName} ${e.position}').join(' ') ?? '',
-
-  ].join(' ').toLowerCase();
-
-  String? get resume =>
-      (resumes != null && resumes!.isNotEmpty) ? resumes!.first : null;
-
-  String get initials {
-    final parts = displayName
-        .split(RegExp(r'\s+'))
-        .where((part) => part.trim().isNotEmpty)
-        .toList();
-    if (parts.isEmpty) return 'C';
-    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
-    return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
-        .toUpperCase();
-  }
-
-  String get resumeFileName {
-    final rawResume = (resumes != null && resumes!.isNotEmpty)
-        ? resumes!.first
-        : '';
-    if (rawResume.isEmpty) {
-      return '${displayName.toLowerCase().replaceAll(RegExp(r'\s+'), '_')}_resume.pdf';
+      final parsedUri = Uri.tryParse(rawResume);
+      final fileName = parsedUri?.pathSegments.isNotEmpty == true
+          ? parsedUri!.pathSegments.last
+          : rawResume;
+      return fileName.isEmpty
+          ? '${displayName.toLowerCase().replaceAll(RegExp(r'\s+'), '_')}_resume.pdf'
+          : fileName;
     }
 
-    final parsedUri = Uri.tryParse(rawResume);
-    final fileName = parsedUri?.pathSegments.isNotEmpty == true
-        ? parsedUri!.pathSegments.last
-        : rawResume;
-    return fileName.isEmpty
-        ? '${displayName.toLowerCase().replaceAll(RegExp(r'\s+'), '_')}_resume.pdf'
-        : fileName;
-  }
-
-  static String _cleanValue(String? value, {required String fallback}) {
-    final cleaned = _nullableStringValue(value);
-    return cleaned == null || cleaned.isEmpty ? fallback : cleaned;
-  }
-
-  static String? _nullableStringValue(dynamic value) {
-    if (value == null) return null;
-    var cleaned = value.toString().trim();
-    if (cleaned.isEmpty || cleaned.toLowerCase() == 'null') return null;
-    cleaned = cleaned.replaceAll('\\', '');
-    while (cleaned.isNotEmpty &&
-        (cleaned.startsWith('[') ||
-            cleaned.startsWith('{') ||
-            cleaned.startsWith('"') ||
-            cleaned.startsWith("'"))) {
-      cleaned = cleaned.substring(1).trim();
+    static String _cleanValue(String? value, {required String fallback}) {
+      final cleaned = _nullableStringValue(value);
+      return cleaned == null || cleaned.isEmpty ? fallback : cleaned;
     }
-    while (cleaned.isNotEmpty &&
-        (cleaned.endsWith(']') ||
-            cleaned.endsWith('}') ||
-            cleaned.endsWith('"') ||
-            cleaned.endsWith("'"))) {
-      cleaned = cleaned.substring(0, cleaned.length - 1).trim();
-    }
-    return cleaned.isEmpty ? null : cleaned;
-  }
 
-  static List<String> _splitSkillList(String? value) {
-    final cleanedValue = _nullableStringValue(value);
-    if (cleanedValue == null) return const [];
-
-    final results = <String>[];
-    final normalized = cleanedValue.replaceAll('\\', '');
-
-    void addValue(String entry) {
-      var cleaned = entry.trim();
-      if (cleaned.isEmpty) return;
+    static String? _nullableStringValue(dynamic value) {
+      if (value == null) return null;
+      var cleaned = value.toString().trim();
+      if (cleaned.isEmpty || cleaned.toLowerCase() == 'null') return null;
       cleaned = cleaned.replaceAll('\\', '');
       while (cleaned.isNotEmpty &&
           (cleaned.startsWith('[') ||
@@ -376,71 +348,99 @@ class CandidateSupabaseModel {
               cleaned.endsWith("'"))) {
         cleaned = cleaned.substring(0, cleaned.length - 1).trim();
       }
-      if (cleaned.isNotEmpty) {
-        results.add(cleaned);
-      }
+      return cleaned.isEmpty ? null : cleaned;
     }
 
-    if (normalized.startsWith('[') && normalized.endsWith(']')) {
-      final inner = normalized.substring(1, normalized.length - 1);
-      for (final part in inner.split(RegExp(r'[\r\n,]+'))) {
+    static List<String> _splitSkillList(String? value) {
+      final cleanedValue = _nullableStringValue(value);
+      if (cleanedValue == null) return const [];
+
+      final results = <String>[];
+      final normalized = cleanedValue.replaceAll('\\', '');
+
+      void addValue(String entry) {
+        var cleaned = entry.trim();
+        if (cleaned.isEmpty) return;
+        cleaned = cleaned.replaceAll('\\', '');
+        while (cleaned.isNotEmpty &&
+            (cleaned.startsWith('[') ||
+                cleaned.startsWith('{') ||
+                cleaned.startsWith('"') ||
+                cleaned.startsWith("'"))) {
+          cleaned = cleaned.substring(1).trim();
+        }
+        while (cleaned.isNotEmpty &&
+            (cleaned.endsWith(']') ||
+                cleaned.endsWith('}') ||
+                cleaned.endsWith('"') ||
+                cleaned.endsWith("'"))) {
+          cleaned = cleaned.substring(0, cleaned.length - 1).trim();
+        }
+        if (cleaned.isNotEmpty) {
+          results.add(cleaned);
+        }
+      }
+
+      if (normalized.startsWith('[') && normalized.endsWith(']')) {
+        final inner = normalized.substring(1, normalized.length - 1);
+        for (final part in inner.split(RegExp(r'[\r\n,]+'))) {
+          addValue(part);
+        }
+        return results;
+      }
+
+      for (final part in normalized.split(RegExp(r'[\r\n,]+'))) {
         addValue(part);
       }
+
       return results;
     }
 
-    for (final part in normalized.split(RegExp(r'[\r\n,]+'))) {
-      addValue(part);
-    }
-
-    return results;
-  }
-
-  static String _formatMoney(double value) {
-    if (value >= 1000000) {
-      return '\$${(value / 1000000).toStringAsFixed(1)}M';
-    }
-    if (value >= 1000) {
-      final kValue = (value / 1000).toStringAsFixed(value % 1000 == 0 ? 0 : 1);
-      return '\$${kValue}k';
-    }
-    return '\$${value.toStringAsFixed(value % 1 == 0 ? 0 : 2)}';
-  }
-
-  static int? _toInt(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is double) return value.toInt();
-    return int.tryParse(value.toString());
-  }
-
-  static double? _toDouble(dynamic value) {
-    if (value == null) return null;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    return double.tryParse(value.toString());
-  }
-
-  static DateTime? _toDateTime(dynamic value) {
-    if (value == null) return null;
-    if (value is DateTime) return value;
-    return DateTime.tryParse(value.toString());
-  }
-
-  static List<String>? _toList(dynamic value) {
-    if (value == null) return null;
-    if (value is List) {
-      return value.map((e) => e.toString()).toList();
-    }
-    // If it's a string like "{url1,url2}", it might be from a direct SQL query
-    if (value is String) {
-      if (value.startsWith('{') && value.endsWith('}')) {
-        final content = value.substring(1, value.length - 1);
-        if (content.isEmpty) return [];
-        return content.split(',').map((e) => e.trim()).toList();
+    static String _formatMoney(double value) {
+      if (value >= 1000000) {
+        return '\$${(value / 1000000).toStringAsFixed(1)}M';
       }
-      return [value];
+      if (value >= 1000) {
+        final kValue = (value / 1000).toStringAsFixed(value % 1000 == 0 ? 0 : 1);
+        return '\$${kValue}k';
+      }
+      return '\$${value.toStringAsFixed(value % 1 == 0 ? 0 : 2)}';
     }
-    return null;
+
+    static int? _toInt(dynamic value) {
+      if (value == null) return null;
+      if (value is int) return value;
+      if (value is double) return value.toInt();
+      return int.tryParse(value.toString());
+    }
+
+    static double? _toDouble(dynamic value) {
+      if (value == null) return null;
+      if (value is double) return value;
+      if (value is int) return value.toDouble();
+      return double.tryParse(value.toString());
+    }
+
+    static DateTime? _toDateTime(dynamic value) {
+      if (value == null) return null;
+      if (value is DateTime) return value;
+      return DateTime.tryParse(value.toString());
+    }
+
+    static List<String>? _toList(dynamic value) {
+      if (value == null) return null;
+      if (value is List) {
+        return value.map((e) => e.toString()).toList();
+      }
+      // If it's a string like "{url1,url2}", it might be from a direct SQL query
+      if (value is String) {
+        if (value.startsWith('{') && value.endsWith('}')) {
+          final content = value.substring(1, value.length - 1);
+          if (content.isEmpty) return [];
+          return content.split(',').map((e) => e.trim()).toList();
+        }
+        return [value];
+      }
+      return null;
+    }
   }
-}
