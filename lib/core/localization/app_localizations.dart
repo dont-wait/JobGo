@@ -751,6 +751,9 @@ class AppLocalizations {
   String get completeProfileTitle => translate('completeProfileTitle');
   String get completeProfileMessage => translate('completeProfileMessage');
   String get later => translate('later');
+
+  String get yearsExperienceMustBePositive =>
+      translate('yearsExperienceMustBePositive');
 }
 
 class _AppLocalizationsDelegate
