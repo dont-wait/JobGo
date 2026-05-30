@@ -46,9 +46,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          const LanguageSelectorButton(isCompact: true),
-        ],
+        actions: [const LanguageSelectorButton(isCompact: true)],
       ),
       body: Stack(
         children: [
@@ -68,8 +66,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
                     validator: (value) {
                       if (value == null || value.trim().isEmpty)
                         return loc.fullNameRequired;
-                      if (value.trim().length < 2)
-                        return loc.fullNameLength;
+                      if (value.trim().length < 2) return loc.fullNameLength;
                       return null;
                     },
                   ),
@@ -112,10 +109,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
                     },
                   ),
                   const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: _onContinue,
-                    child: Text(loc.next),
-                  ),
+                  ElevatedButton(onPressed: _onContinue, child: Text(loc.next)),
                   const SizedBox(height: 24),
                   SocialLoginRow(
                     onGoogleTap: _onGoogleSignIn,
@@ -211,7 +205,7 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
                 'u_password': passwordController.text.trim(),
               })
               .select('u_id')
-              .single(); // ✅ lấy u_id vừa tạo
+              .single(); // lấy u_id vừa tạo
 
           final uId = insertedUser['u_id'] as int;
 

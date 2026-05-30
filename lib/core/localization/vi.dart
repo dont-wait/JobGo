@@ -757,4 +757,9 @@ final Map<String, String> vietStrings = {
       'Vui lòng hoàn tất thanh toán trên trình duyệt. Sau khi xong, nhấn "Xác nhận đã thanh toán" để tiếp tục.',
   'confirmPaid': 'Xác nhận đã thanh toán',
   'openingPaymentBrowser': 'Đang mở trình duyệt để thanh toán...',
+
+  // Social Login Profile Completion
+  'completeProfileTitle': 'Hoàn thiện hồ sơ',
+  'completeProfileMessage': 'Tài khoản của bạn được tạo bằng Google. Vui lòng cập nhật thông tin hồ sơ (SĐT, địa chỉ, CV...) để có trải nghiệm tốt nhất.',
+  'later': 'Để sau',
 };

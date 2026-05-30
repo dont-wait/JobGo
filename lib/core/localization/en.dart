@@ -755,4 +755,9 @@ final Map<String, String> englishStrings = {
       'Please complete the payment in your browser. When finished, select "Confirm paid" to continue.',
   'confirmPaid': 'Confirm paid',
   'openingPaymentBrowser': 'Opening browser for payment...',
+
+  // Social Login Profile Completion
+  'completeProfileTitle': 'Complete Your Profile',
+  'completeProfileMessage': 'Your account was created with Google. Please update your profile information (phone, address, CV...) to get the best experience.',
+  'later': 'Later',
 };

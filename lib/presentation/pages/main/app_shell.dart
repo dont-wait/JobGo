@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
+import 'package:jobgo/presentation/providers/employer_provider.dart';
 import 'package:jobgo/presentation/providers/chat_provider.dart';
 import 'package:jobgo/presentation/providers/notification_provider.dart';
 
@@ -77,7 +79,69 @@ class _AppShellState extends State<AppShell> {
       // Khởi tạo luồng lắng nghe tin nhắn và thông báo realtime cho user hiện tại
       context.read<ChatProvider>().initRealtimeSubscriptions();
       context.read<NotificationProvider>().initRealtimeSubscriptions();
+
+      // Tự động check profile sau khi load xong, hiện popup nếu thiếu thông tin
+      _checkProfileCompleteness();
     });
+  }
+
+  /// Kiểm tra thông tin profile có đầy đủ không.
+  /// Nếu thiếu phone/address/... thì hiện popup nhắc cập nhật.
+  void _checkProfileCompleteness() {
+    if (widget.role == UserRole.candidate) {
+      final provider = context.read<ProfileProvider>();
+      // Đợi profile load xong
+      void listener() {
+        if (!provider.isLoading && mounted) {
+          provider.removeListener(listener);
+          final c = provider.candidate;
+          if (c != null && _isCandidateIncomplete(c)) {
+            _showProfileUpdateDialog();
+          }
+        }
+      }
+      if (!provider.isLoading && provider.candidate != null) {
+        if (_isCandidateIncomplete(provider.candidate!)) {
+          _showProfileUpdateDialog();
+        }
+      } else {
+        provider.addListener(listener);
+      }
+    } else if (widget.role == UserRole.employer) {
+      final provider = context.read<EmployerProvider>();
+      void listener() {
+        if (!provider.isLoading && mounted) {
+          provider.removeListener(listener);
+          final e = provider.employer;
+          if (e != null && _isEmployerIncomplete(e)) {
+            _showProfileUpdateDialog();
+          }
+        }
+      }
+      if (!provider.isLoading && provider.employer != null) {
+        if (_isEmployerIncomplete(provider.employer!)) {
+          _showProfileUpdateDialog();
+        }
+      } else {
+        provider.addListener(listener);
+      }
+    }
+  }
+
+  /// Candidate thiếu thông tin nếu chưa có phone hoặc address
+  bool _isCandidateIncomplete(dynamic c) {
+    final phone = c.phone as String?;
+    final address = c.address as String?;
+    return (phone == null || phone.isEmpty) &&
+           (address == null || address.isEmpty);
+  }
+
+  /// Employer thiếu thông tin nếu chưa có phone hoặc companyName vẫn là default
+  bool _isEmployerIncomplete(dynamic e) {
+    final phone = e.phone as String?;
+    final companyName = e.companyName as String?;
+    return (phone == null || phone.isEmpty) ||
+           (companyName == null || companyName.isEmpty || companyName == 'Unspecified Company');
   }
 
   @override
@@ -103,6 +167,50 @@ class _AppShellState extends State<AppShell> {
   /// Chuyển sang trang Messages (tab 3) mà vẫn giữ shell.
   void goToMessages() {
     setState(() => _currentIndex = 3); // 3 = Messages tab for both employer and candidate
+  }
+
+  /// Hiển thị dialog nhắc user cập nhật thông tin profile sau khi đăng ký bằng social login.
+  void _showProfileUpdateDialog() {
+    final loc = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        icon: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.person_outline, color: AppColors.primary, size: 32),
+        ),
+        title: Text(
+          loc.completeProfileTitle,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          loc.completeProfileMessage,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: AppColors.textSecondary, height: 1.5),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(loc.later),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              goToProfile();
+            },
+            child: Text(loc.goToProfile),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Index ẩn dành cho Profile (không có icon trên nav bar).
