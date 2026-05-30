@@ -585,13 +585,33 @@ class AdminRepository {
             .limit(1);
         if ((userRows as List).isNotEmpty) {
           foundAnyRow = true;
-          await _supabase.from('users').update({
-            'u_status': 'deleted',
-            'u_deleted_at': DateTime.now().toIso8601String(),
-          }).eq('u_id', resolvedUserId);
-          return true;
+          try {
+            await _supabase.from('users').update({
+              'u_status': 'deleted',
+              'u_deleted_at': DateTime.now().toIso8601String(),
+            }).eq('u_id', resolvedUserId);
+            return true;
+          } catch (_) {
+            try {
+              await _supabase.from('users').update({
+                'u_status': 'deleted',
+              }).eq('u_id', resolvedUserId);
+              return true;
+            } catch (_) {
+              try {
+                await _supabase.from('users').update({
+                  'u_role': 'deleted',
+                }).eq('u_id', resolvedUserId);
+                return true;
+              } catch (softErr) {
+                dev.log('All soft delete strategies failed: $softErr');
+              }
+            }
+          }
         }
       } catch (e) {
+        dev.log('Checking user existence failed (u_id=$resolvedUserId): $e');
+        
         var anyDeleted = false;
 
         // Any soft-delete failure should still try hard-delete path.
@@ -643,8 +663,6 @@ class AdminRepository {
             dev.log('Role fallback delete failed (u_id=$resolvedUserId): $roleFallbackErr');
           }
         }
-
-        dev.log('Soft delete users by u_id failed (u_id=$resolvedUserId): $e');
       }
     }
 
