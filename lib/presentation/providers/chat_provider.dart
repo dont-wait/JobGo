@@ -44,10 +44,14 @@ class ChatProvider extends ChangeNotifier {
       // Load conversations ban đầu
       await loadConversations();
 
-      // Subscribe realtime new messages
-      _messageChannel = _repository.subscribeToNewMessages(
-        onNewMessage: _handleNewMessage,
-      );
+      // Lấy userId để subscribe realtime
+      final userId = await _repository.getCurrentUserId();
+      if (userId != null) {
+        _messageChannel = _repository.subscribeToNewMessages(
+          userId: userId,
+          onNewMessage: _handleNewMessage,
+        );
+      }
 
       AppLogger.info('Chat realtime subscriptions initialized');
     } catch (e, st) {
@@ -118,12 +122,25 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  /// Stream messages giữa current user và [otherUserId].
-  Stream<List<ChatMessageModel>> streamMessages(
+  /// Lấy tin nhắn giữa current user và [otherUserId] (REST query).
+  Future<List<ChatMessageModel>> fetchMessages(
     int currentUserId,
     int otherUserId,
   ) {
-    return _repository.streamMessages(currentUserId, otherUserId);
+    return _repository.fetchMessages(currentUserId, otherUserId);
+  }
+
+  /// Subscribe realtime tin nhắn trực tiếp giữa 2 user.
+  RealtimeChannel subscribeToDirectMessages({
+    required int currentUserId,
+    required int otherUserId,
+    required void Function(ChatMessageModel message) onNewMessage,
+  }) {
+    return _repository.subscribeToDirectMessages(
+      currentUserId: currentUserId,
+      otherUserId: otherUserId,
+      onNewMessage: onNewMessage,
+    );
   }
 
   /// Lấy userId hiện tại.

@@ -22,8 +22,8 @@ class MessageRepository {
 
     final messagesResp = await _supabase
         .from('messages')
-      .select('m_id, m_sent_at, m_content, m_status, i_id, u_id')
-        .eq('u_id', userId)
+      .select('m_id, m_sent_at, m_content, m_status, i_id, u_id, sender_id, receiver_id')
+        .or('sender_id.eq.$userId,receiver_id.eq.$userId')
         .order('m_sent_at', ascending: false);
 
     final rows = (messagesResp as List)

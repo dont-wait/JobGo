@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/conversation_model.dart';
 import 'package:jobgo/presentation/providers/chat_provider.dart';
@@ -26,26 +27,76 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final TextEditingController _msgController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   int? _currentUserId;
+  List<ChatMessageModel> _messages = [];
+  bool _isLoadingMessages = true;
+  RealtimeChannel? _dmChannel;
+  // Track message IDs đã có để tránh duplicate
+  final Set<int> _messageIds = {};
 
   @override
   void initState() {
     super.initState();
-    _initUserId();
-    // Mark as read when entering
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChatProvider>().markAsRead(widget.otherUserId);
-    });
+    _initAndLoad();
   }
 
-  Future<void> _initUserId() async {
-    final userId = await context.read<ChatProvider>().getUserId();
-    if (mounted) {
-      setState(() => _currentUserId = userId);
+  Future<void> _initAndLoad() async {
+    final chatProvider = context.read<ChatProvider>();
+    final userId = await chatProvider.getUserId();
+    if (!mounted || userId == null) return;
+
+    setState(() => _currentUserId = userId);
+
+    // Mark as read
+    chatProvider.markAsRead(widget.otherUserId);
+
+    // Load messages via REST (filtered query)
+    await _loadMessages();
+
+    // Subscribe realtime cho cuộc trò chuyện này
+    _dmChannel = chatProvider.subscribeToDirectMessages(
+      currentUserId: userId,
+      otherUserId: widget.otherUserId,
+      onNewMessage: _handleNewDM,
+    );
+  }
+
+  Future<void> _loadMessages() async {
+    if (_currentUserId == null) return;
+    try {
+      final msgs = await context.read<ChatProvider>().fetchMessages(
+            _currentUserId!,
+            widget.otherUserId,
+          );
+      if (mounted) {
+        setState(() {
+          _messages = msgs;
+          _messageIds
+            ..clear()
+            ..addAll(msgs.map((m) => m.id));
+          _isLoadingMessages = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingMessages = false);
     }
+  }
+
+  void _handleNewDM(ChatMessageModel message) {
+    if (!mounted) return;
+    // Chèn trực tiếp vào list nếu chưa có — realtime tức thì, không cần fetch lại
+    if (!_messageIds.contains(message.id)) {
+      setState(() {
+        _messages.add(message);
+        _messageIds.add(message.id);
+      });
+    }
+    // Mark as read ngay khi đang mở conversation
+    context.read<ChatProvider>().markAsRead(widget.otherUserId);
   }
 
   @override
   void dispose() {
+    _dmChannel?.unsubscribe();
     _msgController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -53,7 +104,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   void _sendMessage() async {
     final text = _msgController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _currentUserId == null) return;
 
     _msgController.clear();
     try {
@@ -61,6 +112,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             receiverId: widget.otherUserId,
             content: text,
           );
+      // Fetch lại để lấy tin nhắn vừa gửi (có m_id từ server)
+      await _loadMessages();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -189,77 +242,56 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   // ── Message List (Realtime) ──
 
   Widget _buildMessageList() {
-    if (_currentUserId == null) {
+    if (_currentUserId == null || _isLoadingMessages) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return StreamBuilder<List<ChatMessageModel>>(
-      stream: context.read<ChatProvider>().streamMessages(_currentUserId!, widget.otherUserId),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Lỗi: ${snapshot.error}',
-              style: const TextStyle(color: AppColors.error),
+    final messages = _messages.reversed.toList();
+
+    if (messages.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.chat_bubble_outline,
+              size: 64,
+              color: AppColors.textHint.withValues(alpha: 0.4),
             ),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting &&
-            !snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        // Đảo ngược danh sách để tin nhắn mới nhất nằm ở index 0 (kết hợp với reverse: true)
-        final messages = snapshot.data?.reversed.toList() ?? [];
-
-        if (messages.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.chat_bubble_outline,
-                  size: 64,
-                  color: AppColors.textHint.withValues(alpha: 0.4),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Hãy gửi lời chào để bắt đầu cuộc trò chuyện!',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 12),
+            const Text(
+              'Hãy gửi lời chào để bắt đầu cuộc trò chuyện!',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
             ),
-          );
-        }
+          ],
+        ),
+      );
+    }
 
-        return ListView.builder(
-          controller: _scrollController,
-          reverse: true,
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          itemCount: messages.length,
-          itemBuilder: (context, index) {
-            final msg = messages[index];
-            final isMe = msg.isMe(_currentUserId!);
-            
-            // Do danh sách đảo ngược, tin nhắn cũ hơn kế tiếp sẽ ở index + 1
-            final showTime = index == messages.length - 1 ||
-                messages[index].sentAt
-                        .difference(messages[index + 1].sentAt)
-                        .inMinutes >
-                    5;
+    return ListView.builder(
+      controller: _scrollController,
+      reverse: true,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      itemCount: messages.length,
+      itemBuilder: (context, index) {
+        final msg = messages[index];
+        final isMe = msg.isMe(_currentUserId!);
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (showTime) _buildTimeDivider(msg.sentAt),
-                _MessageBubble(message: msg, isMe: isMe),
-              ],
-            );
-          },
+        final showTime = index == messages.length - 1 ||
+            messages[index].sentAt
+                    .difference(messages[index + 1].sentAt)
+                    .inMinutes >
+                5;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (showTime) _buildTimeDivider(msg.sentAt),
+            _MessageBubble(message: msg, isMe: isMe),
+          ],
         );
       },
     );

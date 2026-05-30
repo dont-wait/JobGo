@@ -71,8 +71,8 @@ class _NotificationsPageState extends State<NotificationsPage>
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 12),
+          tabAlignment: TabAlignment.center,
+          labelPadding: const EdgeInsets.symmetric(horizontal: 10),
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textHint,
           indicatorColor: AppColors.primary,
@@ -242,8 +242,8 @@ class _NotificationsPageState extends State<NotificationsPage>
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: items.length,
-        separatorBuilder: (_, _) =>
-            const Divider(height: 1, indent: 72, endIndent: 16),
+        separatorBuilder: (_, __) =>
+            const Divider(height: 1, indent: 76, endIndent: 16),
         itemBuilder: (context, index) =>
             _buildNotificationTile(items[index], provider),
       ),
@@ -254,59 +254,80 @@ class _NotificationsPageState extends State<NotificationsPage>
     _NotificationItem item,
     NotificationProvider provider,
   ) {
-    return Container(
-      color: item.isRead ? Colors.white : const Color(0xFFF0F7FF),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: item.iconBg,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(item.icon, color: item.iconColor, size: 22),
-        ),
-        title: Text(
-          item.title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: item.isRead ? FontWeight.w400 : FontWeight.w600,
-            color: AppColors.textPrimary,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            item.time,
-            style: const TextStyle(fontSize: 12, color: AppColors.textHint),
-          ),
-        ),
-        trailing: item.isRead
-            ? null
-            : Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () {
+        // Mark as read
+        if (!item.isRead && item.id > 0) {
+          provider.markAsRead(item.id);
+        }
+        // Navigate for interview notifications
+        if (item.type == _NType.interviewSchedule) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CandidateInterviewPage()),
+          );
+        }
+      },
+      child: Container(
+        color: item.isRead ? Colors.white : const Color(0xFFF0F7FF),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: item.iconBg,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(item.icon, color: item.iconColor, size: 22),
+            ),
+            const SizedBox(width: 16),
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight:
+                          item.isRead ? FontWeight.w400 : FontWeight.w600,
+                      color: AppColors.textPrimary,
+                      height: 1.4,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.time,
+                    style:
+                        const TextStyle(fontSize: 12, color: AppColors.textHint),
+                  ),
+                ],
+              ),
+            ),
+            // Unread dot
+            if (!item.isRead) ...[
+              const SizedBox(width: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-        onTap: () {
-          // Mark as read
-          if (!item.isRead && item.id > 0) {
-            provider.markAsRead(item.id);
-          }
-          // Navigate for interview notifications
-          if (item.type == _NType.interviewSchedule) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const CandidateInterviewPage()),
-            );
-          }
-        },
+            ],
+          ],
+        ),
       ),
     );
   }

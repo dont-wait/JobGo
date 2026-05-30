@@ -152,29 +152,62 @@ class ChatRepository {
 
   // ── Messages ──
 
-  /// Stream realtime messages giữa current user và [otherUserId].
-  Stream<List<ChatMessageModel>> streamMessages(
+  /// Lấy tin nhắn giữa current user và [otherUserId] (REST query, có filter đúng user).
+  Future<List<ChatMessageModel>> fetchMessages(
     int currentUserId,
     int otherUserId,
-  ) {
-    return _supabase
+  ) async {
+    final rows = await _supabase
         .from('messages')
-        .stream(primaryKey: ['m_id'])
-        .order('m_sent_at', ascending: true)
-        .map(
-          (rows) => rows
-              .map(
-                (r) => ChatMessageModel.fromJson(Map<String, dynamic>.from(r)),
-              )
-              .where(
-                (m) =>
-                    (m.senderId == currentUserId &&
-                        m.receiverId == otherUserId) ||
-                    (m.senderId == otherUserId &&
-                        m.receiverId == currentUserId),
-              )
-              .toList(),
-        );
+        .select('m_id, sender_id, receiver_id, m_content, m_status, m_sent_at')
+        .or(
+          'and(sender_id.eq.$currentUserId,receiver_id.eq.$otherUserId),'
+          'and(sender_id.eq.$otherUserId,receiver_id.eq.$currentUserId)',
+        )
+        .order('m_sent_at', ascending: true);
+
+    return (rows as List)
+        .map((r) => ChatMessageModel.fromJson(Map<String, dynamic>.from(r)))
+        .toList();
+  }
+
+  /// Subscribe realtime tin nhắn giữa current user và [otherUserId].
+  /// Khi có tin nhắn mới, gọi callback để refresh.
+  RealtimeChannel subscribeToDirectMessages({
+    required int currentUserId,
+    required int otherUserId,
+    required void Function(ChatMessageModel message) onNewMessage,
+  }) {
+    final channel = _supabase.channel('dm-$currentUserId-$otherUserId');
+
+    // Lắng nghe tin từ otherUser gửi cho currentUser
+    channel
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'sender_id',
+            value: otherUserId,
+          ),
+          callback: (payload) {
+            try {
+              if (payload.eventType == PostgresChangeEvent.insert ||
+                  payload.eventType == PostgresChangeEvent.update) {
+                final msg = ChatMessageModel.fromJson(payload.newRecord);
+                if (msg.receiverId == currentUserId) {
+                  onNewMessage(msg);
+                }
+              }
+            } catch (e) {
+              AppLogger.error('Error parsing DM event', error: e);
+            }
+          },
+        )
+        .subscribe();
+
+    return channel;
   }
 
   /// Gửi tin nhắn.
@@ -259,17 +292,23 @@ class ChatRepository {
 
   // ── Realtime channel subscription ──
 
-  /// Subscribe to new messages across all conversations.
+  /// Subscribe to new messages for a specific user (as receiver).
   RealtimeChannel subscribeToNewMessages({
+    required int userId,
     required void Function(ChatMessageModel message) onNewMessage,
   }) {
-    final channel = _supabase.channel('messages-global');
+    final channel = _supabase.channel('messages-user-$userId');
 
     channel
         .onPostgresChanges(
           event: PostgresChangeEvent.insert,
           schema: 'public',
           table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'receiver_id',
+            value: userId,
+          ),
           callback: (payload) {
             try {
               final message = ChatMessageModel.fromJson(payload.newRecord);
