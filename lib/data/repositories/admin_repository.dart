@@ -1110,28 +1110,7 @@ class AdminRepository {
     final numericId = int.tryParse(jobId);
 
     Future<bool> performDelete(dynamic targetId) async {
-      try {
-        // 1. Thử xóa vĩnh viễn (Hard delete) khỏi bảng jobs
-        final rows = await _supabase
-            .from('jobs')
-            .delete()
-            .eq('j_id', targetId)
-            .select('j_id');
-            
-        if ((rows as List).isNotEmpty) return true;
-        
-        // Fallback cho schema cột id cũ
-        final legacyRows = await _supabase
-            .from('jobs')
-            .delete()
-            .eq('id', targetId)
-            .select('id');
-        return (legacyRows as List).isNotEmpty;
-      } catch (e) {
-        dev.log('Hard delete job failed (dính khóa ngoại): $e');
-        
-        // 2. Nếu xóa bị chặn bởi khóa ngoại, tiến hành Xóa Ảo (Soft delete)
-        // Cập nhật thành trạng thái 'deleted' để bộ lọc loại bỏ nó vĩnh viễn
+      // Chỉ thực hiện Xóa Ảo (Soft delete) - Loại bỏ Hard delete theo yêu cầu
         try {
           final softRows = await _supabase
               .from('jobs')
@@ -1151,7 +1130,6 @@ class AdminRepository {
             return false;
           }
         }
-      }
     }
 
     final targets = <dynamic>[jobId, if (numericId != null) numericId];
