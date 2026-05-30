@@ -62,7 +62,6 @@ class _NotificationsPageState extends State<NotificationsPage>
                 SnackBar(
                   content: Text(loc.allMarkedAsReadMessage),
                   behavior: SnackBarBehavior.floating,
-                  
                 ),
               );
             },
@@ -71,6 +70,9 @@ class _NotificationsPageState extends State<NotificationsPage>
         ],
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          labelPadding: const EdgeInsets.symmetric(horizontal: 12),
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textHint,
           indicatorColor: AppColors.primary,
@@ -94,7 +96,10 @@ class _NotificationsPageState extends State<NotificationsPage>
                       if (count <= 0) return const SizedBox.shrink();
                       return Container(
                         margin: const EdgeInsets.only(left: 6),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.error,
                           borderRadius: BorderRadius.circular(10),
@@ -129,9 +134,9 @@ class _NotificationsPageState extends State<NotificationsPage>
   }
 
   Widget _buildNotificationTab(_NType filterType) {
-    return Consumer<NotificationProvider>(
-      builder: (context, provider, _) {
-        if (provider.isLoading) {
+    return Consumer2<NotificationProvider, ChatProvider>(
+      builder: (context, provider, chatProvider, _) {
+        if (provider.isLoading && chatProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -139,12 +144,18 @@ class _NotificationsPageState extends State<NotificationsPage>
           return _buildErrorState(provider.error!);
         }
 
-        final items = provider.notifications
-            .map(_toNotificationItem)
-            .toList();
+        final items = provider.notifications.map(_toNotificationItem).toList();
+        final hasUnreadPersistedMessageNotification = items.any(
+          (item) => item.type == _NType.message && !item.isRead,
+        );
+        if (!hasUnreadPersistedMessageNotification) {
+          items.addAll(_buildMessageItemsFromConversations(chatProvider));
+        }
+
         final filtered = filterType == _NType.all
             ? items
             : items.where((item) => item.type == filterType).toList();
+        filtered.sort((a, b) => b.sortTime.compareTo(a.sortTime));
 
         return _buildNotificationList(filtered, provider);
       },
@@ -159,8 +170,11 @@ class _NotificationsPageState extends State<NotificationsPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline,
-                size: 56, color: AppColors.error.withValues(alpha: 0.7)),
+            Icon(
+              Icons.error_outline,
+              size: 56,
+              color: AppColors.error.withValues(alpha: 0.7),
+            ),
             const SizedBox(height: 12),
             Text(
               loc.unableToLoadNotifications,
@@ -200,9 +214,11 @@ class _NotificationsPageState extends State<NotificationsPage>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.notifications_off_outlined,
-                        size: 64,
-                        color: AppColors.textHint.withValues(alpha: 0.5)),
+                    Icon(
+                      Icons.notifications_off_outlined,
+                      size: 64,
+                      color: AppColors.textHint.withValues(alpha: 0.5),
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       loc.noNotificationsMessage,
@@ -226,7 +242,7 @@ class _NotificationsPageState extends State<NotificationsPage>
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: items.length,
-        separatorBuilder: (_, __) =>
+        separatorBuilder: (_, _) =>
             const Divider(height: 1, indent: 72, endIndent: 16),
         itemBuilder: (context, index) =>
             _buildNotificationTile(items[index], provider),
@@ -241,8 +257,7 @@ class _NotificationsPageState extends State<NotificationsPage>
     return Container(
       color: item.isRead ? Colors.white : const Color(0xFFF0F7FF),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           width: 44,
           height: 44,
@@ -281,16 +296,14 @@ class _NotificationsPageState extends State<NotificationsPage>
               ),
         onTap: () {
           // Mark as read
-          if (!item.isRead) {
+          if (!item.isRead && item.id > 0) {
             provider.markAsRead(item.id);
           }
           // Navigate for interview notifications
           if (item.type == _NType.interviewSchedule) {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => const CandidateInterviewPage(),
-              ),
+              MaterialPageRoute(builder: (_) => const CandidateInterviewPage()),
             );
           }
         },
@@ -307,12 +320,42 @@ class _NotificationsPageState extends State<NotificationsPage>
       id: model.id,
       title: model.content,
       time: _formatTimeAgo(model.createdAt),
+      sortTime: model.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
       icon: visual.icon,
       iconBg: visual.iconBg,
       iconColor: visual.iconColor,
       type: type,
       isRead: model.isRead,
     );
+  }
+
+  List<_NotificationItem> _buildMessageItemsFromConversations(
+    ChatProvider chatProvider,
+  ) {
+    final now = DateTime.now();
+    return chatProvider.conversations
+        .where((conversation) => conversation.unreadCount > 0)
+        .map((conversation) {
+          final lastMessage = conversation.lastMessage;
+          final sentAt = lastMessage?.sentAt ?? now;
+          final preview = (lastMessage?.content ?? '').trim();
+          final title = preview.isEmpty
+              ? '${conversation.displayName} đã gửi một tin nhắn mới'
+              : '${conversation.displayName}: $preview';
+
+          return _NotificationItem(
+            id: -(conversation.otherUserId + 1000000),
+            title: title,
+            time: _formatTimeAgo(sentAt),
+            sortTime: sentAt,
+            icon: Icons.chat_bubble_outline,
+            iconBg: const Color(0xFFE8F5E9),
+            iconColor: AppColors.success,
+            type: _NType.message,
+            isRead: false,
+          );
+        })
+        .toList();
   }
 
   _NType _mapType(String rawType) {
@@ -397,6 +440,7 @@ class _NotificationItem {
   final int id;
   final String title;
   final String time;
+  final DateTime sortTime;
   final IconData icon;
   final Color iconBg;
   final Color iconColor;
@@ -407,6 +451,7 @@ class _NotificationItem {
     required this.id,
     required this.title,
     required this.time,
+    required this.sortTime,
     required this.icon,
     required this.iconBg,
     required this.iconColor,

@@ -67,12 +67,12 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
             },
           ),
           const ProfileAvatar(role: UserRole.employer),
-          const SizedBox(width: 4),
         ],
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
           tabAlignment: TabAlignment.start,
+          labelPadding: const EdgeInsets.symmetric(horizontal: 12),
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textHint,
           indicatorColor: AppColors.primary,
@@ -242,7 +242,7 @@ class _EmployerNotificationsPageState extends State<EmployerNotificationsPage>
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: items.length,
-        separatorBuilder: (_, __) =>
+        separatorBuilder: (_, _) =>
             const Divider(height: 1, indent: 72, endIndent: 16),
         itemBuilder: (context, index) =>
             _buildNotificationTile(items[index], provider),

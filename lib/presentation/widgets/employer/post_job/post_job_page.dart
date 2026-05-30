@@ -174,6 +174,10 @@ class _PostJobPageState extends State<PostJobPage> {
     return _parsePositionsInput() ?? 1;
   }
 
+  bool _hasAtLeastOneValue(List<String> items) {
+    return items.any((item) => item.trim().isNotEmpty);
+  }
+
   bool _isPastDate(DateTime value) {
     final today = DateUtils.dateOnly(DateTime.now());
     final selected = DateUtils.dateOnly(value);
@@ -251,6 +255,9 @@ class _PostJobPageState extends State<PostJobPage> {
     if (requirementsController.text.trim().isEmpty) {
       return loc.requirementsRequired;
     }
+    if (!_hasAtLeastOneValue(selectedSkills)) {
+      return loc.chooseAtLeastOneSkill;
+    }
     return null;
   }
 
@@ -288,6 +295,10 @@ class _PostJobPageState extends State<PostJobPage> {
 
     if (_isPastDate(selectedDeadline!)) {
       return loc.deadlineCannotBePast;
+    }
+
+    if (!_hasAtLeastOneValue(selectedBenefits)) {
+      return loc.chooseAtLeastOneBenefit;
     }
 
     return _validateSalaryInputs(publish: true);

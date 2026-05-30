@@ -79,7 +79,9 @@ class ChatRepository {
     final otherIds = grouped.keys.toList();
     final userRows = await _supabase
         .from('users')
-        .select('u_id, u_name, u_email, u_role, candidates(c_full_name), employers(e_company_name)')
+        .select(
+          'u_id, u_name, u_email, u_role, candidates(c_full_name), employers(e_company_name)',
+        )
         .inFilter('u_id', otherIds);
 
     final userMap = <int, Map<String, dynamic>>{};
@@ -100,7 +102,7 @@ class ChatRepository {
           .length;
 
       String? displayName;
-      
+
       // Ưu tiên lấy c_full_name nếu là candidate
       if (userData != null && userData['candidates'] != null) {
         final cData = userData['candidates'];
@@ -110,9 +112,11 @@ class ChatRepository {
           displayName = cData['c_full_name'] as String?;
         }
       }
-      
+
       // Hoặc lấy e_company_name nếu là employer
-      if (displayName == null && userData != null && userData['employers'] != null) {
+      if (displayName == null &&
+          userData != null &&
+          userData['employers'] != null) {
         final eData = userData['employers'];
         if (eData is List && eData.isNotEmpty) {
           displayName = eData.first['e_company_name'] as String?;
@@ -121,16 +125,19 @@ class ChatRepository {
         }
       }
 
-      conversations.add(ConversationModel(
-        otherUserId: otherId,
-        otherUserName: displayName ??
-            userData?['u_name'] as String? ??
-            userData?['u_email'] as String? ??
-            'User #$otherId',
-        otherUserRole: userData?['u_role'] as String?,
-        lastMessage: messages.first, // đã sort DESC
-        unreadCount: unreadCount,
-      ));
+      conversations.add(
+        ConversationModel(
+          otherUserId: otherId,
+          otherUserName:
+              displayName ??
+              userData?['u_name'] as String? ??
+              userData?['u_email'] as String? ??
+              'User #$otherId',
+          otherUserRole: userData?['u_role'] as String?,
+          lastMessage: messages.first, // đã sort DESC
+          unreadCount: unreadCount,
+        ),
+      );
     }
 
     // Sort theo last message time
@@ -146,17 +153,28 @@ class ChatRepository {
   // ── Messages ──
 
   /// Stream realtime messages giữa current user và [otherUserId].
-  Stream<List<ChatMessageModel>> streamMessages(int currentUserId, int otherUserId) {
+  Stream<List<ChatMessageModel>> streamMessages(
+    int currentUserId,
+    int otherUserId,
+  ) {
     return _supabase
         .from('messages')
         .stream(primaryKey: ['m_id'])
         .order('m_sent_at', ascending: true)
-        .map((rows) => rows
-            .map((r) => ChatMessageModel.fromJson(Map<String, dynamic>.from(r)))
-            .where((m) =>
-                (m.senderId == currentUserId && m.receiverId == otherUserId) ||
-                (m.senderId == otherUserId && m.receiverId == currentUserId))
-            .toList());
+        .map(
+          (rows) => rows
+              .map(
+                (r) => ChatMessageModel.fromJson(Map<String, dynamic>.from(r)),
+              )
+              .where(
+                (m) =>
+                    (m.senderId == currentUserId &&
+                        m.receiverId == otherUserId) ||
+                    (m.senderId == otherUserId &&
+                        m.receiverId == currentUserId),
+              )
+              .toList(),
+        );
   }
 
   /// Gửi tin nhắn.
@@ -167,13 +185,59 @@ class ChatRepository {
     final userId = await getCurrentUserId();
     if (userId == null) throw Exception('Not authenticated');
 
-    await _supabase.from('messages').insert({
-      'sender_id': userId,
-      'receiver_id': receiverId,
-      'm_content': content,
-      'm_status': 'sent',
-      'u_id': userId,
-    });
+    final inserted = await _supabase
+        .from('messages')
+        .insert({
+          'sender_id': userId,
+          'receiver_id': receiverId,
+          'm_content': content,
+          'm_status': 'sent',
+          'u_id': userId,
+        })
+        .select('m_id')
+        .maybeSingle();
+
+    await _sendMessageNotification(
+      senderId: userId,
+      receiverId: receiverId,
+      content: content,
+      messageId: _toInt(inserted?['m_id']),
+    );
+  }
+
+  Future<void> ensureIncomingMessageNotification(
+    ChatMessageModel message, {
+    required int currentUserId,
+  }) async {
+    if (message.receiverId != currentUserId) return;
+
+    try {
+      final existing = await _supabase
+          .from('notifications')
+          .select('n_id')
+          .eq('u_id', currentUserId)
+          .eq('related_type', 'message')
+          .eq('related_id', message.id)
+          .maybeSingle();
+      if (existing != null) return;
+
+      final senderName = await _resolveUserDisplayName(message.senderId);
+      final preview = _buildMessagePreview(message.content);
+      final messageContent = preview.isEmpty
+          ? '$senderName đã gửi một tin nhắn mới'
+          : '$senderName: $preview';
+
+      await _supabase.from('notifications').insert({
+        'n_type': 'message',
+        'n_content': messageContent,
+        'n_status': 'unread',
+        'u_id': currentUserId,
+        'related_id': message.id,
+        'related_type': 'message',
+      });
+    } catch (e) {
+      AppLogger.error('Error ensuring incoming message notification', error: e);
+    }
   }
 
   /// Đánh dấu tất cả tin nhắn từ [otherUserId] là đã đọc.
@@ -227,5 +291,94 @@ class ChatRepository {
     if (value is int) return value;
     if (value is double) return value.toInt();
     return int.tryParse(value.toString());
+  }
+
+  Future<void> _sendMessageNotification({
+    required int senderId,
+    required int receiverId,
+    required String content,
+    int? messageId,
+  }) async {
+    if (senderId == receiverId) return;
+
+    try {
+      final senderName = await _resolveUserDisplayName(senderId);
+      final preview = _buildMessagePreview(content);
+      final messageContent = preview.isEmpty
+          ? '$senderName đã gửi một tin nhắn mới'
+          : '$senderName: $preview';
+
+      await _supabase.from('notifications').insert({
+        'n_type': 'message',
+        'n_content': messageContent,
+        'n_status': 'unread',
+        'u_id': receiverId,
+        'related_id': messageId ?? senderId,
+        'related_type': 'message',
+      });
+    } catch (e) {
+      AppLogger.error('Error creating message notification', error: e);
+    }
+  }
+
+  Future<String> _resolveUserDisplayName(int userId) async {
+    final userRow = await _supabase
+        .from('users')
+        .select(
+          'u_name, u_email, candidates(c_full_name), employers(e_company_name)',
+        )
+        .eq('u_id', userId)
+        .maybeSingle();
+
+    final map = _asMap(userRow);
+    if (map == null) return 'Người dùng #$userId';
+
+    final candidateName = _extractNestedString(
+      map['candidates'],
+      'c_full_name',
+    );
+    if (candidateName.isNotEmpty) return candidateName;
+
+    final employerName = _extractNestedString(
+      map['employers'],
+      'e_company_name',
+    );
+    if (employerName.isNotEmpty) return employerName;
+
+    final userName = _safeString(map['u_name']);
+    if (userName.isNotEmpty) return userName;
+
+    final email = _safeString(map['u_email']);
+    if (email.isNotEmpty) return email;
+
+    return 'Người dùng #$userId';
+  }
+
+  String _buildMessagePreview(String content) {
+    final normalized = content.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (normalized.isEmpty) return '';
+    const maxLen = 80;
+    if (normalized.length <= maxLen) return normalized;
+    return '${normalized.substring(0, maxLen)}...';
+  }
+
+  String _extractNestedString(dynamic value, String key) {
+    final nested = value is List && value.isNotEmpty ? value.first : value;
+    final map = _asMap(nested);
+    if (map == null) return '';
+    return _safeString(map[key]);
+  }
+
+  Map<String, dynamic>? _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
+  String _safeString(dynamic value) {
+    if (value == null) return '';
+    final str = value.toString().trim();
+    if (str.isEmpty || str.toLowerCase() == 'null') return '';
+    return str;
   }
 }

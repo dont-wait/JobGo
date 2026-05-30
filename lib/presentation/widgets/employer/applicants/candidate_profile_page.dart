@@ -343,7 +343,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
               _buildPill(candidate.seniorityLabel),
               _buildPill(candidate.salaryLabel),
               if (application != null)
-                _buildStatusPill(application.statusLabel),
+                _buildStatusPill(application.statusLabel, application.status),
             ],
           ),
 
@@ -418,6 +418,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
 
   Widget _buildApplicantActionBar() {
     final loc = AppLocalizations.of(context);
+    final isRejected = widget.application?.status == ApplicationStatus.rejected;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       decoration: BoxDecoration(
@@ -453,17 +454,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   loc.rejectAction,
                   AppColors.error,
                   Icons.close,
-                  _confirmRejectCandidate,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildActionButton(
-                  loc.shortlistAction,
-                  AppColors.white,
-                  null,
-                  _shortlistCandidate,
-                  borderColor: AppColors.primary,
+                  isRejected ? null : _confirmRejectCandidate,
                 ),
               ),
               const SizedBox(width: 12),
@@ -472,7 +463,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
                   loc.scheduleAction,
                   AppColors.primary,
                   null,
-                  _openInterviewSchedule,
+                  isRejected ? null : _openInterviewSchedule,
                   textColor: Colors.white,
                 ),
               ),
@@ -599,36 +590,44 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     String label,
     Color bgColor,
     IconData? icon,
-    VoidCallback onTap, {
+    VoidCallback? onTap, {
     Color? textColor,
     Color borderColor = Colors.transparent,
   }) {
-    final resolvedTextColor =
-        textColor ??
-        (bgColor == AppColors.white ? AppColors.primary : Colors.white);
+    final isDisabled = onTap == null;
+    final effectiveBgColor = isDisabled ? AppColors.border : bgColor;
+    final effectiveBorderColor = isDisabled ? AppColors.border : borderColor;
+    final resolvedTextColor = isDisabled
+        ? AppColors.textSecondary
+        : textColor ??
+              (bgColor == AppColors.white ? AppColors.primary : Colors.white);
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: bgColor,
+          color: effectiveBgColor,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: borderColor),
+          border: Border.all(color: effectiveBorderColor),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               Icon(icon, color: resolvedTextColor, size: 18),
               const SizedBox(width: 6),
             ],
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: resolvedTextColor,
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: resolvedTextColor,
+                ),
               ),
             ),
           ],
@@ -654,21 +653,37 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     );
   }
 
-  Widget _buildStatusPill(String text) {
+  Widget _buildStatusPill(String text, ApplicationStatus status) {
+    final color = _statusColor(status);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.success.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          color: AppColors.success,
-          fontWeight: FontWeight.w600,
-        ),
+        style: TextStyle(color: color, fontWeight: FontWeight.w600),
       ),
     );
+  }
+
+  Color _statusColor(ApplicationStatus status) {
+    switch (status) {
+      case ApplicationStatus.interview:
+        return AppColors.warning;
+      case ApplicationStatus.shortlisted:
+      case ApplicationStatus.reviewing:
+        return const Color(0xFF8B5CF6);
+      case ApplicationStatus.hired:
+        return AppColors.success;
+      case ApplicationStatus.rejected:
+        return AppColors.error;
+      case ApplicationStatus.withdrawn:
+        return AppColors.textSecondary;
+      case ApplicationStatus.pending:
+        return AppColors.primary;
+    }
   }
 
   Widget _buildTabBar() {
@@ -1205,36 +1220,6 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
     );
   }
 
-  Future<void> _shortlistCandidate() async {
-    if (widget.application == null) return;
-    final loc = AppLocalizations.of(context);
-
-    try {
-      final repository = JobApplicationRepository();
-      final success = await repository.shortlistApplication(
-        widget.application!.applicationId,
-      );
-
-      if (mounted) {
-        if (success) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(loc.shortlistSuccess)));
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(loc.shortlistFailed)));
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
-      }
-    }
-  }
-
   Future<void> _confirmRejectCandidate() async {
     if (widget.application == null) return;
     final loc = AppLocalizations.of(context);
@@ -1291,6 +1276,7 @@ class _CandidateProfilePageState extends State<CandidateProfilePage> {
   }
 
   Future<void> _openInterviewSchedule() async {
+    if (widget.application?.status == ApplicationStatus.rejected) return;
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const InterviewSchedulePage()),
