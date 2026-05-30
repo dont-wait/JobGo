@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/enums/user_role.dart';
 import 'package:jobgo/data/models/notification_model.dart';
@@ -8,6 +9,8 @@ import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/presentation/providers/chat_provider.dart';
 import 'package:jobgo/presentation/widgets/common/profile_avatar.dart';
 import 'package:jobgo/presentation/pages/candidate/interview_schedule/candidate_interview_page.dart';
+import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
+import 'package:jobgo/data/models/conversation_model.dart';
 
 /// Candidate Notifications page — realtime qua NotificationProvider.
 class NotificationsPage extends StatefulWidget {
@@ -145,12 +148,13 @@ class _NotificationsPageState extends State<NotificationsPage>
         }
 
         final items = provider.notifications.map(_toNotificationItem).toList();
-        final hasUnreadPersistedMessageNotification = items.any(
-          (item) => item.type == _NType.message && !item.isRead,
-        );
-        if (!hasUnreadPersistedMessageNotification) {
-          items.addAll(_buildMessageItemsFromConversations(chatProvider));
-        }
+        
+        // Remove raw database message notifications to avoid duplicates and clutter.
+        // We will replace them with nicely grouped conversations from ChatProvider.
+        items.removeWhere((item) => item.type == _NType.message);
+        
+        // Always add all conversations (unread and read) as message items.
+        items.addAll(_buildMessageItemsFromConversations(chatProvider));
 
         final filtered = filterType == _NType.all
             ? items
@@ -255,7 +259,7 @@ class _NotificationsPageState extends State<NotificationsPage>
     NotificationProvider provider,
   ) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         // Mark as read
         if (!item.isRead && item.id > 0) {
           provider.markAsRead(item.id);
@@ -266,6 +270,55 @@ class _NotificationsPageState extends State<NotificationsPage>
             context,
             MaterialPageRoute(builder: (_) => const CandidateInterviewPage()),
           );
+        } else if (item.type == _NType.message) {
+          int? otherUserId;
+          if (item.id < 0) {
+            // Đây là tin nhắn ảo tự build từ conversation: id = -(otherUserId + 1000000)
+            otherUserId = -item.id - 1000000;
+          } else if (item.relatedId != null) {
+            // Đây là notification thật từ DB. relatedId có thể là message_id hoặc sender_id.
+            try {
+              final db = Supabase.instance.client;
+              final msgData = await db
+                  .from('messages')
+                  .select('sender_id')
+                  .eq('m_id', item.relatedId!)
+                  .maybeSingle();
+              if (msgData != null) {
+                otherUserId = msgData['sender_id'] as int?;
+              } else {
+                otherUserId = item.relatedId;
+              }
+            } catch (_) {
+              otherUserId = item.relatedId;
+            }
+          }
+
+          if (otherUserId != null && mounted) {
+            final chatProvider = context.read<ChatProvider>();
+            final conversation = chatProvider.conversations.firstWhere(
+              (c) => c.otherUserId == otherUserId,
+              orElse: () => ConversationModel(
+                otherUserId: otherUserId!,
+                otherUserName: item.title.contains(':')
+                    ? item.title.split(':').first
+                    : 'Nhà tuyển dụng',
+                otherUserRole: 'employer',
+                lastMessage: null,
+                unreadCount: 0,
+              ),
+            );
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatDetailPage(
+                  otherUserId: otherUserId!,
+                  otherUserName: conversation.displayName,
+                ),
+              ),
+            );
+          }
         }
       },
       child: Container(
@@ -347,6 +400,8 @@ class _NotificationsPageState extends State<NotificationsPage>
       iconColor: visual.iconColor,
       type: type,
       isRead: model.isRead,
+      relatedId: model.relatedId,
+      relatedType: model.relatedType,
     );
   }
 
@@ -355,7 +410,6 @@ class _NotificationsPageState extends State<NotificationsPage>
   ) {
     final now = DateTime.now();
     return chatProvider.conversations
-        .where((conversation) => conversation.unreadCount > 0)
         .map((conversation) {
           final lastMessage = conversation.lastMessage;
           final sentAt = lastMessage?.sentAt ?? now;
@@ -373,7 +427,9 @@ class _NotificationsPageState extends State<NotificationsPage>
             iconBg: const Color(0xFFE8F5E9),
             iconColor: AppColors.success,
             type: _NType.message,
-            isRead: false,
+            isRead: conversation.unreadCount == 0,
+            relatedId: conversation.otherUserId,
+            relatedType: 'message',
           );
         })
         .toList();
@@ -467,6 +523,8 @@ class _NotificationItem {
   final Color iconColor;
   final _NType type;
   final bool isRead;
+  final int? relatedId;
+  final String? relatedType;
 
   const _NotificationItem({
     required this.id,
@@ -478,5 +536,7 @@ class _NotificationItem {
     required this.iconColor,
     required this.type,
     this.isRead = false,
+    this.relatedId,
+    this.relatedType,
   });
 }

@@ -5,6 +5,8 @@ class NotificationModel {
   final String status;
   final DateTime? createdAt;
   final int userId;
+  final int? relatedId;
+  final String? relatedType;
 
   NotificationModel({
     required this.id,
@@ -13,6 +15,8 @@ class NotificationModel {
     required this.status,
     required this.createdAt,
     required this.userId,
+    this.relatedId,
+    this.relatedType,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,8 @@ class NotificationModel {
       status: _toString(json['n_status']) ?? 'unread',
       createdAt: _toDateTime(json['n_create_at']),
       userId: _toInt(json['u_id']) ?? 0,
+      relatedId: _toInt(json['related_id']),
+      relatedType: _toString(json['related_type']),
     );
   }
 
