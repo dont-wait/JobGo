@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/skill_model.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
+import 'package:flutter/services.dart';
 
 class SkillsSection extends StatelessWidget {
   final List<SkillModel>? skills;
@@ -288,7 +289,27 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
                         hintText: 'e.g. 2',
                         border: OutlineInputBorder(),
                       ),
-                      onChanged: (v) => _years = int.tryParse(v),
+                      onChanged: (v) {
+                        final parsed = int.tryParse(v);
+                        // Chỉ lưu nếu là số dương
+                        if (parsed != null && parsed > 0) {
+                          _years = parsed;
+                        } else {
+                          _years = null;
+                        }
+                      },
+                      //  Chỉ cho nhập số, không cho nhập dấu âm
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return null; // optional
+                        final parsed = int.tryParse(v);
+                        if (parsed == null || parsed <= 0) {
+                          return 'Phải lớn hơn 0';
+                        }
+                        return null;
+                      },
                     ),
                   ],
                 ),
