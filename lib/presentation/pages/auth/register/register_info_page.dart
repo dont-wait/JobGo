@@ -134,7 +134,8 @@ class _RegisterInfoPageState extends State<RegisterInfoPage> {
   void _onGoogleSignIn() async {
     setState(() => _isLoading = true);
     try {
-      await _authRepository.signInWithGoogle();
+      // Pass the role chosen in step 1 so the correct profile is created
+      await _authRepository.signInWithGoogle(role: widget.role.name);
     } catch (e) {
       if (!mounted) return;
       final loc = AppLocalizations.of(context);
