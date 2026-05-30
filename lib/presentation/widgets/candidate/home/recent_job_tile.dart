@@ -45,6 +45,8 @@ class RecentJobTile extends StatelessWidget {
                 children: [
                   Text(
                     job.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -54,13 +56,18 @@ class RecentJobTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     job.company,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 13,
                       color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
                         job.formattedSalary,
@@ -70,41 +77,41 @@ class RecentJobTile extends StatelessWidget {
                           color: AppColors.primary,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Icon(
-                        Icons.access_time,
-                        size: 12,
-                        color: AppColors.textHint,
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          job.postedTimeAgo,
-                          style: const TextStyle(
-                            fontSize: 11,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.access_time,
+                            size: 12,
                             color: AppColors.textHint,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                          const SizedBox(width: 4),
+                          Text(
+                            job.postedTimeAgo,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textHint,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      const Icon(
-                        Icons.people_outline,
-                        size: 12,
-                        color: AppColors.textHint,
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          '${job.applicants ?? 0} applicants',
-                          style: const TextStyle(
-                            fontSize: 11,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.people_outline,
+                            size: 12,
                             color: AppColors.textHint,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${job.applicants ?? 0} applicants',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textHint,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

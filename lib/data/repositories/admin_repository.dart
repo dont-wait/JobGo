@@ -699,14 +699,59 @@ class AdminRepository {
     resolvedUserId ??= numericId;
 
     if (resolvedUserId != null) {
+      // Thử tìm role thật để restore nếu lỡ update role thành deleted
+      String? realRole;
+      try {
+        final isCand = await _supabase.from('candidates').select('c_id').eq('u_id', resolvedUserId).maybeSingle();
+        if (isCand != null) {
+          realRole = 'candidate';
+        } else {
+          final isEmp = await _supabase.from('employers').select('e_id').eq('u_id', resolvedUserId).maybeSingle();
+          if (isEmp != null) realRole = 'employer';
+        }
+      } catch (_) {}
+
+      // Mặc định luôn đưa về candidate nếu không xác định được, ép mất chữ 'deleted' ở role
+      realRole ??= 'candidate';
+
       try {
         await _supabase.from('users').update({
-          'u_status': 'active', // Trả về trạng thái hoạt động bình thường
+          'u_status': 'active',
           'u_deleted_at': null,
+          'u_role': realRole,
         }).eq('u_id', resolvedUserId);
         return true;
       } catch (e) {
-        dev.log('Restore user failed: $e');
+        dev.log('Restore attempt 1 failed: $e');
+      }
+
+      try {
+        await _supabase.from('users').update({
+          'u_status': 'active',
+          'u_role': realRole,
+        }).eq('u_id', resolvedUserId);
+        return true;
+      } catch (e) {
+        dev.log('Restore attempt 2 failed: $e');
+      }
+
+      try {
+        await _supabase.from('users').update({
+          'u_role': realRole,
+        }).eq('u_id', resolvedUserId);
+        return true;
+      } catch (e) {
+        dev.log('Restore attempt 3 failed: $e');
+      }
+
+      try {
+        await _supabase.from('users').update({
+          'status': 'active',
+          'role': realRole,
+        }).eq('id', resolvedUserId);
+        return true;
+      } catch (e) {
+        dev.log('Restore attempt 4 failed: $e');
       }
     }
     return false;

@@ -182,6 +182,8 @@ class _ResponseCard extends StatelessWidget {
         ),
         title: Text(
           schedule.candidateName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -193,6 +195,8 @@ class _ResponseCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               schedule.jobTitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 13,
                 color: AppColors.textSecondary,

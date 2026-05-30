@@ -18,16 +18,19 @@ class ModerationTabs extends StatelessWidget {
     return Container(
       color: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
-        children: [
-          _buildTab('Pending', pendingCount > 0 ? pendingCount.toString() : null),
-          const SizedBox(width: 12),
-          _buildTab('Approved', null),
-          const SizedBox(width: 12),
-          _buildTab('Rejected', null),
-          const SizedBox(width: 12),
-          _buildTab('Expired', null),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildTab('Pending', pendingCount > 0 ? pendingCount.toString() : null),
+            const SizedBox(width: 12),
+            _buildTab('Approved', null),
+            const SizedBox(width: 12),
+            _buildTab('Rejected', null),
+            const SizedBox(width: 12),
+            _buildTab('Expired', null),
+          ],
+        ),
       ),
     );
   }

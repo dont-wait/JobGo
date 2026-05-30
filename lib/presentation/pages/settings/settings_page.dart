@@ -256,21 +256,22 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                displayName,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2),
-              SizedBox(
-                width: 220,
-                child: Text(
+                const SizedBox(height: 2),
+                Text(
                   subtitle.isEmpty ? 'Employer account' : subtitle,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -278,8 +279,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -320,21 +321,22 @@ class _SettingsPageState extends State<SettingsPage> {
             backgroundColor: AppColors.primary,
           ),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                displayName,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              SizedBox(
-                width: 220,
-                child: Text(
+                const SizedBox(height: 2),
+                Text(
                   subtitle.isEmpty ? 'Candidate account' : subtitle,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -342,8 +344,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -368,21 +370,22 @@ class _SettingsPageState extends State<SettingsPage> {
             backgroundColor: AppColors.textSecondary,
           ),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                displayName,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              SizedBox(
-                width: 220,
-                child: Text(
+                const SizedBox(height: 2),
+                Text(
                   subtitle,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -390,8 +393,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
