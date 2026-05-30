@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
-import 'package:jobgo/core/enums/user_role.dart';
-import 'package:jobgo/presentation/pages/settings/settings_page.dart';
 
 class AdminProfilePage extends StatelessWidget {
   const AdminProfilePage({super.key});
@@ -23,22 +21,6 @@ class AdminProfilePage extends StatelessWidget {
           ),
         ),
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.settings,
-              color: AppColors.textPrimary,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const SettingsPage(
-                  role: UserRole.admin,
-                )),
-              );
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

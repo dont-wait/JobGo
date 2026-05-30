@@ -585,13 +585,33 @@ class AdminRepository {
             .limit(1);
         if ((userRows as List).isNotEmpty) {
           foundAnyRow = true;
-          await _supabase.from('users').update({
-            'u_status': 'deleted',
-            'u_deleted_at': DateTime.now().toIso8601String(),
-          }).eq('u_id', resolvedUserId);
-          return true;
+          try {
+            await _supabase.from('users').update({
+              'u_status': 'deleted',
+              'u_deleted_at': DateTime.now().toIso8601String(),
+            }).eq('u_id', resolvedUserId);
+            return true;
+          } catch (_) {
+            try {
+              await _supabase.from('users').update({
+                'u_status': 'deleted',
+              }).eq('u_id', resolvedUserId);
+              return true;
+            } catch (_) {
+              try {
+                await _supabase.from('users').update({
+                  'u_role': 'deleted',
+                }).eq('u_id', resolvedUserId);
+                return true;
+              } catch (softErr) {
+                dev.log('All soft delete strategies failed: $softErr');
+              }
+            }
+          }
         }
       } catch (e) {
+        dev.log('Checking user existence failed (u_id=$resolvedUserId): $e');
+        
         var anyDeleted = false;
 
         // Any soft-delete failure should still try hard-delete path.
@@ -643,8 +663,6 @@ class AdminRepository {
             dev.log('Role fallback delete failed (u_id=$resolvedUserId): $roleFallbackErr');
           }
         }
-
-        dev.log('Soft delete users by u_id failed (u_id=$resolvedUserId): $e');
       }
     }
 
@@ -699,14 +717,59 @@ class AdminRepository {
     resolvedUserId ??= numericId;
 
     if (resolvedUserId != null) {
+      // Thử tìm role thật để restore nếu lỡ update role thành deleted
+      String? realRole;
+      try {
+        final isCand = await _supabase.from('candidates').select('c_id').eq('u_id', resolvedUserId).maybeSingle();
+        if (isCand != null) {
+          realRole = 'candidate';
+        } else {
+          final isEmp = await _supabase.from('employers').select('e_id').eq('u_id', resolvedUserId).maybeSingle();
+          if (isEmp != null) realRole = 'employer';
+        }
+      } catch (_) {}
+
+      // Mặc định luôn đưa về candidate nếu không xác định được, ép mất chữ 'deleted' ở role
+      realRole ??= 'candidate';
+
       try {
         await _supabase.from('users').update({
-          'u_status': 'active', // Trả về trạng thái hoạt động bình thường
+          'u_status': 'active',
           'u_deleted_at': null,
+          'u_role': realRole,
         }).eq('u_id', resolvedUserId);
         return true;
       } catch (e) {
-        dev.log('Restore user failed: $e');
+        dev.log('Restore attempt 1 failed: $e');
+      }
+
+      try {
+        await _supabase.from('users').update({
+          'u_status': 'active',
+          'u_role': realRole,
+        }).eq('u_id', resolvedUserId);
+        return true;
+      } catch (e) {
+        dev.log('Restore attempt 2 failed: $e');
+      }
+
+      try {
+        await _supabase.from('users').update({
+          'u_role': realRole,
+        }).eq('u_id', resolvedUserId);
+        return true;
+      } catch (e) {
+        dev.log('Restore attempt 3 failed: $e');
+      }
+
+      try {
+        await _supabase.from('users').update({
+          'status': 'active',
+          'role': realRole,
+        }).eq('id', resolvedUserId);
+        return true;
+      } catch (e) {
+        dev.log('Restore attempt 4 failed: $e');
       }
     }
     return false;
@@ -1046,69 +1109,35 @@ class AdminRepository {
   Future<bool> deleteJob(String jobId) async {
     final numericId = int.tryParse(jobId);
 
-    Future<bool> markJobAsRemoved(dynamic targetId) async {
-      final now = DateTime.now().toIso8601String();
-      final adminUid = _supabase.auth.currentUser?.id;
-
-      try {
-        final rows = await _supabase
-            .from('jobs')
-            .update({'j_moderation_status': 'rejected', 'j_status': 'inactive'})
-            .eq('j_id', targetId)
-            .select('j_id');
-        final ok = (rows as List).isNotEmpty;
-        if (!ok) return false;
-
+    Future<bool> performDelete(dynamic targetId) async {
+      // Chỉ thực hiện Xóa Ảo (Soft delete) - Loại bỏ Hard delete theo yêu cầu
         try {
-          await _supabase
+          final softRows = await _supabase
               .from('jobs')
-              .update({
-                'j_rejection_note': 'Removed by admin',
-                'j_rejected_at': now,
-                'j_rejected_by': adminUid,
-              })
-              .eq('j_id', targetId);
-        } catch (_) {}
-
-        return true;
-      } catch (_) {
-        try {
-          final rows = await _supabase
-              .from('jobs')
-              .update({'status': 'rejected'})
+              .update({'j_moderation_status': 'deleted', 'j_status': 'deleted'})
               .eq('j_id', targetId)
               .select('j_id');
-          final ok = (rows as List).isNotEmpty;
-          if (!ok) return false;
-
+          return (softRows as List).isNotEmpty;
+        } catch (softErr) {
           try {
-            await _supabase
+            final legacySoftRows = await _supabase
                 .from('jobs')
-                .update({
-                  'rejection_note': 'Removed by admin',
-                  'rejected_at': now,
-                  'rejected_by': adminUid,
-                })
-                .eq('j_id', targetId);
-          } catch (_) {}
-
-          return true;
-        } catch (e) {
-          dev.log('Error marking job as removed: $e');
-          return false;
+                .update({'status': 'deleted'})
+                .eq('id', targetId)
+                .select('id');
+            return (legacySoftRows as List).isNotEmpty;
+          } catch (legacySoftErr) {
+            return false;
+          }
         }
-      }
     }
 
     final targets = <dynamic>[jobId, if (numericId != null) numericId];
     for (final target in targets) {
-      final ok = await markJobAsRemoved(target);
-      if (ok) {
-        return true;
-      }
+      if (await performDelete(target)) return true;
     }
 
-    dev.log('Remove-from-approved failed for jobId=$jobId');
+    dev.log('Delete job failed for jobId=$jobId');
     return false;
   }
 

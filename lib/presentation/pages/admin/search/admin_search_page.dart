@@ -65,11 +65,15 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
         for (final item in moderatedJobs) item.id: item,
       };
 
+      if (!mounted) return;
+
       setState(() {
         _users = userMap.values.toList();
         _jobs = mapById.values.toList();
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _error = e.toString();
       });
@@ -162,16 +166,19 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _chip('All'),
-                    const SizedBox(width: 8),
-                    _chip('Candidates'),
-                    const SizedBox(width: 8),
-                    _chip('Employers'),
-                    const SizedBox(width: 8),
-                    _chip('Job Posts'),
-                  ],
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _chip('All'),
+                      const SizedBox(width: 8),
+                      _chip('Candidates'),
+                      const SizedBox(width: 8),
+                      _chip('Employers'),
+                      const SizedBox(width: 8),
+                      _chip('Job Posts'),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Align(
@@ -233,23 +240,21 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
 
   Widget _chip(String label) {
     final selected = _selectedFilter == label;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedFilter = label),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.primary : AppColors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: selected ? Colors.white : AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
+    return GestureDetector(
+      onTap: () => setState(() => _selectedFilter = label),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: selected ? Colors.white : AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -263,8 +268,8 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
     return Card(
       child: ListTile(
         leading: CircleAvatar(child: Text(name[0].toUpperCase())),
-        title: Text(name),
-        subtitle: Text('$subtitle | ${u.role}'),
+        title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text('$subtitle | ${u.role}', maxLines: 1, overflow: TextOverflow.ellipsis),
       ),
     );
   }
@@ -273,8 +278,16 @@ class _AdminSearchPageState extends State<AdminSearchPage> {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.work_outline),
-        title: Text(j.title.isEmpty ? 'Untitled job' : j.title),
-        subtitle: Text('${j.company} | ${j.location} | ${j.status}'),
+        title: Text(
+          j.title.isEmpty ? 'Untitled job' : j.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          '${j.company} | ${j.location} | ${j.status}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }

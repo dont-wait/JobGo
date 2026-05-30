@@ -113,61 +113,6 @@ class _JobModerationPageState extends State<JobModerationPage> {
     }
   }
 
-  void _handleDeleteJob(
-    JobModerationItem job,
-    AdminProvider adminProvider,
-  ) async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete job post?'),
-        content: Text('This will permanently remove "${job.title}".'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldDelete != true) return;
-
-    try {
-      final deleted = await adminProvider.deleteJob(job.id);
-      if (deleted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Job "${job.title}" has been deleted'),
-            backgroundColor: AppColors.warning,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Delete failed: job record was not found'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error deleting job: $e'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AdminProvider>(
@@ -246,7 +191,6 @@ class _JobModerationPageState extends State<JobModerationPage> {
                           onApprove: () => _handleApproval(job, adminProvider),
                           onReject: () =>
                               _showRejectionDialog(job, adminProvider),
-                          onDelete: () => _handleDeleteJob(job, adminProvider),
                         );
                       },
                     ),

@@ -153,12 +153,14 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
 
               // 6 ô nhập OTP
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(6, (index) {
-                  return SizedBox(
-                    width: 48,
-                    height: 56,
-                    child: TextFormField(
+                  return Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: SizedBox(
+                        height: 56,
+                        child: TextFormField(
                       controller: _controllers[index],
                       focusNode: _focusNodes[index],
                       textAlign: TextAlign.center,
@@ -197,6 +199,8 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
                         }
                       },
                     ),
+                      ),
+                    ),
                   );
                 }),
               ),
@@ -231,8 +235,8 @@ class _ForgotPasswordOtpPageState extends State<ForgotPasswordOtpPage> {
               const SizedBox(height: 24),
 
               // RESEND
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Wrap(
+                alignment: WrapAlignment.center,
                 children: [
                   const Text(
                     "Didn't receive the code? ",
