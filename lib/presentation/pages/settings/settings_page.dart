@@ -85,11 +85,12 @@ class _SettingsPageState extends State<SettingsPage> {
                 _buildSectionLabel(loc.account),
                 const SizedBox(height: 8),
                 _buildMenuGroup([
-                  _buildMenuItem(
-                    icon: Icons.person_outline,
-                    label: loc.editProfile,
-                    onTap: () => navigateToEditProfile(context, widget.role),
-                  ),
+                  if (widget.role != UserRole.admin)
+                    _buildMenuItem(
+                      icon: Icons.person_outline,
+                      label: loc.editProfile,
+                      onTap: () => navigateToEditProfile(context, widget.role),
+                    ),
                   _buildMenuItem(
                     icon: Icons.lock_outline,
                     label: loc.changePassword,
