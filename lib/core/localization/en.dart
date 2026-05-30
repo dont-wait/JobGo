@@ -411,6 +411,7 @@ final Map<String, String> englishStrings = {
   'locationRequired': 'Location is required',
   'descriptionRequired': 'Job description is required',
   'requirementsRequired': 'Job requirements are required',
+  'chooseAtLeastOneSkill': 'Please choose at least one skill',
   'employmentTypeRequired': 'Employment type is required',
   'positionsGreaterThanZero': 'Open positions must be greater than 0',
   'positionsMustBeWholeNumber': 'Open positions must be a whole number',
@@ -419,6 +420,7 @@ final Map<String, String> englishStrings = {
   'deadlineCannotBePast': 'Application deadline cannot be in the past',
   'addSalaryRange':
       'Please add a salary range or mark the salary as negotiable',
+  'chooseAtLeastOneBenefit': 'Please choose at least one benefit',
   'salaryInvalidNumber': 'Salary must be a valid number',
   'salaryMustBePositive': 'Salary must be greater than 0',
   'salaryMinGreaterThanMax':
@@ -767,9 +769,10 @@ final Map<String, String> englishStrings = {
 
   // Social Login Profile Completion
   'completeProfileTitle': 'Complete Your Profile',
-  'completeProfileMessage': 'Your account was created with Google. Please update your profile information (phone, address, CV...) to get the best experience.',
+  'completeProfileMessage':
+      'Your account was created with Google. Please update your profile information (phone, address, CV...) to get the best experience.',
   'later': 'Later',
 
   'yearsExperienceMustBePositive':
-    'Years of experience must be a number greater than 0',
+      'Years of experience must be a number greater than 0',
 };

@@ -413,6 +413,7 @@ final Map<String, String> vietStrings = {
   'locationRequired': 'Địa điểm là bắt buộc',
   'descriptionRequired': 'Mô tả công việc là bắt buộc',
   'requirementsRequired': 'Yêu cầu công việc là bắt buộc',
+  'chooseAtLeastOneSkill': 'Vui lòng chọn ít nhất 1 kỹ năng',
   'employmentTypeRequired': 'Loại hình công việc là bắt buộc',
   'positionsGreaterThanZero': 'Số lượng tuyển dụng phải lớn hơn 0',
   'positionsMustBeWholeNumber': 'Số lượng tuyển dụng phải là số nguyên',
@@ -420,6 +421,7 @@ final Map<String, String> vietStrings = {
   'chooseDeadline': 'Vui lòng chọn hạn chót ứng tuyển',
   'deadlineCannotBePast': 'Hạn chót ứng tuyển không được ở quá khứ',
   'addSalaryRange': 'Vui lòng thêm mức lương hoặc đánh dấu là thỏa thuận',
+  'chooseAtLeastOneBenefit': 'Vui lòng chọn ít nhất 1 phúc lợi',
   'salaryInvalidNumber': 'Mức lương phải là số hợp lệ',
   'salaryMustBePositive': 'Mức lương phải lớn hơn 0',
   'salaryMinGreaterThanMax':
@@ -770,9 +772,9 @@ final Map<String, String> vietStrings = {
 
   // Social Login Profile Completion
   'completeProfileTitle': 'Hoàn thiện hồ sơ',
-  'completeProfileMessage': 'Tài khoản của bạn được tạo bằng Google. Vui lòng cập nhật thông tin hồ sơ (SĐT, địa chỉ, CV...) để có trải nghiệm tốt nhất.',
+  'completeProfileMessage':
+      'Tài khoản của bạn được tạo bằng Google. Vui lòng cập nhật thông tin hồ sơ (SĐT, địa chỉ, CV...) để có trải nghiệm tốt nhất.',
   'later': 'Để sau',
 
-  'yearsExperienceMustBePositive':
-    'Số năm kinh nghiệm phải là số và lớn hơn 0',
+  'yearsExperienceMustBePositive': 'Số năm kinh nghiệm phải là số và lớn hơn 0',
 };

@@ -287,6 +287,16 @@ class EmployerJobRepository {
         'Please add a salary range or mark the salary as negotiable.',
       );
     }
+
+    final hasSkill = job.tags.any((item) => item.trim().isNotEmpty);
+    if (!hasSkill) {
+      throw StateError('Please choose at least one skill.');
+    }
+
+    final hasBenefit = job.benefits.any((item) => item.trim().isNotEmpty);
+    if (!hasBenefit) {
+      throw StateError('Please choose at least one benefit.');
+    }
   }
 
   bool _isPastDate(DateTime value) {
