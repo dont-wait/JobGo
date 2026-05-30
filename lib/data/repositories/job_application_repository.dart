@@ -228,6 +228,34 @@ class JobApplicationRepository {
     }
   }
 
+  /// Subscribe to realtime changes on applications for a specific candidate.
+  /// Listens for INSERT, UPDATE, DELETE events.
+  RealtimeChannel subscribeToApplicationChanges({
+    required int candidateId,
+    required void Function() onChanged,
+  }) {
+    final channel = _supabase.channel('applications-c$candidateId');
+
+    channel
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'applications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'c_id',
+            value: candidateId,
+          ),
+          callback: (payload) {
+            dev.log('Application realtime event: ${payload.eventType}');
+            onChanged();
+          },
+        )
+        .subscribe();
+
+    return channel;
+  }
+
   String _extractCandidateName(dynamic candidateRow, int candidateId) {
     final map = _asMap(candidateRow);
     if (map == null) return 'Ứng viên #$candidateId';

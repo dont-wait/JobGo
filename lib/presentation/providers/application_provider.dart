@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
 import 'package:jobgo/data/repositories/job_application_repository.dart';
 
@@ -9,6 +10,10 @@ class ApplicationProvider extends ChangeNotifier {
   final Set<int> _appliedJobIds = {};
   bool _isLoading = false;
   String? _error;
+
+  // Realtime
+  RealtimeChannel? _appChannel;
+  int? _subscribedCandidateId;
 
   List<JobApplicantModel> get applications => _applications;
   bool get isLoading => _isLoading;
@@ -27,11 +32,43 @@ class ApplicationProvider extends ChangeNotifier {
       for (var app in _applications) {
         _appliedJobIds.add(app.jobId);
       }
+
+      // Đăng ký realtime nếu chưa subscribe cho candidate này
+      _ensureRealtimeSubscription(candidateId);
     } catch (e) {
       _error = 'Lỗi: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Đăng ký lắng nghe realtime thay đổi trên bảng applications cho candidate.
+  void _ensureRealtimeSubscription(int candidateId) {
+    if (_subscribedCandidateId == candidateId && _appChannel != null) return;
+
+    // Cleanup subscription cũ nếu có
+    _appChannel?.unsubscribe();
+
+    _subscribedCandidateId = candidateId;
+    _appChannel = _repository.subscribeToApplicationChanges(
+      candidateId: candidateId,
+      onChanged: () => _handleRealtimeChange(candidateId),
+    );
+  }
+
+  /// Khi có thay đổi realtime, refresh lại danh sách applications.
+  Future<void> _handleRealtimeChange(int candidateId) async {
+    try {
+      _applications = await _repository.fetchCandidateApplications(candidateId);
+      _appliedJobIds.clear();
+      for (var app in _applications) {
+        _appliedJobIds.add(app.jobId);
+      }
+      notifyListeners();
+    } catch (e) {
+      // Không set error để tránh ảnh hưởng UI, chỉ log
+      debugPrint('Error refreshing applications via realtime: $e');
     }
   }
 
@@ -98,10 +135,19 @@ class ApplicationProvider extends ChangeNotifier {
   }
 
   void clearApplications() {
+    _appChannel?.unsubscribe();
+    _appChannel = null;
+    _subscribedCandidateId = null;
     _applications = [];
     _appliedJobIds.clear();
     _isLoading = false;
     _error = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _appChannel?.unsubscribe();
+    super.dispose();
   }
 }

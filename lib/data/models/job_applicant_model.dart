@@ -109,6 +109,7 @@ class JobApplicantModel {
     final statusStr = value.toString().trim().toLowerCase();
     if (statusStr == 'reviewed') return ApplicationStatus.reviewing;
     if (statusStr == 'shortlisted') return ApplicationStatus.shortlisted;
+    if (statusStr == 'accepted') return ApplicationStatus.hired;
     return ApplicationStatus.values.firstWhere(
       (e) => e.name == statusStr,
       orElse: () => ApplicationStatus.pending,

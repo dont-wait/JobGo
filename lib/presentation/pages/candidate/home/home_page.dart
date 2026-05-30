@@ -24,7 +24,8 @@ class _HomePageState extends State<HomePage> {
 
   List<JobModel> _recommendedJobs = [];
   List<JobModel> _recentJobs = [];
-  bool _isLoading = true;
+  bool _isLoading = true; // chỉ dùng cho lần load đầu tiên
+  bool _isSearching = false; // loading nhẹ khi tìm kiếm
   bool _isLoadingMore = false;
   int _currentPage = 0;
   final int _pageSize = 10;
@@ -45,6 +46,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  /// Load lần đầu hoặc khi pull-to-refresh (full page loading).
   Future<void> _loadJobs({String query = ''}) async {
     if (!mounted) return;
     setState(() {
@@ -72,7 +74,6 @@ class _HomePageState extends State<HomePage> {
           _recommendedJobs = results[0];
           _recentJobs = results[1];
           _isLoading = false;
-          // Search results aren't typically paginated in current repository search implementation
           if (query.isNotEmpty || results[1].length < _pageSize) {
             _hasMore = false;
           }
@@ -87,10 +88,45 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  /// Tìm kiếm — chỉ cập nhật danh sách jobs, không reload nguyên trang.
+  Future<void> _searchJobs(String query) async {
+    if (!mounted) return;
+    setState(() {
+      _isSearching = true;
+      _currentPage = 0;
+      _hasMore = true;
+      _searchQuery = query;
+    });
+
+    try {
+      List<JobModel> jobs;
+      if (query.isEmpty) {
+        jobs = await _jobRepository.getRecentJobs(page: 0, pageSize: _pageSize);
+        _hasMore = jobs.length >= _pageSize;
+      } else {
+        jobs = await _jobRepository.searchJobs(query);
+        _hasMore = false;
+      }
+
+      if (mounted) {
+        setState(() {
+          _recentJobs = jobs;
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSearching = false;
+        });
+      }
+    }
+  }
+
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      _loadJobs(query: query);
+      _searchJobs(query);
     });
   }
 
@@ -166,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                         onTap: () {}, // Not needed as it's interactive now
                       ),
                       const SizedBox(height: 24),
-                      // Recommended Jobs
+                      // Recommended Jobs — ẩn khi đang search
                       if (_searchQuery.isEmpty &&
                           _recommendedJobs.isNotEmpty) ...[
                         _buildSectionTitle(loc.recommendedJobsTitle),
@@ -174,14 +210,27 @@ class _HomePageState extends State<HomePage> {
                         _buildRecommendedJobs(),
                         const SizedBox(height: 28),
                       ],
-                      // Recent Job Postings
+                      // Recent Job Postings / Search results
                       _buildSectionTitle(
                         _searchQuery.isEmpty
                             ? loc.recentJobPostingsTitle
                             : '${loc.searchResultsTitle} "$_searchQuery"',
                       ),
                       const SizedBox(height: 8),
-                      _buildRecentJobs(),
+                      // Loading indicator nhẹ khi đang search
+                      if (_isSearching)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 32),
+                          child: Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2.5),
+                            ),
+                          ),
+                        )
+                      else
+                        _buildRecentJobs(),
                       const SizedBox(height: 20),
                     ],
                   ),
