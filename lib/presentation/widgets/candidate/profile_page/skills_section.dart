@@ -306,7 +306,7 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
 
             if (_years == null || _years! <= 0) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Years of experience phải là số hoặc > 0')),
+                const SnackBar(content: Text('số năm kinh nghiệm phải là số và số > 0')),
               );
               return; // không đóng dialog
             }
