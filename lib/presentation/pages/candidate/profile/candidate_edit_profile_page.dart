@@ -186,11 +186,59 @@ class _CandidateEditProfilePageState extends State<CandidateEditProfilePage> {
                 controller: _dobCtrl,
                 icon: Icons.cake_outlined,
               ),
-              _buildField(
-                label: 'Gender',
-                controller: _genderCtrl,
-                icon: Icons.wc_outlined,
+              // _buildField(
+              //   label: 'Gender',
+              //   controller: _genderCtrl,
+              //   icon: Icons.wc_outlined,
+              // ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Gender',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    DropdownButtonFormField<String>(
+                      value: _genderCtrl.text.isNotEmpty ? _genderCtrl.text : null,
+                      items: const [
+                        DropdownMenuItem(value: 'Nam', child: Text('Nam')),
+                        DropdownMenuItem(value: 'Nữ', child: Text('Nữ')),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _genderCtrl.text = value ?? '';
+                        });
+                      },
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.wc_outlined, size: 20, color: AppColors.textHint),
+                        filled: true,
+                        fillColor: AppColors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                        ),
+                      ),
+                      validator: (v) => v == null || v.isEmpty ? 'Gender is required' : null,
+                    ),
+                  ],
+                ),
               ),
+
               _buildField(
                 label: 'Address',
                 controller: _addressCtrl,
