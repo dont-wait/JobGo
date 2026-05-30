@@ -305,8 +305,15 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
             if (_selectedSkillId == null) return;
 
             if (_years == null || _years! <= 0) {
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   const SnackBar(content: Text('số năm kinh nghiệm phải là số và số > 0')),
+              // );
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('số năm kinh nghiệm phải là số và số > 0')),
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.of(context).yearsExperienceMustBePositive,
+                  ),
+                ),
               );
               return; // không đóng dialog
             }

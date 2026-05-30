@@ -762,4 +762,7 @@ final Map<String, String> vietStrings = {
   'completeProfileTitle': 'Hoàn thiện hồ sơ',
   'completeProfileMessage': 'Tài khoản của bạn được tạo bằng Google. Vui lòng cập nhật thông tin hồ sơ (SĐT, địa chỉ, CV...) để có trải nghiệm tốt nhất.',
   'later': 'Để sau',
+
+  'yearsExperienceMustBePositive':
+    'Số năm kinh nghiệm phải là số và lớn hơn 0',
 };

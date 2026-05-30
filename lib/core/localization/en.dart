@@ -760,4 +760,7 @@ final Map<String, String> englishStrings = {
   'completeProfileTitle': 'Complete Your Profile',
   'completeProfileMessage': 'Your account was created with Google. Please update your profile information (phone, address, CV...) to get the best experience.',
   'later': 'Later',
+
+  'yearsExperienceMustBePositive':
+    'Years of experience must be a number greater than 0',
 };
