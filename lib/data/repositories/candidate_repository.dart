@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/candidate_supabase_model.dart';
 
+
+
 class CandidateRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
 
@@ -193,6 +195,16 @@ class CandidateRepository {
       'n_status': 'unread',
       'u_id': uId,
     });
+  }
+    Future<List<CandidateSupabaseModel>> fetchCandidatesForJob(int jobId) async {
+    final data = await Supabase.instance.client
+        .from('applications')
+        .select('candidates(c_id, c_full_name)')
+        .eq('j_id', jobId);
+
+    return (data as List)
+        .map((row) => CandidateSupabaseModel.fromJson(row['candidates']))
+        .toList();
   }
 
   int? _toInt(dynamic value) {
