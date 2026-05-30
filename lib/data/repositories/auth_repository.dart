@@ -42,7 +42,9 @@ class AuthRepository {
   }
 
   /// Sign in with Google
-  Future<AuthResponse> signInWithGoogle() async {
+  /// [role] is optional — when called from Register flow, pass the user's chosen role.
+  /// When called from Login flow, defaults to 'candidate' for new users.
+  Future<AuthResponse> signInWithGoogle({String role = 'candidate'}) async {
     // 1. Trigger the native Google Sign-In flow
     // Read Client IDs from .env file
     final webClientId = dotenv.get('GOOGLE_WEB_CLIENT_ID', fallback: '');
@@ -83,7 +85,7 @@ class AuthRepository {
     );
 
     // 3. Handle auto-creation of profile if it's a new user
-    await _handleSocialLoginProfile(response.user);
+    await _handleSocialLoginProfile(response.user, role: role);
 
     return response;
   }
@@ -109,13 +111,14 @@ class AuthRepository {
     );
 
     // 3. Handle auto-creation of profile if it's a new user
-    await _handleSocialLoginProfile(response.user);
+    await _handleSocialLoginProfile(response.user, role: 'candidate');
 
     return response;
   }
 
-  /// Helper to create a default profile for social login users if they don't exist
-  Future<void> _handleSocialLoginProfile(User? user) async {
+  /// Helper to create a default profile for social login users if they don't exist.
+  /// [role] determines which role-specific table to insert into.
+  Future<void> _handleSocialLoginProfile(User? user, {required String role}) async {
     if (user == null) return;
 
     final userId = user.id;
@@ -130,25 +133,29 @@ class AuthRepository {
         .maybeSingle();
 
     if (existingUser == null) {
-      // Create new profile with default role (candidate)
+      // Create new profile with the chosen role
       final insertedUser = await _supabase
           .from('users')
           .insert({
             'auth_uid': userId,
             'u_email': email,
             'u_name': name,
-            'u_role': 'candidate', // Default role for social logins
+            'u_role': role,
           })
           .select('u_id')
           .single();
 
       final uId = insertedUser['u_id'] as int;
 
-      // Also create record in candidates table
-      await _supabase.from('candidates').insert({
-        'u_id': uId,
-        'c_full_name': name,
-      });
+      // Create record in the role-specific table
+      if (role == 'employer') {
+        await _supabase.from('employers').insert({'u_id': uId});
+      } else {
+        await _supabase.from('candidates').insert({
+          'u_id': uId,
+          'c_full_name': name,
+        });
+      }
     }
   }
 

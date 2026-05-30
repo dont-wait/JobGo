@@ -746,6 +746,11 @@ class AppLocalizations {
   String get completePaymentMessage => translate('completePaymentMessage');
   String get confirmPaid => translate('confirmPaid');
   String get openingPaymentBrowser => translate('openingPaymentBrowser');
+
+  // Social Login Profile Completion
+  String get completeProfileTitle => translate('completeProfileTitle');
+  String get completeProfileMessage => translate('completeProfileMessage');
+  String get later => translate('later');
 }
 
 class _AppLocalizationsDelegate
