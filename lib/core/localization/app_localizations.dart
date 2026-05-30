@@ -50,6 +50,8 @@ class AppLocalizations {
   String get loginError => translate('loginError');
   String get emailRequired => translate('emailRequired');
   String get invalidEmailFormat => translate('invalidEmailFormat');
+  String get invalidPhoneFormat => translate('invalidPhoneFormat');
+  String get invalidWebsiteFormat => translate('invalidWebsiteFormat');
   String get passwordRequired => translate('passwordRequired');
 
   // Profile
@@ -706,6 +708,8 @@ class AppLocalizations {
   String get pleaseSelectJob => translate('pleaseSelectJob');
   String get pleaseSelectCandidate => translate('pleaseSelectCandidate');
   String get pleaseSelectDateTime => translate('pleaseSelectDateTime');
+  String get interviewDateTimeMustBeFuture =>
+      translate('interviewDateTimeMustBeFuture');
   String get recruitingPosition => translate('recruitingPosition');
   String get selectJobHint => translate('selectJobHint');
   String get candidateRequired => translate('candidateRequired');
