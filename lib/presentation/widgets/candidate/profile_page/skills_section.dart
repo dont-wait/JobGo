@@ -289,27 +289,8 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
                         hintText: 'e.g. 2',
                         border: OutlineInputBorder(),
                       ),
-                      onChanged: (v) {
-                        final parsed = int.tryParse(v);
-                        // Chỉ lưu nếu là số dương
-                        if (parsed != null && parsed > 0) {
-                          _years = parsed;
-                        } else {
-                          _years = null;
-                        }
-                      },
-                      //  Chỉ cho nhập số, không cho nhập dấu âm
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return null; // optional
-                        final parsed = int.tryParse(v);
-                        if (parsed == null || parsed <= 0) {
-                          return 'Phải lớn hơn 0';
-                        }
-                        return null;
-                      },
+                      onChanged: (v) => _years = int.tryParse(v),
+                      
                     ),
                   ],
                 ),
@@ -318,15 +299,26 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
+      
         ElevatedButton(
-          onPressed: _selectedSkillId == null
-              ? null
-              : () => Navigator.pop(context, {
-                    'skId': _selectedSkillId,
-                    'years': _years,
-                  }),
+          onPressed: () {
+            if (_selectedSkillId == null) return;
+
+            if (_years == null || _years! <= 0) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Years of experience phải là số hoặc > 0')),
+              );
+              return; // không đóng dialog
+            }
+
+            Navigator.pop(context, {
+              'skId': _selectedSkillId,
+              'years': _years,
+            });
+          },
           child: const Text('Add'),
         ),
+
       ],
     );
   }
