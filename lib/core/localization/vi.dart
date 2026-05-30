@@ -781,4 +781,5 @@ final Map<String, String> vietStrings = {
   'invalidWebsiteFormat': 'Định dạng website không hợp lệ',
   'interviewDateTimeMustBeFuture':
       'Thời gian phỏng vấn phải lớn hơn thời điểm hiện tại',
+  'salaryRequiredForPublish': 'Vui lòng thêm mức lương',
 };

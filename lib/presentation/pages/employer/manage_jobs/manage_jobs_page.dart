@@ -89,6 +89,8 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       _jobs.where((job) => job.isClosed).toList();
 
   bool _isModerationPending(EmployerJobModel job) {
+    if (job.isClosed) return false;
+
     final moderation = job.moderationStatus.trim().toLowerCase();
     return moderation == 'pending' ||
         moderation == 'under_review' ||

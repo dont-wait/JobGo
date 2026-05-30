@@ -211,11 +211,8 @@ class _PostJobPageState extends State<PostJobPage> {
       return loc.salaryMinGreaterThanMax;
     }
 
-    if (publish &&
-        !salaryNegotiable &&
-        minSalary == null &&
-        maxSalary == null) {
-      return loc.addSalaryRange;
+    if (publish && minSalary == null && maxSalary == null) {
+      return loc.salaryRequiredForPublish;
     }
 
     return null;
@@ -236,6 +233,9 @@ class _PostJobPageState extends State<PostJobPage> {
     }
     if (selectedCategory == JobCategories.defaultCategory) {
       return loc.pleaseChooseCategory;
+    }
+    if (selectedEmploymentType.trim().isEmpty) {
+      return loc.employmentTypeRequired;
     }
     final location = locationController.text.trim();
     if (location.isEmpty) {
@@ -269,8 +269,9 @@ class _PostJobPageState extends State<PostJobPage> {
     final step2Error = _validateStep2();
     if (step2Error != null) return step2Error;
 
-    if (selectedEmploymentType.trim().isEmpty) {
-      return loc.employmentTypeRequired;
+    final salaryError = _validateSalaryInputs(publish: true);
+    if (salaryError != null) {
+      return salaryError;
     }
 
     final positionsRaw = positionsController.text.trim();
@@ -301,7 +302,7 @@ class _PostJobPageState extends State<PostJobPage> {
       return loc.chooseAtLeastOneBenefit;
     }
 
-    return _validateSalaryInputs(publish: true);
+    return null;
   }
 
   String? _validateDraftSave() {

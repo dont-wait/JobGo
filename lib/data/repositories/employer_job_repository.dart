@@ -282,10 +282,8 @@ class EmployerJobRepository {
     if (job.deadline == null) {
       throw StateError('Please choose an application deadline.');
     }
-    if (!job.salaryNegotiable && minSalary == null && maxSalary == null) {
-      throw StateError(
-        'Please add a salary range or mark the salary as negotiable.',
-      );
+    if (minSalary == null && maxSalary == null) {
+      throw StateError('Please add a salary range.');
     }
 
     final hasSkill = job.tags.any((item) => item.trim().isNotEmpty);
