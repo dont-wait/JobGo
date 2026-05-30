@@ -31,6 +31,11 @@ class ChatProvider extends ChangeNotifier {
 
   /// Gọi sau khi user đăng nhập thành công.
   Future<void> initRealtimeSubscriptions() async {
+    if (_messageChannel != null) {
+      await loadConversations();
+      return;
+    }
+
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -47,7 +52,11 @@ class ChatProvider extends ChangeNotifier {
       AppLogger.info('Chat realtime subscriptions initialized');
     } catch (e, st) {
       _error = e.toString();
-      AppLogger.error('Error initializing chat realtime', error: e, stackTrace: st);
+      AppLogger.error(
+        'Error initializing chat realtime',
+        error: e,
+        stackTrace: st,
+      );
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -91,10 +100,7 @@ class ChatProvider extends ChangeNotifier {
     required int receiverId,
     required String content,
   }) async {
-    await _repository.sendMessage(
-      receiverId: receiverId,
-      content: content,
-    );
+    await _repository.sendMessage(receiverId: receiverId, content: content);
   }
 
   /// Đánh dấu đã đọc tất cả tin nhắn từ [otherUserId].
@@ -102,7 +108,9 @@ class ChatProvider extends ChangeNotifier {
     await _repository.markAsRead(otherUserId);
 
     // Update local state
-    final index = _conversations.indexWhere((c) => c.otherUserId == otherUserId);
+    final index = _conversations.indexWhere(
+      (c) => c.otherUserId == otherUserId,
+    );
     if (index != -1) {
       _conversations[index] = _conversations[index].copyWith(unreadCount: 0);
       _calculateTotalUnread();
@@ -111,7 +119,10 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// Stream messages giữa current user và [otherUserId].
-  Stream<List<ChatMessageModel>> streamMessages(int currentUserId, int otherUserId) {
+  Stream<List<ChatMessageModel>> streamMessages(
+    int currentUserId,
+    int otherUserId,
+  ) {
     return _repository.streamMessages(currentUserId, otherUserId);
   }
 
@@ -121,11 +132,22 @@ class ChatProvider extends ChangeNotifier {
   // ── Private ──
 
   void _handleNewMessage(ChatMessageModel message) {
+    unawaited(_ensureIncomingNotification(message));
     // Refresh conversations list khi có tin nhắn mới
     loadConversations();
   }
 
   void _calculateTotalUnread() {
     _totalUnread = _conversations.fold(0, (sum, c) => sum + c.unreadCount);
+  }
+
+  Future<void> _ensureIncomingNotification(ChatMessageModel message) async {
+    final userId =
+        _repository.cachedUserId ?? await _repository.getCurrentUserId();
+    if (userId == null) return;
+    await _repository.ensureIncomingMessageNotification(
+      message,
+      currentUserId: userId,
+    );
   }
 }

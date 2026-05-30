@@ -31,6 +31,11 @@ class NotificationProvider extends ChangeNotifier {
 
   /// Gọi sau khi user đăng nhập thành công.
   Future<void> initRealtimeSubscriptions() async {
+    if (_notifChannel != null) {
+      await loadNotifications();
+      return;
+    }
+
     _isLoading = true;
     _error = null;
     notifyListeners();

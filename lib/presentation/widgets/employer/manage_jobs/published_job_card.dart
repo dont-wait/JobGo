@@ -10,12 +10,14 @@ class PublishedJobCard extends StatelessWidget {
   final EmployerJobModel job;
   final VoidCallback onEdit;
   final VoidCallback onClose;
+  final bool forcePendingStatus;
 
   const PublishedJobCard({
     super.key,
     required this.job,
     required this.onEdit,
     required this.onClose,
+    this.forcePendingStatus = false,
   });
 
   @override
@@ -171,8 +173,27 @@ class PublishedJobCard extends StatelessWidget {
     AppLocalizations loc,
     EmployerJobModel job,
   ) {
-    final moderation = job.moderationStatus.toLowerCase();
-    if (moderation == 'pending') {
+    final moderation = job.moderationStatus.trim().toLowerCase();
+    const pendingModerationStatuses = {
+      'pending',
+      'under_review',
+      'reviewing',
+      'awaiting',
+      'awaiting_review',
+      'in_review',
+    };
+
+    if (forcePendingStatus || pendingModerationStatuses.contains(moderation)) {
+      return _JobStatusMeta(
+        label: loc.jobPendingStatus,
+        textColor: AppColors.warning,
+        backgroundColor: AppColors.warning.withValues(alpha: 0.15),
+      );
+    }
+
+    if (moderation.isNotEmpty &&
+        moderation != 'approved' &&
+        moderation != 'draft') {
       return _JobStatusMeta(
         label: loc.jobPendingStatus,
         textColor: AppColors.warning,

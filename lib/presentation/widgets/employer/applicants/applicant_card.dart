@@ -3,8 +3,6 @@ import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/ai_cv_analysis_model.dart';
 import 'package:jobgo/data/models/job_applicant_model.dart';
-import 'package:jobgo/main.dart';
-import 'package:jobgo/presentation/pages/main/app_shell.dart';
 import 'package:jobgo/presentation/pages/common/chat_detail_page.dart';
 import 'package:jobgo/presentation/widgets/employer/applicants/candidate_profile_page.dart';
 import 'dart:math';
@@ -106,46 +104,6 @@ class ApplicantCard extends StatelessWidget {
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.verified,
-                          size: 16,
-                          color: AppColors.success,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          analysis != null
-                              ? '${analysis!.matchScore}% ${loc.aiMatch}'
-                              : application.matchLabel,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const Spacer(),
-                        TextButton.icon(
-                          onPressed: isAnalyzing ? null : onAnalyze,
-                          icon: isAnalyzing
-                              ? const SizedBox(
-                                  width: 12,
-                                  height: 12,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  size: 14,
-                                ),
-                          label: Text(
-                            analysis == null ? loc.analyze : loc.reanalyze,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -180,8 +138,9 @@ class ApplicantCard extends StatelessWidget {
                   onPressed: () {
                     final seed = application.candidate.displayName.isEmpty
                         ? 1
-                        : application.candidate.displayName.codeUnits
-                            .reduce((a, b) => a + b);
+                        : application.candidate.displayName.codeUnits.reduce(
+                            (a, b) => a + b,
+                          );
                     final random = Random(seed);
                     final color = Color.fromARGB(
                       255,

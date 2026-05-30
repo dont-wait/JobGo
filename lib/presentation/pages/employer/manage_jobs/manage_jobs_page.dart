@@ -79,15 +79,28 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
   List<EmployerJobModel> get _draftJobs =>
       _jobs.where((job) => job.isDraft).toList();
 
-  List<EmployerJobModel> get _activeJobs => _jobs
-      .where((job) => job.isActive && job.moderationStatus == 'approved')
-      .toList();
+  List<EmployerJobModel> get _activeJobs =>
+      _jobs.where((job) => job.isActive && _isModerationApproved(job)).toList();
 
   List<EmployerJobModel> get _pendingJobs =>
-      _jobs.where((job) => job.moderationStatus == 'pending').toList();
+      _jobs.where(_isModerationPending).toList();
 
   List<EmployerJobModel> get _closedJobs =>
       _jobs.where((job) => job.isClosed).toList();
+
+  bool _isModerationPending(EmployerJobModel job) {
+    final moderation = job.moderationStatus.trim().toLowerCase();
+    return moderation == 'pending' ||
+        moderation == 'under_review' ||
+        moderation == 'reviewing' ||
+        moderation == 'awaiting' ||
+        moderation == 'awaiting_review' ||
+        moderation == 'in_review';
+  }
+
+  bool _isModerationApproved(EmployerJobModel job) {
+    return job.moderationStatus.trim().toLowerCase() == 'approved';
+  }
 
   Future<void> _openCreateJob() async {
     final result = await Navigator.push<bool>(
@@ -306,6 +319,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
               job: job,
               onEdit: () => _openEditJob(job),
               onClose: () => _closeJob(job),
+              forcePendingStatus: true,
             ),
           );
           widgets.add(const SizedBox(height: 16));
@@ -383,6 +397,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
           job: job,
           onEdit: () => _openEditJob(job),
           onClose: () => _closeJob(job),
+          forcePendingStatus: true,
         ),
         2 => PublishedJobCard(
           job: job,
