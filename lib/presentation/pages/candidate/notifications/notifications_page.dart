@@ -72,7 +72,7 @@ class _NotificationsPageState extends State<NotificationsPage>
           controller: _tabController,
           isScrollable: true,
           tabAlignment: TabAlignment.center,
-          labelPadding: const EdgeInsets.symmetric(horizontal: 10),
+          labelPadding: const EdgeInsets.symmetric(horizontal: 16),
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textHint,
           indicatorColor: AppColors.primary,
