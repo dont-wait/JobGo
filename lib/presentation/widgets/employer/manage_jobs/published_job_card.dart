@@ -23,6 +23,7 @@ class PublishedJobCard extends StatelessWidget {
     final loc = AppLocalizations.of(context);
     final applicantCount = job.applicationCount;
     final jobId = job.id?.toString() ?? '';
+    final statusMeta = _resolveStatusMeta(loc, job);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -42,13 +43,13 @@ class PublishedJobCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
+                  color: statusMeta.backgroundColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  _statusLabel(loc, job.status),
-                  style: const TextStyle(
-                    color: AppColors.success,
+                  statusMeta.label,
+                  style: TextStyle(
+                    color: statusMeta.textColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
@@ -125,7 +126,7 @@ class PublishedJobCard extends StatelessWidget {
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
-                    backgroundColor: AppColors.primary.withOpacity(0.05),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.05),
                     side: const BorderSide(
                       color: AppColors.primary,
                       width: 1.5,
@@ -149,7 +150,7 @@ class PublishedJobCard extends StatelessWidget {
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.orange,
-                    backgroundColor: Colors.orange.withOpacity(0.1),
+                    backgroundColor: Colors.orange.withValues(alpha: 0.1),
                     side: const BorderSide(color: Colors.orange, width: 1.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -166,22 +167,52 @@ class PublishedJobCard extends StatelessWidget {
     );
   }
 
-  String _statusLabel(AppLocalizations loc, String status) {
-    switch (status.toLowerCase()) {
-      case 'active':
-      case 'published':
-      case 'open':
-        return loc.statusActive;
-      case 'closed':
-      case 'expired':
-      case 'archived':
-        return loc.statusClosed;
-      case 'pending':
-        return loc.jobPendingStatus;
-      case 'draft':
-      case 'saved':
-      default:
-        return loc.statusDraft;
+  _JobStatusMeta _resolveStatusMeta(
+    AppLocalizations loc,
+    EmployerJobModel job,
+  ) {
+    final moderation = job.moderationStatus.toLowerCase();
+    if (moderation == 'pending') {
+      return _JobStatusMeta(
+        label: loc.jobPendingStatus,
+        textColor: AppColors.warning,
+        backgroundColor: AppColors.warning.withValues(alpha: 0.15),
+      );
     }
+
+    final status = job.status.toLowerCase();
+    if (status == 'active' || status == 'published' || status == 'open') {
+      return _JobStatusMeta(
+        label: loc.statusActive,
+        textColor: AppColors.success,
+        backgroundColor: AppColors.success.withValues(alpha: 0.1),
+      );
+    }
+
+    if (status == 'closed' || status == 'expired' || status == 'archived') {
+      return _JobStatusMeta(
+        label: loc.statusClosed,
+        textColor: AppColors.textSecondary,
+        backgroundColor: AppColors.border,
+      );
+    }
+
+    return _JobStatusMeta(
+      label: loc.statusDraft,
+      textColor: AppColors.textSecondary,
+      backgroundColor: AppColors.border,
+    );
   }
+}
+
+class _JobStatusMeta {
+  final String label;
+  final Color textColor;
+  final Color backgroundColor;
+
+  const _JobStatusMeta({
+    required this.label,
+    required this.textColor,
+    required this.backgroundColor,
+  });
 }

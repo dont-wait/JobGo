@@ -388,6 +388,7 @@ class AppLocalizations {
   String get locationRequired => translate('locationRequired');
   String get descriptionRequired => translate('descriptionRequired');
   String get requirementsRequired => translate('requirementsRequired');
+  String get chooseAtLeastOneSkill => translate('chooseAtLeastOneSkill');
   String get employmentTypeRequired => translate('employmentTypeRequired');
   String get positionsGreaterThanZero => translate('positionsGreaterThanZero');
   String get positionsMustBeWholeNumber =>
@@ -396,6 +397,7 @@ class AppLocalizations {
   String get chooseDeadline => translate('chooseDeadline');
   String get deadlineCannotBePast => translate('deadlineCannotBePast');
   String get addSalaryRange => translate('addSalaryRange');
+  String get chooseAtLeastOneBenefit => translate('chooseAtLeastOneBenefit');
   String get salaryInvalidNumber => translate('salaryInvalidNumber');
   String get salaryMustBePositive => translate('salaryMustBePositive');
   String get salaryMinGreaterThanMax => translate('salaryMinGreaterThanMax');

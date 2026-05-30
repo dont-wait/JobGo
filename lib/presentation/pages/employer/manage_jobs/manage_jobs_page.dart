@@ -68,23 +68,25 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
         ).showSnackBar(SnackBar(content: Text(message)));
       }
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
-    List<EmployerJobModel> get _draftJobs =>
+  List<EmployerJobModel> get _draftJobs =>
       _jobs.where((job) => job.isDraft).toList();
 
-    List<EmployerJobModel> get _activeJobs =>
-      _jobs.where((job) => job.isActive && job.moderationStatus != 'pending').toList();
+  List<EmployerJobModel> get _activeJobs => _jobs
+      .where((job) => job.isActive && job.moderationStatus == 'approved')
+      .toList();
 
-    List<EmployerJobModel> get _pendingJobs =>
+  List<EmployerJobModel> get _pendingJobs =>
       _jobs.where((job) => job.moderationStatus == 'pending').toList();
 
-    List<EmployerJobModel> get _closedJobs =>
+  List<EmployerJobModel> get _closedJobs =>
       _jobs.where((job) => job.isClosed).toList();
 
   Future<void> _openCreateJob() async {
@@ -191,8 +193,8 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
     return Padding(
       padding: const EdgeInsets.only(top: 24, bottom: 12),
       child: Text(
-        title.isNotEmpty 
-            ? '${title[0].toUpperCase()}${title.substring(1).toLowerCase()}' 
+        title.isNotEmpty
+            ? '${title[0].toUpperCase()}${title.substring(1).toLowerCase()}'
             : title,
         style: const TextStyle(
           fontSize: 18,
@@ -295,7 +297,9 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
       }
 
       if (_pendingJobs.isNotEmpty) {
-        widgets.add(_sectionHeader(AppLocalizations.of(context).jobPendingStatus));
+        widgets.add(
+          _sectionHeader(AppLocalizations.of(context).jobPendingStatus),
+        );
         for (final job in _pendingJobs) {
           widgets.add(
             PublishedJobCard(
@@ -386,7 +390,7 @@ class _ManageJobsPageState extends State<ManageJobsPage> {
           onClose: () => _closeJob(job),
         ),
         3 => ClosedJobCard(
-          job: job, 
+          job: job,
           onReopen: () => _reopenJob(job),
           onViewHistory: () {},
         ),
