@@ -25,6 +25,9 @@ class PostJobPage extends StatefulWidget {
 
 class _PostJobPageState extends State<PostJobPage> {
   final EmployerJobRepository _repository = EmployerJobRepository();
+  static const int _maxTitleLength = 120;
+  static const int _maxLocationLength = 120;
+  static const int _maxPositions = 1000;
 
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
@@ -37,7 +40,7 @@ class _PostJobPageState extends State<PostJobPage> {
   );
   final TextEditingController deadlineController = TextEditingController();
 
-  List<String> _categoryOptions = JobCategories.categoriesWithDefault;
+  final List<String> _categoryOptions = JobCategories.categoriesWithDefault;
 
   int currentStep = 1;
   String selectedCategory = JobCategories.defaultCategory;
@@ -121,11 +124,11 @@ class _PostJobPageState extends State<PostJobPage> {
       category: selectedCategory == JobCategories.defaultCategory
           ? ''
           : selectedCategory,
-      salaryMin: double.tryParse(minSalaryController.text.trim()),
-      salaryMax: double.tryParse(maxSalaryController.text.trim()),
+      salaryMin: _parseSalaryInput(minSalaryController.text),
+      salaryMax: _parseSalaryInput(maxSalaryController.text),
       salaryValue: _deriveSalaryValue(),
       salaryNegotiable: salaryNegotiable,
-      positions: int.tryParse(positionsController.text.trim()) ?? 1,
+      positions: _parsePositionsOrDefault(),
       deadline: selectedDeadline,
       status: widget.initialJob?.status ?? 'draft',
       moderationStatus: widget.initialJob?.moderationStatus ?? 'draft',
@@ -143,8 +146,8 @@ class _PostJobPageState extends State<PostJobPage> {
   }
 
   double? _deriveSalaryValue() {
-    final minSalary = double.tryParse(minSalaryController.text.trim());
-    final maxSalary = double.tryParse(maxSalaryController.text.trim());
+    final minSalary = _parseSalaryInput(minSalaryController.text);
+    final maxSalary = _parseSalaryInput(maxSalaryController.text);
 
     if (minSalary != null && maxSalary != null) {
       return (minSalary + maxSalary) / 2;
@@ -155,20 +158,87 @@ class _PostJobPageState extends State<PostJobPage> {
     return null;
   }
 
+  double? _parseSalaryInput(String rawValue) {
+    final normalized = rawValue.trim().replaceAll(',', '');
+    if (normalized.isEmpty) return null;
+    return double.tryParse(normalized);
+  }
+
+  int? _parsePositionsInput() {
+    final rawValue = positionsController.text.trim();
+    if (rawValue.isEmpty) return null;
+    return int.tryParse(rawValue);
+  }
+
+  int _parsePositionsOrDefault() {
+    return _parsePositionsInput() ?? 1;
+  }
+
+  bool _isPastDate(DateTime value) {
+    final today = DateUtils.dateOnly(DateTime.now());
+    final selected = DateUtils.dateOnly(value);
+    return selected.isBefore(today);
+  }
+
+  String? _validateSalaryInputs({required bool publish}) {
+    final loc = AppLocalizations.of(context);
+    final minRaw = minSalaryController.text.trim();
+    final maxRaw = maxSalaryController.text.trim();
+    final minSalary = _parseSalaryInput(minRaw);
+    final maxSalary = _parseSalaryInput(maxRaw);
+
+    if (minRaw.isNotEmpty && minSalary == null) {
+      return loc.salaryInvalidNumber;
+    }
+
+    if (maxRaw.isNotEmpty && maxSalary == null) {
+      return loc.salaryInvalidNumber;
+    }
+
+    if (minSalary != null && minSalary <= 0) {
+      return loc.salaryMustBePositive;
+    }
+
+    if (maxSalary != null && maxSalary <= 0) {
+      return loc.salaryMustBePositive;
+    }
+
+    if (minSalary != null && maxSalary != null && minSalary > maxSalary) {
+      return loc.salaryMinGreaterThanMax;
+    }
+
+    if (publish &&
+        !salaryNegotiable &&
+        minSalary == null &&
+        maxSalary == null) {
+      return loc.addSalaryRange;
+    }
+
+    return null;
+  }
+
   String _formatDateForField(DateTime dateTime) {
     return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
   }
 
   String? _validateStep1() {
     final loc = AppLocalizations.of(context);
-    if (jobTitleController.text.trim().isEmpty) {
+    final title = jobTitleController.text.trim();
+    if (title.isEmpty) {
       return loc.jobTitleRequired;
+    }
+    if (title.length > _maxTitleLength) {
+      return loc.jobTitleTooLong;
     }
     if (selectedCategory == JobCategories.defaultCategory) {
       return loc.pleaseChooseCategory;
     }
-    if (locationController.text.trim().isEmpty) {
+    final location = locationController.text.trim();
+    if (location.isEmpty) {
       return loc.locationRequired;
+    }
+    if (location.length > _maxLocationLength) {
+      return loc.locationTooLong;
     }
     return null;
   }
@@ -196,30 +266,65 @@ class _PostJobPageState extends State<PostJobPage> {
       return loc.employmentTypeRequired;
     }
 
-    final positions = int.tryParse(positionsController.text.trim()) ?? 0;
+    final positionsRaw = positionsController.text.trim();
+    if (positionsRaw.isEmpty) {
+      return loc.positionsGreaterThanZero;
+    }
+
+    final positions = _parsePositionsInput();
+    if (positions == null) {
+      return loc.positionsMustBeWholeNumber;
+    }
     if (positions <= 0) {
       return loc.positionsGreaterThanZero;
+    }
+    if (positions > _maxPositions) {
+      return loc.positionsTooLarge;
     }
 
     if (selectedDeadline == null) {
       return loc.chooseDeadline;
     }
 
-    if (!salaryNegotiable) {
-      final minSalary = double.tryParse(minSalaryController.text.trim());
-      final maxSalary = double.tryParse(maxSalaryController.text.trim());
-      if (minSalary == null && maxSalary == null) {
-        return loc.addSalaryRange;
-      }
+    if (_isPastDate(selectedDeadline!)) {
+      return loc.deadlineCannotBePast;
     }
 
-    return null;
+    return _validateSalaryInputs(publish: true);
   }
 
   String? _validateDraftSave() {
-    if (jobTitleController.text.trim().isEmpty) {
-      return AppLocalizations.of(context).jobTitleDraftRequired;
+    final loc = AppLocalizations.of(context);
+    final title = jobTitleController.text.trim();
+    if (title.isEmpty) {
+      return loc.jobTitleDraftRequired;
     }
+    if (title.length > _maxTitleLength) {
+      return loc.jobTitleTooLong;
+    }
+
+    final location = locationController.text.trim();
+    if (location.length > _maxLocationLength) {
+      return loc.locationTooLong;
+    }
+
+    final positionsRaw = positionsController.text.trim();
+    final positions = _parsePositionsInput();
+    if (positionsRaw.isNotEmpty && positions == null) {
+      return loc.positionsMustBeWholeNumber;
+    }
+    if (positions != null && positions <= 0) {
+      return loc.positionsGreaterThanZero;
+    }
+    if (positions != null && positions > _maxPositions) {
+      return loc.positionsTooLarge;
+    }
+
+    final salaryError = _validateSalaryInputs(publish: false);
+    if (salaryError != null) {
+      return salaryError;
+    }
+
     return null;
   }
 
@@ -307,12 +412,22 @@ class _PostJobPageState extends State<PostJobPage> {
   }
 
   void _nextStep() {
-    if (currentStep < 3) {
-      setState(() => currentStep++);
+    final validationError = switch (currentStep) {
+      1 => _validateStep1(),
+      2 => _validateStep2(),
+      _ => null,
+    };
+
+    if (validationError != null) {
+      _showSnackBar(validationError);
       return;
     }
 
-    _openPreview();
+    if (currentStep < 3) {
+      setState(() => currentStep++);
+    } else {
+      _openPreview();
+    }
   }
 
   void _prevStep() {
@@ -429,7 +544,7 @@ class _PostJobPageState extends State<PostJobPage> {
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),

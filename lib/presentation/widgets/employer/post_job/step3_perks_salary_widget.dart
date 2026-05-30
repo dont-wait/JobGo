@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/presentation/widgets/employer/post_job/components/benefit_selector.dart';
@@ -47,7 +48,12 @@ class Step3PerksSalaryWidget extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: minSalaryController,
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                ],
                 decoration: InputDecoration(
                   labelText: '${AppLocalizations.of(context).minSalary} (USD)',
                 ),
@@ -57,7 +63,12 @@ class Step3PerksSalaryWidget extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: maxSalaryController,
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                ],
                 decoration: InputDecoration(
                   labelText: '${AppLocalizations.of(context).maxSalary} (USD)',
                 ),
@@ -85,6 +96,7 @@ class Step3PerksSalaryWidget extends StatelessWidget {
               child: TextField(
                 controller: positionsController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context).openPositions,
                 ),

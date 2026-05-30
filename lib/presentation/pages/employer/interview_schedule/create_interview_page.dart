@@ -150,6 +150,18 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
                 children: [
                   // Chọn Job
                   _buildLabel(loc.recruitingPosition),
+                  // DropdownButtonFormField<int>(
+                  //   value: _selectedJobId,
+                  //   hint: Text(loc.selectJobHint),
+                  //   items: _jobs.map((j) {
+                  //     return DropdownMenuItem<int>(
+                  //       value: j['id'] as int,
+                  //       child: Text(j['title'] as String),
+                  //     );
+                  //   }).toList(),
+                  //   onChanged: (v) => setState(() => _selectedJobId = v),
+                  //   decoration: _inputDecoration(),
+                  // ),
                   DropdownButtonFormField<int>(
                     value: _selectedJobId,
                     hint: Text(loc.selectJobHint),
@@ -159,9 +171,23 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
                         child: Text(j['title'] as String),
                       );
                     }).toList(),
-                    onChanged: (v) => setState(() => _selectedJobId = v),
+                    onChanged: (v) async {
+                      setState(() => _selectedJobId = v);
+
+                      if (v != null) {
+                        final candidateRepo = CandidateRepository();
+                        final candidates = await candidateRepo.fetchCandidatesForJob(v);
+                        setState(() {
+                          _candidates = candidates
+                              .map((c) => {'id': c.cId, 'name': c.fullName ?? 'Unknown'})
+                              .toList();
+                          _selectedCandidateId = null; // reset khi đổi job
+                        });
+                      }
+                    },
                     decoration: _inputDecoration(),
                   ),
+
 
                   const SizedBox(height: 16),
 

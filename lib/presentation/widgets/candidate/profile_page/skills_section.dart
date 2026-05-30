@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
 import 'package:jobgo/data/models/skill_model.dart';
 import 'package:jobgo/presentation/providers/profile_provider.dart';
+import 'package:flutter/services.dart';
 
 class SkillsSection extends StatelessWidget {
   final List<SkillModel>? skills;
@@ -289,6 +290,7 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
                         border: OutlineInputBorder(),
                       ),
                       onChanged: (v) => _years = int.tryParse(v),
+                      
                     ),
                   ],
                 ),
@@ -297,15 +299,33 @@ class _AddSkillDialogState extends State<_AddSkillDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
+      
         ElevatedButton(
-          onPressed: _selectedSkillId == null
-              ? null
-              : () => Navigator.pop(context, {
-                    'skId': _selectedSkillId,
-                    'years': _years,
-                  }),
+          onPressed: () {
+            if (_selectedSkillId == null) return;
+
+            if (_years == null || _years! <= 0) {
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   const SnackBar(content: Text('số năm kinh nghiệm phải là số và số > 0')),
+              // );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.of(context).yearsExperienceMustBePositive,
+                  ),
+                ),
+              );
+              return; // không đóng dialog
+            }
+
+            Navigator.pop(context, {
+              'skId': _selectedSkillId,
+              'years': _years,
+            });
+          },
           child: const Text('Add'),
         ),
+
       ],
     );
   }

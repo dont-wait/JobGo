@@ -413,10 +413,19 @@ final Map<String, String> englishStrings = {
   'requirementsRequired': 'Job requirements are required',
   'employmentTypeRequired': 'Employment type is required',
   'positionsGreaterThanZero': 'Open positions must be greater than 0',
+  'positionsMustBeWholeNumber': 'Open positions must be a whole number',
+  'positionsTooLarge': 'Open positions cannot exceed 1000',
   'chooseDeadline': 'Please choose an application deadline',
+  'deadlineCannotBePast': 'Application deadline cannot be in the past',
   'addSalaryRange':
       'Please add a salary range or mark the salary as negotiable',
+  'salaryInvalidNumber': 'Salary must be a valid number',
+  'salaryMustBePositive': 'Salary must be greater than 0',
+  'salaryMinGreaterThanMax':
+      'Minimum salary cannot be greater than maximum salary',
   'jobTitleDraftRequired': 'Job title is required to save a draft',
+  'jobTitleTooLong': 'Job title cannot exceed 120 characters',
+  'locationTooLong': 'Location cannot exceed 120 characters',
   'jobUpdatedSuccess': 'Job updated successfully!',
   'jobPostedSuccess': 'Job posted successfully!',
   'draftSavedSuccess': 'Draft saved successfully!',
@@ -755,4 +764,12 @@ final Map<String, String> englishStrings = {
       'Please complete the payment in your browser. When finished, select "Confirm paid" to continue.',
   'confirmPaid': 'Confirm paid',
   'openingPaymentBrowser': 'Opening browser for payment...',
+
+  // Social Login Profile Completion
+  'completeProfileTitle': 'Complete Your Profile',
+  'completeProfileMessage': 'Your account was created with Google. Please update your profile information (phone, address, CV...) to get the best experience.',
+  'later': 'Later',
+
+  'yearsExperienceMustBePositive':
+    'Years of experience must be a number greater than 0',
 };

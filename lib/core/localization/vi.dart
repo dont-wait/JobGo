@@ -32,7 +32,8 @@ final Map<String, String> vietStrings = {
   'emailRequired': 'Email là bắt buộc',
   'invalidEmailFormat': 'Định dạng email không hợp lệ',
   'passwordRequired': 'Mật khẩu là bắt buộc',
-  'accountBlocked': 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+  'accountBlocked':
+      'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
 
   // Profile
   'profile': 'Hồ sơ',
@@ -414,9 +415,18 @@ final Map<String, String> vietStrings = {
   'requirementsRequired': 'Yêu cầu công việc là bắt buộc',
   'employmentTypeRequired': 'Loại hình công việc là bắt buộc',
   'positionsGreaterThanZero': 'Số lượng tuyển dụng phải lớn hơn 0',
+  'positionsMustBeWholeNumber': 'Số lượng tuyển dụng phải là số nguyên',
+  'positionsTooLarge': 'Số lượng tuyển dụng không được vượt quá 1000',
   'chooseDeadline': 'Vui lòng chọn hạn chót ứng tuyển',
+  'deadlineCannotBePast': 'Hạn chót ứng tuyển không được ở quá khứ',
   'addSalaryRange': 'Vui lòng thêm mức lương hoặc đánh dấu là thỏa thuận',
+  'salaryInvalidNumber': 'Mức lương phải là số hợp lệ',
+  'salaryMustBePositive': 'Mức lương phải lớn hơn 0',
+  'salaryMinGreaterThanMax':
+      'Mức lương tối thiểu không được lớn hơn mức tối đa',
   'jobTitleDraftRequired': 'Tiêu đề công việc là bắt buộc để lưu bản nháp',
+  'jobTitleTooLong': 'Tiêu đề công việc không được vượt quá 120 ký tự',
+  'locationTooLong': 'Địa điểm không được vượt quá 120 ký tự',
   'jobUpdatedSuccess': 'Cập nhật công việc thành công!',
   'jobPostedSuccess': 'Đăng công việc thành công!',
   'draftSavedSuccess': 'Lưu bản nháp thành công!',
@@ -757,4 +767,12 @@ final Map<String, String> vietStrings = {
       'Vui lòng hoàn tất thanh toán trên trình duyệt. Sau khi xong, nhấn "Xác nhận đã thanh toán" để tiếp tục.',
   'confirmPaid': 'Xác nhận đã thanh toán',
   'openingPaymentBrowser': 'Đang mở trình duyệt để thanh toán...',
+
+  // Social Login Profile Completion
+  'completeProfileTitle': 'Hoàn thiện hồ sơ',
+  'completeProfileMessage': 'Tài khoản của bạn được tạo bằng Google. Vui lòng cập nhật thông tin hồ sơ (SĐT, địa chỉ, CV...) để có trải nghiệm tốt nhất.',
+  'later': 'Để sau',
+
+  'yearsExperienceMustBePositive':
+    'Số năm kinh nghiệm phải là số và lớn hơn 0',
 };
