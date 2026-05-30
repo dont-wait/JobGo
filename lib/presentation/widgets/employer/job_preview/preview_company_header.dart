@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 
 class PreviewCompanyHeader extends StatelessWidget {
@@ -14,6 +14,7 @@ class PreviewCompanyHeader extends StatelessWidget {
     final loc = AppLocalizations.of(context);
     final logoColor = _parseColor(job.companyLogoColor);
     final hasLogoUrl = job.companyLogoUrl.trim().isNotEmpty;
+    final locationMaxWidth = MediaQuery.sizeOf(context).width * 0.7;
 
     return Container(
       color: AppColors.white,
@@ -53,24 +54,50 @@ class PreviewCompanyHeader extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
             children: [
-              const Icon(
-                Icons.location_on_outlined,
-                color: AppColors.textSecondary,
-                size: 18,
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: locationMaxWidth),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.location_on_outlined,
+                      color: AppColors.textSecondary,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        job.location.isEmpty
+                            ? loc.locationNotSet
+                            : job.location,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: AppColors.textSecondary),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 4),
-              Text(
-                job.location.isEmpty ? loc.locationNotSet : job.location,
-                style: const TextStyle(color: AppColors.textSecondary),
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.verified, color: AppColors.success, size: 18),
-              Text(
-                ' • ${loc.verified}',
-                style: const TextStyle(color: AppColors.success),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.verified,
+                    color: AppColors.success,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    loc.verified,
+                    style: const TextStyle(color: AppColors.success),
+                  ),
+                ],
               ),
             ],
           ),
@@ -104,7 +131,6 @@ class PreviewCompanyHeader extends StatelessWidget {
     final parsed = int.tryParse(hex, radix: 16);
     if (parsed == null) return const Color(0xFF1E2937);
 
-    // Normalize 24-bit RGB values (RRGGBB) to opaque ARGB.
     final argb = parsed <= 0x00FFFFFF ? (parsed | 0xFF000000) : parsed;
     return Color(argb);
   }

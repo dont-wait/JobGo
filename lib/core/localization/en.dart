@@ -31,6 +31,8 @@ final Map<String, String> englishStrings = {
   'loginError': 'Login failed',
   'emailRequired': 'Email is required',
   'invalidEmailFormat': 'Invalid email format',
+  'invalidPhoneFormat': 'Invalid phone number format',
+  'invalidWebsiteFormat': 'Invalid website format',
   'passwordRequired': 'Password is required',
 
   // Profile
@@ -724,6 +726,8 @@ final Map<String, String> englishStrings = {
   'pleaseSelectJob': 'Please select job',
   'pleaseSelectCandidate': 'Please select candidate',
   'pleaseSelectDateTime': 'Please select date and time',
+  'interviewDateTimeMustBeFuture':
+      'Interview date and time must be in the future',
   'recruitingPosition': 'Recruiting Position *',
   'selectJobHint': 'Select job',
   'candidateRequired': 'Candidate *',

@@ -777,4 +777,8 @@ final Map<String, String> vietStrings = {
   'later': 'Để sau',
 
   'yearsExperienceMustBePositive': 'Số năm kinh nghiệm phải là số và lớn hơn 0',
+  'invalidPhoneFormat': 'Định dạng số điện thoại không hợp lệ',
+  'invalidWebsiteFormat': 'Định dạng website không hợp lệ',
+  'interviewDateTimeMustBeFuture':
+      'Thời gian phỏng vấn phải lớn hơn thời điểm hiện tại',
 };

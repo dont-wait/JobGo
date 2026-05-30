@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/repositories/candidate_repository.dart';
 import 'package:jobgo/data/repositories/employer_job_repository.dart';
 import 'package:jobgo/presentation/providers/interview_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:jobgo/core/localization/app_localizations.dart';
 
 class CreateInterviewPage extends StatefulWidget {
   const CreateInterviewPage({super.key});
@@ -15,6 +14,7 @@ class CreateInterviewPage extends StatefulWidget {
 }
 
 class _CreateInterviewPageState extends State<CreateInterviewPage> {
+  final _formKey = GlobalKey<FormState>();
   final _locationCtrl = TextEditingController();
   final _contactCtrl = TextEditingController();
   final _noteCtrl = TextEditingController();
@@ -24,7 +24,6 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
   String _type = 'Offline';
   bool _isLoading = true;
 
-  // Data thật
   List<Map<String, dynamic>> _jobs = [];
   List<Map<String, dynamic>> _candidates = [];
   int? _selectedJobId;
@@ -64,9 +63,7 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
       if (!mounted) return;
       setState(() => _isLoading = false);
       final loc = AppLocalizations.of(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${loc.errorMessage}$e')));
+      _showMessage('${loc.errorMessage}$e');
     }
   }
 
@@ -77,7 +74,9 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
       lastDate: DateTime(2100),
       initialDate: DateTime.now(),
     );
-    if (picked != null) setState(() => _date = picked);
+    if (picked != null) {
+      setState(() => _date = picked);
+    }
   }
 
   Future<void> _pickTime() async {
@@ -85,31 +84,23 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null) setState(() => _time = picked);
+    if (picked != null) {
+      setState(() => _time = picked);
+    }
   }
 
   Future<void> _submit() async {
     final loc = AppLocalizations.of(context);
-    if (_selectedJobId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(loc.pleaseSelectJob)));
-      return;
-    }
-    if (_selectedCandidateId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(loc.pleaseSelectCandidate)));
-      return;
-    }
-    if (_date == null || _time == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(loc.pleaseSelectDateTime)));
+    if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
 
-    final dateTime = DateTime(
+    if (_date == null || _time == null) {
+      _showMessage(loc.pleaseSelectDateTime);
+      return;
+    }
+
+    final interviewDateTime = DateTime(
       _date!.year,
       _date!.month,
       _date!.day,
@@ -117,12 +108,17 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
       _time!.minute,
     );
 
+    if (interviewDateTime.isBefore(DateTime.now())) {
+      _showMessage(loc.interviewDateTimeMustBeFuture);
+      return;
+    }
+
     await context.read<InterviewProvider>().createSchedule(
-      date: dateTime,
+      date: interviewDateTime,
       type: _type,
-      location: _locationCtrl.text,
-      contactPerson: _contactCtrl.text,
-      note: _noteCtrl.text,
+      location: _locationCtrl.text.trim(),
+      contactPerson: _contactCtrl.text.trim(),
+      note: _noteCtrl.text.trim(),
       cId: _selectedCandidateId!,
       jId: _selectedJobId!,
     );
@@ -145,193 +141,210 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Chọn Job
-                  _buildLabel(loc.recruitingPosition),
-                  // DropdownButtonFormField<int>(
-                  //   value: _selectedJobId,
-                  //   hint: Text(loc.selectJobHint),
-                  //   items: _jobs.map((j) {
-                  //     return DropdownMenuItem<int>(
-                  //       value: j['id'] as int,
-                  //       child: Text(j['title'] as String),
-                  //     );
-                  //   }).toList(),
-                  //   onChanged: (v) => setState(() => _selectedJobId = v),
-                  //   decoration: _inputDecoration(),
-                  // ),
-                  DropdownButtonFormField<int>(
-                    value: _selectedJobId,
-                    hint: Text(loc.selectJobHint),
-                    items: _jobs.map((j) {
-                      return DropdownMenuItem<int>(
-                        value: j['id'] as int,
-                        child: Text(j['title'] as String),
-                      );
-                    }).toList(),
-                    onChanged: (v) async {
-                      setState(() => _selectedJobId = v);
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel(loc.recruitingPosition),
+                    DropdownButtonFormField<int>(
+                      initialValue: _selectedJobId,
+                      hint: Text(loc.selectJobHint),
+                      isExpanded: true,
+                      items: _jobs.map((job) {
+                        return DropdownMenuItem<int>(
+                          value: job['id'] as int,
+                          child: Text(
+                            job['title'] as String,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) async {
+                        setState(() => _selectedJobId = value);
 
-                      if (v != null) {
+                        if (value == null) return;
                         final candidateRepo = CandidateRepository();
-                        final candidates = await candidateRepo.fetchCandidatesForJob(v);
+                        final candidates = await candidateRepo
+                            .fetchCandidatesForJob(value);
+                        if (!mounted) return;
+
                         setState(() {
                           _candidates = candidates
-                              .map((c) => {'id': c.cId, 'name': c.fullName ?? 'Unknown'})
+                              .map(
+                                (c) => {
+                                  'id': c.cId,
+                                  'name': c.fullName ?? 'Unknown',
+                                },
+                              )
                               .toList();
-                          _selectedCandidateId = null; // reset khi đổi job
+                          _selectedCandidateId = null;
                         });
-                      }
-                    },
-                    decoration: _inputDecoration(),
-                  ),
-
-
-                  const SizedBox(height: 16),
-
-                  // Chọn Candidate
-                  _buildLabel(loc.candidateRequired),
-                  DropdownButtonFormField<int>(
-                    value: _selectedCandidateId,
-                    hint: Text(loc.selectCandidateHint),
-                    items: _candidates.map((c) {
-                      return DropdownMenuItem<int>(
-                        value: c['id'] as int,
-                        child: Text(c['name'] as String),
-                      );
-                    }).toList(),
-                    onChanged: (v) => setState(() => _selectedCandidateId = v),
-                    decoration: _inputDecoration(),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Chọn ngày
-                  _buildLabel(loc.interviewDateLabel),
-                  InkWell(
-                    onTap: _pickDate,
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.calendar_today,
-                            color: AppColors.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            _date == null
-                                ? loc.selectDateHint
-                                : '${_date!.day}/${_date!.month}/${_date!.year}',
-                            style: TextStyle(
-                              color: _date == null
-                                  ? AppColors.textHint
-                                  : AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
+                      },
+                      decoration: _inputDecoration(),
+                      validator: (value) =>
+                          value == null ? loc.pleaseSelectJob : null,
                     ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Chọn giờ
-                  _buildLabel(loc.interviewTimeLabel),
-                  InkWell(
-                    onTap: _pickTime,
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.access_time,
-                            color: AppColors.primary,
+                    const SizedBox(height: 16),
+                    _buildLabel(loc.candidateRequired),
+                    DropdownButtonFormField<int>(
+                      initialValue: _selectedCandidateId,
+                      hint: Text(loc.selectCandidateHint),
+                      isExpanded: true,
+                      items: _candidates.map((candidate) {
+                        return DropdownMenuItem<int>(
+                          value: candidate['id'] as int,
+                          child: Text(
+                            candidate['name'] as String,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            _time == null
-                                ? loc.selectTimeHint
-                                : '${_time!.hour}:${_time!.minute.toString().padLeft(2, '0')}',
-                            style: TextStyle(
-                              color: _time == null
-                                  ? AppColors.textHint
-                                  : AppColors.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      }).toList(),
+                      onChanged: (value) =>
+                          setState(() => _selectedCandidateId = value),
+                      decoration: _inputDecoration(),
+                      validator: (value) =>
+                          value == null ? loc.pleaseSelectCandidate : null,
                     ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Loại phỏng vấn
-                  _buildLabel(loc.interviewTypeLabel),
-                  DropdownButtonFormField<String>(
-                    value: _type,
-                    items: [
-                        DropdownMenuItem(value: 'Online', child: Text(loc.translate('online'))),
-                        DropdownMenuItem(value: 'Offline', child: Text(loc.translate('offline'))),
-                    ],
-                    onChanged: (v) => setState(() => _type = v!),
-                    decoration: _inputDecoration(),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Địa điểm
-                  _buildLabel(loc.location),
-                  _buildTextField(_locationCtrl, loc.locationHint),
-
-                  const SizedBox(height: 16),
-
-                  // Người liên hệ
-                  _buildLabel(loc.contactPersonLabel),
-                  _buildTextField(_contactCtrl, loc.contactPersonHint),
-
-                  const SizedBox(height: 16),
-
-                  // Ghi chú
-                  _buildLabel(loc.notesLabel),
-                  _buildTextField(_noteCtrl, loc.notesHint, maxLines: 3),
-
-                  const SizedBox(height: 32),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                    const SizedBox(height: 16),
+                    _buildLabel(loc.interviewDateLabel),
+                    InkWell(
+                      onTap: _pickDate,
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
                         ),
-                      ),
-                      child: Text(
-                        loc.createInterviewTitle,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                _date == null
+                                    ? loc.selectDateHint
+                                    : '${_date!.day}/${_date!.month}/${_date!.year}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: _date == null
+                                      ? AppColors.textHint
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    _buildLabel(loc.interviewTimeLabel),
+                    InkWell(
+                      onTap: _pickTime,
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.access_time,
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                _time == null
+                                    ? loc.selectTimeHint
+                                    : '${_time!.hour}:${_time!.minute.toString().padLeft(2, '0')}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: _time == null
+                                      ? AppColors.textHint
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel(loc.interviewTypeLabel),
+                    DropdownButtonFormField<String>(
+                      initialValue: _type,
+                      isExpanded: true,
+                      items: [
+                        DropdownMenuItem(
+                          value: 'Online',
+                          child: Text(loc.translate('online')),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Offline',
+                          child: Text(loc.translate('offline')),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setState(() => _type = value);
+                      },
+                      decoration: _inputDecoration(),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel(loc.location),
+                    _buildTextField(
+                      _locationCtrl,
+                      loc.locationHint,
+                      required: true,
+                      requiredMessage: loc.locationRequired,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel(loc.contactPersonLabel),
+                    _buildTextField(
+                      _contactCtrl,
+                      loc.contactPersonHint,
+                      required: true,
+                      requiredMessage:
+                          '${loc.contactPersonLabel} ${loc.isFieldsRequired}',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel(loc.notesLabel),
+                    _buildTextField(_noteCtrl, loc.notesHint, maxLines: 3),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          loc.createInterviewTitle,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );
@@ -352,14 +365,28 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
   }
 
   Widget _buildTextField(
-    TextEditingController ctrl,
+    TextEditingController controller,
     String hint, {
     int maxLines = 1,
+    bool required = false,
+    String? requiredMessage,
   }) {
-    return TextField(
-      controller: ctrl,
+    return TextFormField(
+      controller: controller,
       maxLines: maxLines,
+      textInputAction: maxLines > 1
+          ? TextInputAction.newline
+          : TextInputAction.next,
       decoration: _inputDecoration(hint: hint),
+      validator: required
+          ? (value) {
+              if (value == null || value.trim().isEmpty) {
+                return requiredMessage ??
+                    AppLocalizations.of(context).fillRequiredFields;
+              }
+              return null;
+            }
+          : null,
     );
   }
 
@@ -382,5 +409,11 @@ class _CreateInterviewPageState extends State<CreateInterviewPage> {
         borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
       ),
     );
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

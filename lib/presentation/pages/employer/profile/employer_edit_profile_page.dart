@@ -18,6 +18,8 @@ class EmployerEditProfilePage extends StatefulWidget {
 class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
+  final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+  final RegExp _phoneRegex = RegExp(r'^\+?[0-9]{7,15}$');
 
   late final TextEditingController _companyCtrl;
   late final TextEditingController _addressCtrl;
@@ -87,8 +89,10 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded,
-                      color: AppColors.primary),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: AppColors.primary,
+                  ),
                 ),
                 title: Text(loc.takeNewPhoto),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
@@ -100,8 +104,10 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                     color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.photo_library_rounded,
-                      color: AppColors.primary),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.primary,
+                  ),
                 ),
                 title: Text(loc.chooseFromLibrary),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
@@ -182,14 +188,62 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
             ),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(loc.profileUpdateFailed),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(loc.profileUpdateFailed)));
         }
       }
     }
+  }
+
+  String? _validateRequired(String? value, String label) {
+    if (value == null || value.trim().isEmpty) {
+      return '$label ${AppLocalizations.of(context).isFieldsRequired}';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    final loc = AppLocalizations.of(context);
+    final requiredError = _validateRequired(value, loc.emailLabel);
+    if (requiredError != null) return requiredError;
+    if (!_emailRegex.hasMatch(value!.trim())) {
+      return loc.invalidEmailFormat;
+    }
+    return null;
+  }
+
+  String? _validatePhone(String? value) {
+    final loc = AppLocalizations.of(context);
+    final requiredError = _validateRequired(value, loc.phoneLabel);
+    if (requiredError != null) return requiredError;
+
+    final normalized = value!.trim().replaceAll(RegExp(r'[\s().-]'), '');
+    if (!_phoneRegex.hasMatch(normalized)) {
+      return loc.invalidPhoneFormat;
+    }
+    return null;
+  }
+
+  String? _validateWebsite(String? value) {
+    final loc = AppLocalizations.of(context);
+    final requiredError = _validateRequired(value, loc.websiteLabel);
+    if (requiredError != null) return requiredError;
+
+    var url = value!.trim();
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://$url';
+    }
+
+    final uri = Uri.tryParse(url);
+    final isValid =
+        uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.isNotEmpty;
+    if (!isValid) {
+      return loc.invalidWebsiteFormat;
+    }
+    return null;
   }
 
   @override
@@ -231,45 +285,58 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                         label: loc.companyName,
                         controller: _companyCtrl,
                         icon: Icons.business_outlined,
+                        validator: (value) =>
+                            _validateRequired(value, loc.companyName),
                       ),
                       _buildField(
                         label: loc.addressLabel,
                         controller: _addressCtrl,
                         icon: Icons.location_on_outlined,
+                        validator: (value) =>
+                            _validateRequired(value, loc.addressLabel),
                       ),
                       _buildField(
                         label: loc.industryLabel,
                         controller: _industryCtrl,
                         icon: Icons.category_outlined,
+                        validator: (value) =>
+                            _validateRequired(value, loc.industryLabel),
                       ),
                       _buildField(
                         label: loc.companySize,
                         controller: _companySizeCtrl,
                         icon: Icons.people_outline_rounded,
+                        validator: (value) =>
+                            _validateRequired(value, loc.companySize),
                       ),
                       _buildField(
                         label: loc.phoneLabel,
                         controller: _phoneCtrl,
                         icon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
+                        validator: _validatePhone,
                       ),
                       _buildField(
                         label: loc.emailLabel,
                         controller: _emailCtrl,
                         icon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
+                        validator: _validateEmail,
                       ),
                       _buildField(
                         label: loc.websiteLabel,
                         controller: _websiteCtrl,
                         icon: Icons.language_outlined,
                         keyboardType: TextInputType.url,
+                        validator: _validateWebsite,
                       ),
                       _buildField(
                         label: loc.description,
                         controller: _descriptionCtrl,
                         icon: Icons.info_outline_rounded,
                         maxLines: 4,
+                        validator: (value) =>
+                            _validateRequired(value, loc.description),
                       ),
                       const SizedBox(height: 32),
                       SizedBox(
@@ -389,6 +456,7 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
+    FormFieldValidator<String>? validator,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -439,8 +507,7 @@ class _EmployerEditProfilePageState extends State<EmployerEditProfilePage> {
                 ),
               ),
             ),
-            validator: (v) =>
-                v == null || v.trim().isEmpty ? '$label ${AppLocalizations.of(context).isFieldsRequired}' : null,
+            validator: validator,
           ),
         ],
       ),
