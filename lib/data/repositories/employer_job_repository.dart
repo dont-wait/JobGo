@@ -4,6 +4,9 @@ import '../models/employer_job_model.dart';
 
 class EmployerJobRepository {
   final SupabaseClient _supabase = Supabase.instance.client;
+  static const int _maxTitleLength = 120;
+  static const int _maxLocationLength = 120;
+  static const int _maxPositions = 1000;
 
   Future<int> _requireEmployerId() async {
     final authUser = _supabase.auth.currentUser;
@@ -47,7 +50,6 @@ class EmployerJobRepository {
         .eq('e_id', employerId)
         .order('j_update_at', ascending: false);
 
-
     final rows = response as List<dynamic>;
     final jobs = rows
         .map(
@@ -79,6 +81,8 @@ class EmployerJobRepository {
     EmployerJobModel job, {
     required bool publish,
   }) async {
+    _validateJobBeforeSave(job, publish: publish);
+
     final employerId = await _requireEmployerId();
     final persistedJob = job.copyWith(
       status: publish ? 'active' : 'draft',
@@ -215,5 +219,80 @@ class EmployerJobRepository {
     if (value is int) return value;
     if (value is double) return value.toInt();
     return int.tryParse(value.toString());
+  }
+
+  void _validateJobBeforeSave(EmployerJobModel job, {required bool publish}) {
+    final title = job.title.trim();
+    if (title.isEmpty) {
+      throw StateError('Job title is required.');
+    }
+    if (title.length > _maxTitleLength) {
+      throw StateError('Job title cannot exceed $_maxTitleLength characters.');
+    }
+
+    final location = job.location.trim();
+    if (location.length > _maxLocationLength) {
+      throw StateError(
+        'Location cannot exceed $_maxLocationLength characters.',
+      );
+    }
+
+    if (job.positions <= 0) {
+      throw StateError('Open positions must be greater than 0.');
+    }
+    if (job.positions > _maxPositions) {
+      throw StateError('Open positions cannot exceed $_maxPositions.');
+    }
+
+    final minSalary = job.salaryMin;
+    final maxSalary = job.salaryMax;
+    if (minSalary != null && minSalary <= 0) {
+      throw StateError('Minimum salary must be greater than 0.');
+    }
+    if (maxSalary != null && maxSalary <= 0) {
+      throw StateError('Maximum salary must be greater than 0.');
+    }
+    if (minSalary != null && maxSalary != null && minSalary > maxSalary) {
+      throw StateError('Minimum salary cannot be greater than maximum salary.');
+    }
+
+    if (job.deadline != null && _isPastDate(job.deadline!)) {
+      throw StateError('Application deadline cannot be in the past.');
+    }
+
+    if (!publish) {
+      return;
+    }
+
+    if (job.category.trim().isEmpty) {
+      throw StateError('Please choose a category.');
+    }
+    if (location.isEmpty) {
+      throw StateError('Location is required.');
+    }
+    if (job.description.trim().isEmpty) {
+      throw StateError('Job description is required.');
+    }
+    if (job.requirementsText.trim().isEmpty) {
+      throw StateError('Job requirements are required.');
+    }
+    if (job.employmentType.trim().isEmpty) {
+      throw StateError('Employment type is required.');
+    }
+    if (job.deadline == null) {
+      throw StateError('Please choose an application deadline.');
+    }
+    if (!job.salaryNegotiable && minSalary == null && maxSalary == null) {
+      throw StateError(
+        'Please add a salary range or mark the salary as negotiable.',
+      );
+    }
+  }
+
+  bool _isPastDate(DateTime value) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final selected = DateTime(value.year, value.month, value.day);
+    return selected.isBefore(today);
   }
 }
