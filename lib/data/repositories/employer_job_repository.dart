@@ -120,11 +120,23 @@ class EmployerJobRepository {
   Future<EmployerJobModel> reopenJob(int jobId) async {
     final employerId = await _requireEmployerId();
 
+    // Ensure the job belongs to current employer before destructive cleanup.
+    await _supabase
+        .from('jobs')
+        .select('j_id')
+        .eq('j_id', jobId)
+        .eq('e_id', employerId)
+        .single();
+
+    // Re-open starts a fresh hiring cycle: remove all previous applications.
+    await _supabase.from('applications').delete().eq('j_id', jobId);
+
     final response = await _supabase
         .from('jobs')
         .update({
           'j_status': 'active',
           'j_moderation_status': 'pending',
+          'j_application_count': 0,
           'j_update_at': DateTime.now().toIso8601String(),
         })
         .eq('j_id', jobId)

@@ -477,6 +477,21 @@ final Map<String, String> englishStrings = {
   'addSkills': 'Add Skills',
   'addCustom': '+ Add Custom',
   'customSkillComingSoon': 'Custom skill coming soon',
+  'customSkillDialogTitle': 'Add Custom Skill',
+  'customSkillDescriptionHint': 'Short description (optional)',
+  'customSkillSaveAction': 'Save Skill',
+  'customSkillNameRequired': 'Please enter a skill name',
+  'customSkillNameTooShort': 'Skill name must be at least 2 characters',
+  'customSkillNameTooLong': 'Skill name cannot exceed 50 characters',
+  'customSkillNameInvalid':
+      'Skill name may include letters, numbers and + # . - / &',
+  'customSkillAlreadyExists': 'This skill already exists',
+  'customSkillAlreadySelected': 'This skill is already selected',
+  'customSkillAddedSuccess': 'Skill added successfully',
+  'customSkillAddedLocalOnly':
+      'Skill was added to this job, but could not be saved to shared catalog.',
+  'customSkillCatalogFallback':
+      'Could not load system skill catalog, using suggested list.',
   'figma': 'Figma',
   'uiDesign': 'UI Design',
   'flutter': 'Flutter',
