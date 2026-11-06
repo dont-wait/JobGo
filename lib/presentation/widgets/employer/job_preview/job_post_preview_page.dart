@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/core/configs/theme/app_colors.dart';
+import 'package:jobgo/core/localization/app_localizations.dart';
 import 'package:jobgo/data/models/employer_job_model.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/preview_benefits_grid.dart';
 import 'package:jobgo/presentation/widgets/employer/job_preview/preview_bottom_actions.dart';
@@ -40,40 +40,41 @@ class _JobPostPreviewPageState extends State<JobPostPreviewPage> {
   Future<void> _submit(bool publish) async {
     if (_isSubmitting) return;
 
-    // Nếu là publish (đăng bài), chuyển sang trang thanh toán trước
     if (publish) {
-      setState(() => _isSubmitting = true); // Đổi nút thành vòng xoay loading để ngăn bấm liên tục
-
-      final paymentSuccess = await Navigator.push<bool>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const PaymentPage(amount: 50000.0),
-        ),
-      );
-      
-      if (paymentSuccess == true && mounted) {
-        try {
-          final success = await widget.onSubmit(true);
-          if (success && mounted) {
-            Navigator.pop(context, true);
-          }
-        } catch (_) {
-          if (mounted) {
-            final loc = AppLocalizations.of(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(loc.couldNotSaveJob)),
-            );
+      setState(() => _isSubmitting = true);
+      try {
+        // Only new postings require payment. Editing updates immediately.
+        if (!widget.isEditing) {
+          final paymentSuccess = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const PaymentPage(amount: 50000.0),
+            ),
+          );
+          if (paymentSuccess != true || !mounted) {
+            return;
           }
         }
-      }
 
-      if (mounted) {
-        setState(() => _isSubmitting = false);
+        final success = await widget.onSubmit(true);
+        if (success && mounted) {
+          Navigator.pop(context, true);
+        }
+      } catch (_) {
+        if (mounted) {
+          final loc = AppLocalizations.of(context);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(loc.couldNotSaveJob)));
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isSubmitting = false);
+        }
       }
       return;
     }
 
-    // Nếu chỉ lưu nháp thì giữ nguyên logic cũ
     setState(() => _isSubmitting = true);
     try {
       final success = await widget.onSubmit(false);
@@ -192,7 +193,7 @@ class _BulletPoint extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            '• ',
+            '\u2022 ',
             style: TextStyle(fontSize: 16, color: AppColors.primary),
           ),
           Expanded(

@@ -477,6 +477,21 @@ final Map<String, String> vietStrings = {
   'addSkills': 'Thêm kỹ năng',
   'addCustom': '+ Thêm tùy chỉnh',
   'customSkillComingSoon': 'Tính năng thêm kỹ năng tùy chỉnh sắp ra mắt',
+  'customSkillDialogTitle': 'Thêm kỹ năng tùy chỉnh',
+  'customSkillDescriptionHint': 'Mô tả ngắn (không bắt buộc)',
+  'customSkillSaveAction': 'Lưu kỹ năng',
+  'customSkillNameRequired': 'Vui lòng nhập tên kỹ năng',
+  'customSkillNameTooShort': 'Tên kỹ năng phải có ít nhất 2 ký tự',
+  'customSkillNameTooLong': 'Tên kỹ năng không được vượt quá 50 ký tự',
+  'customSkillNameInvalid':
+      'Tên kỹ năng chỉ bao gồm chữ, số và các ký tự + # . - / &',
+  'customSkillAlreadyExists': 'Kỹ năng này đã tồn tại',
+  'customSkillAlreadySelected': 'Kỹ năng này đã được chọn',
+  'customSkillAddedSuccess': 'Đã thêm kỹ năng thành công',
+  'customSkillAddedLocalOnly':
+      'Đã thêm kỹ năng vào tin tuyển dụng. Không thể lưu vào danh mục chung.',
+  'customSkillCatalogFallback':
+      'Không tải được danh mục skill từ hệ thống, đang dùng danh sách gợi ý.',
   'figma': 'Figma',
   'uiDesign': 'Thiết kế UI',
   'flutter': 'Flutter',

@@ -454,6 +454,22 @@ class AppLocalizations {
   String get addSkills => translate('addSkills');
   String get addCustom => translate('addCustom');
   String get customSkillComingSoon => translate('customSkillComingSoon');
+  String get customSkillDialogTitle => translate('customSkillDialogTitle');
+  String get customSkillDescriptionHint =>
+      translate('customSkillDescriptionHint');
+  String get customSkillSaveAction => translate('customSkillSaveAction');
+  String get customSkillNameRequired => translate('customSkillNameRequired');
+  String get customSkillNameTooShort => translate('customSkillNameTooShort');
+  String get customSkillNameTooLong => translate('customSkillNameTooLong');
+  String get customSkillNameInvalid => translate('customSkillNameInvalid');
+  String get customSkillAlreadyExists => translate('customSkillAlreadyExists');
+  String get customSkillAlreadySelected =>
+      translate('customSkillAlreadySelected');
+  String get customSkillAddedSuccess => translate('customSkillAddedSuccess');
+  String get customSkillAddedLocalOnly =>
+      translate('customSkillAddedLocalOnly');
+  String get customSkillCatalogFallback =>
+      translate('customSkillCatalogFallback');
   String get figma => translate('figma');
   String get uiDesign => translate('uiDesign');
   String get flutter => translate('flutter');
